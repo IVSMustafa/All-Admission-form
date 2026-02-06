@@ -1,0 +1,7 @@
+{
+  "name": "IVS Premium Admission Portal",
+  "description": "A futuristic, glassmorphism-styled multi-step registration wizard for Iqra Virtual School featuring smart recommendations and automated trial class allocation.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}
