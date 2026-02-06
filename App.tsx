@@ -12,6 +12,7 @@ const App = () => {
   const [formData, setFormData] = useState<FormData>(INITIAL_DATA);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const webhookUrl = 'https://n8n.srv756914.hstgr.cloud/webhook-test/e2ca9d7d-8a41-4c9c-bbaf-4f01f9543613';
 
   const updateData = (fields: Partial<FormData>) => {
     setFormData(prev => ({ ...prev, ...fields }));
@@ -197,8 +198,29 @@ const App = () => {
 
     setFormData(updatedFormData);
 
-    // Here you would typically send data to backend/webhook
-    console.log("Submitting Data:", updatedFormData);
+    const submissionPayload = {
+      ...updatedFormData,
+      submittedAt: new Date().toISOString()
+    };
+
+    try {
+      const response = await fetch(webhookUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(submissionPayload)
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Webhook submission failed:', response.status, errorText);
+      }
+    } catch (error) {
+      console.error('Webhook submission error:', error);
+    }
+
+    console.log("Submitting Data:", submissionPayload);
     setIsSubmitted(true);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
