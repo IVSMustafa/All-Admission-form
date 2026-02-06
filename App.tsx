@@ -516,7 +516,7 @@ const App = () => {
         {/* Header */}
         <header className="flex items-center justify-between mb-8 animate-fade-in">
           <div className="flex items-center gap-2">
-            <img src="/Public/IVS Logo.png" alt="IVS Logo" className="h-20 w-20 object-contain" />
+            <img src="/ivs-logo.png" alt="IVS Logo" className="h-20 w-20 object-contain" />
             <span className="font-display font-bold text-lg tracking-wide hidden sm:block text-brand-burgundy">Iqra Virtual School</span>
           </div>
         </header>
