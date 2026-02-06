@@ -197,8 +197,13 @@ const App = () => {
 
     setFormData(updatedFormData);
 
+    const webhookPayload = {
+      ...updatedFormData,
+      whatsapp: formatPhoneForWhatsApp(updatedFormData.country || 'Other', updatedFormData.whatsapp),
+    };
+
     // Here you would typically send data to backend/webhook
-    console.log("Submitting Data:", updatedFormData);
+    console.log("Submitting Data:", webhookPayload);
     setIsSubmitted(true);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
