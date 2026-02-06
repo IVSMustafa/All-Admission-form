@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { ArrowLeft, ArrowRight, Check, Send } from 'lucide-react';
 import { FormData, INITIAL_DATA, LeadType } from './types';
 import { validatePhoneLength, formatPhoneForWhatsApp } from './constants';
+import { WEBHOOK_URL } from './env/webhook';
 import SmartPanel from './components/SmartPanel';
 import VoiceAgent from './components/VoiceAgent';
 import { Button } from './components/UI';
@@ -197,8 +198,25 @@ const App = () => {
 
     setFormData(updatedFormData);
 
+    const whatsappNumber = formatPhoneForWhatsApp(updatedFormData.country || 'Other', updatedFormData.whatsapp);
+    const payload = {
+      ...updatedFormData,
+      whatsapp: whatsappNumber,
+    };
+
     // Here you would typically send data to backend/webhook
-    console.log("Submitting Data:", updatedFormData);
+    try {
+      await fetch(WEBHOOK_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+    } catch (error) {
+      console.error('Webhook submission failed:', error);
+    }
+    console.log("Submitting Data:", payload);
     setIsSubmitted(true);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
