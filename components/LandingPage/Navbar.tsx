@@ -18,7 +18,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onNavigate }) => {
                     {/* Logo + School Name */}
                     <div className="flex items-center gap-4">
                         <img
-                            src="/Public/IVS Logo.png"
+                            src="/IVS Logo.png"
                             alt="IVS Logo"
                             className="w-20 h-20 object-contain"
                         />
