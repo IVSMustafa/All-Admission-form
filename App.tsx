@@ -12,6 +12,7 @@ const App = () => {
   const [formData, setFormData] = useState<FormData>(INITIAL_DATA);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const webhookUrl = import.meta.env.VITE_WEBHOOK_URL as string | undefined;
 
   const updateData = (fields: Partial<FormData>) => {
     setFormData(prev => ({ ...prev, ...fields }));
@@ -197,8 +198,30 @@ const App = () => {
 
     setFormData(updatedFormData);
 
-    // Here you would typically send data to backend/webhook
-    console.log("Submitting Data:", updatedFormData);
+    const formattedWhatsapp = formatPhoneForWhatsApp(updatedFormData.country || 'Other', updatedFormData.whatsapp);
+    const payload = {
+      ...updatedFormData,
+      whatsappFormatted: formattedWhatsapp,
+      submittedAt: new Date().toISOString(),
+    };
+
+    if (webhookUrl) {
+      try {
+        await fetch(webhookUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(payload),
+        });
+      } catch (error) {
+        console.error('Webhook submission failed:', error);
+      }
+    } else {
+      console.warn('Webhook URL is missing. Set VITE_WEBHOOK_URL in your .env file.');
+    }
+
+    console.log("Submitting Data:", payload);
     setIsSubmitted(true);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -516,7 +539,7 @@ const App = () => {
         {/* Header */}
         <header className="flex items-center justify-between mb-8 animate-fade-in">
           <div className="flex items-center gap-2">
-            <img src="/Public/IVS Logo.png" alt="IVS Logo" className="h-20 w-20 object-contain" />
+            <img src="/IVS Logo.png" alt="IVS Logo" className="h-20 w-20 object-contain" />
             <span className="font-display font-bold text-lg tracking-wide hidden sm:block text-brand-burgundy">Iqra Virtual School</span>
           </div>
         </header>
