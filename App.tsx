@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ArrowLeft, ArrowRight, Check, Send } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Check, Loader2, Send, Sparkles } from 'lucide-react';
 import { FormData, INITIAL_DATA, LeadType } from './types';
 import { validatePhoneLength, formatPhoneForWhatsApp } from './constants';
 import SmartPanel from './components/SmartPanel';
@@ -8,10 +8,13 @@ import { Button } from './components/UI';
 import { Step0_Welcome, Step1_Details, Step2_FinalSteps } from './components/FormSteps';
 
 const App = () => {
+  const WEBHOOK_URL = 'https://n8n.srv756914.hstgr.cloud/webhook-test/e2ca9d7d-8a41-4c9c-bbaf-4f01f9543613';
   const [step, setStep] = useState(0);
   const [formData, setFormData] = useState<FormData>(INITIAL_DATA);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const updateData = (fields: Partial<FormData>) => {
     setFormData(prev => ({ ...prev, ...fields }));
@@ -151,6 +154,9 @@ const App = () => {
   };
 
   const handleSubmit = async () => {
+    setSubmitError(null);
+    setIsSubmitting(true);
+
     // Auto-add any pending upsell students before submission
     let updatedFormData = { ...formData };
 
@@ -195,12 +201,35 @@ const App = () => {
       updatedFormData.pendingQuranTime = '';
     }
 
-    setFormData(updatedFormData);
+    const payload = {
+      submittedAt: new Date().toISOString(),
+      source: 'ivs-admission-form',
+      leadType: updatedFormData.leadType,
+      data: updatedFormData,
+    };
 
-    // Here you would typically send data to backend/webhook
-    console.log("Submitting Data:", updatedFormData);
-    setIsSubmitted(true);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    try {
+      const response = await fetch(WEBHOOK_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Webhook request failed with status ${response.status}`);
+      }
+
+      setFormData(updatedFormData);
+      setIsSubmitted(true);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } catch (error) {
+      console.error('Webhook submission failed:', error);
+      setSubmitError('We could not submit your form right now. Please check your connection and try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   // Helper function to get grade value for timing determination
@@ -514,10 +543,31 @@ const App = () => {
       {/* LEFT CONTENT: FORM */}
       <div className="flex-1 w-full max-w-3xl mx-auto">
         {/* Header */}
-        <header className="flex items-center justify-between mb-8 animate-fade-in">
-          <div className="flex items-center gap-2">
-            <img src="/Public/IVS Logo.png" alt="IVS Logo" className="h-20 w-20 object-contain" />
-            <span className="font-display font-bold text-lg tracking-wide hidden sm:block text-brand-burgundy">Iqra Virtual School</span>
+        <header className="glass-light rounded-3xl p-4 sm:p-5 mb-6 animate-fade-in border border-white/70 shadow-sm">
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center gap-2">
+              <img src="/Public/IVS Logo.png" alt="IVS Logo" className="h-14 w-14 sm:h-16 sm:w-16 object-contain" />
+              <div>
+                <span className="font-display font-bold text-base sm:text-lg tracking-wide text-brand-burgundy block">Iqra Virtual School</span>
+                <span className="text-xs sm:text-sm text-brand-mediumText">Future-ready admissions</span>
+              </div>
+            </div>
+            <span className="hidden sm:inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.16em] text-brand-burgundy bg-brand-orange/10 rounded-full px-3 py-1.5 border border-brand-orange/25">
+              <Sparkles className="w-3.5 h-3.5" /> Smart Form
+            </span>
+          </div>
+
+          <div className="mt-4">
+            <div className="flex items-center justify-between mb-2 text-xs sm:text-sm text-brand-mediumText">
+              <span>Progress</span>
+              <span className="font-semibold text-brand-burgundy">Step {step} of 2</span>
+            </div>
+            <div className="h-2 bg-brand-beige rounded-full overflow-hidden">
+              <div
+                className="h-full rounded-full bg-gradient-to-r from-brand-burgundy to-brand-orange transition-all duration-500"
+                style={{ width: `${Math.max(5, (step / 2) * 100)}%` }}
+              />
+            </div>
           </div>
         </header>
 
@@ -528,7 +578,13 @@ const App = () => {
         </div>
 
         {/* Navigation Footer */}
-        <div className="flex justify-between items-center pt-6 border-t border-brand-burgundy/20 animate-fade-in">
+        {submitError && (
+          <div className="mb-4 rounded-xl border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-700">
+            {submitError}
+          </div>
+        )}
+
+        <div className="sticky bottom-2 sm:bottom-4 z-20 flex justify-between items-center gap-3 pt-4 px-3 sm:px-0 pb-2 sm:pb-0 border-t border-brand-burgundy/20 animate-fade-in bg-white/80 backdrop-blur-md rounded-2xl sm:bg-transparent sm:backdrop-blur-0 sm:rounded-none">
           <Button onClick={prevStep} variant="secondary">
             <ArrowLeft className="w-4 h-4" /> Back
           </Button>
@@ -538,8 +594,21 @@ const App = () => {
               Next Step <ArrowRight className="w-4 h-4" />
             </Button>
           ) : (
-            <Button onClick={handleSubmit} variant="primary" className="!bg-gradient-to-r !from-emerald-500 !to-green-600 !shadow-emerald-500/20">
-              Submit & Get Details <Send className="w-4 h-4" />
+            <Button
+              onClick={handleSubmit}
+              variant="primary"
+              disabled={isSubmitting}
+              className="!bg-gradient-to-r !from-emerald-500 !to-green-600 !shadow-emerald-500/20"
+            >
+              {isSubmitting ? (
+                <>
+                  Sending... <Loader2 className="w-4 h-4 animate-spin" />
+                </>
+              ) : (
+                <>
+                  Submit & Get Details <Send className="w-4 h-4" />
+                </>
+              )}
             </Button>
           )}
         </div>
