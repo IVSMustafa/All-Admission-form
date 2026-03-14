@@ -396,17 +396,27 @@ const VoiceAgent = ({ variant = 'floating' }: VoiceAgentProps) => {
        );
     }
     
-    // Floating Button for Mobile
+    // Floating Button for Mobile - Using a Div instead to ensure visibility
     return (
-      <button 
-        onClick={connect}
-        className="fixed bottom-6 right-6 z-50 group flex items-center justify-center w-14 h-14 rounded-full bg-brand-dark border-2 border-brand-orange text-brand-burgundy shadow-[0_0_20px_rgba(34,211,238,0.3)] hover:scale-110 hover:shadow-[0_0_40px_rgba(34,211,238,0.5)] transition-all duration-300"
-        title="Start IVS Advisor"
-      >
-        <div className="absolute inset-0 bg-brand-orange/10 rounded-full animate-ping opacity-20"></div>
-        <Sparkles className="w-6 h-6 animate-pulse-slow" />
-        {error && <span className="absolute -top-12 right-0 bg-red-500 text-brand-darkText text-xs px-2 py-1 rounded w-32 text-center shadow-lg">{error}</span>}
-      </button>
+      <div className="fixed bottom-6 right-6 z-40">
+        <button 
+          onClick={connect}
+          className="flex items-center justify-center w-20 h-20 rounded-full shadow-[0_8px_32px_rgba(34,211,238,0.3)] hover:shadow-[0_12px_48px_rgba(34,211,238,0.5)] transition-all duration-300 hover:scale-110 relative"
+          title="Start IVS Advisor"
+        >
+          <div className="absolute inset-0 bg-brand-orange/10 rounded-full animate-ping opacity-20"></div>
+          <img 
+            src="/images/assistant-sofa.png" 
+            alt="AI Assistant"
+            className="w-full h-full rounded-full object-cover transition-opacity duration-300"
+            style={{ 
+              objectPosition: 'center',
+              boxShadow: '0 0 20px rgba(34, 211, 238, 0.4)'
+            }}
+          />
+        </button>
+        {error && <span className="absolute -top-12 right-0 bg-red-500 text-white text-xs px-2 py-1 rounded w-32 text-center shadow-lg">{error}</span>}
+      </div>
     );
   }
 

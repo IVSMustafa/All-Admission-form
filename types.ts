@@ -31,7 +31,6 @@ export enum ClassMode {
   ONE_ON_ONE = 'One-on-One',
 }
 
-// Student entry for multi-student support
 export interface Student {
   id: string;
   name: string;
@@ -40,16 +39,15 @@ export interface Student {
   curriculum: Curriculum | null;
 }
 
-// Quran student entry for multi-student support
 export interface QuranStudent {
   id: string;
   name: string;
   age: string;
+  subjects: string[];
   classDays: string[];
   classTime: string;
 }
 
-// Tuition upsell student entry
 export interface TuitionUpsellStudent {
   id: string;
   name: string;
@@ -58,16 +56,14 @@ export interface TuitionUpsellStudent {
 }
 
 export interface FormData {
-  // Step 0
   leadType: LeadType | null;
 
-  // Multi-student support
   students: Student[];
+  otherCountryName: string;
 
-  // Step 1
-  avatar: string; // Base64 or URL
+  avatar: string;
   studentName: string;
-  age: string; // Keeping as string to handle empty state easily in inputs
+  age: string;
   grade: string;
   country: string;
   city: string;
@@ -75,64 +71,56 @@ export interface FormData {
   whatsapp: string;
   email: string;
 
-  // Step 2
   programType: ProgramType | null;
 
-  // Step 3
   curriculum: Curriculum | null;
-  track: Track | null; // For Federal
-  subjects: string[]; // For IGCSE/Tuition
+  track: Track | null;
+  subjects: string[];
   customSubject: string;
   tuitionBoard: string;
   preferredTimeSlots: string[];
-  // Removed crashCourseAgreement (was for Crash Course)
 
-  // Specific toggles
   britishIslamicStudies: boolean;
   britishUrdu: boolean;
   learningNotes: string;
 
-  // IGCSE / O / A specific
   igcseClassMode: ClassMode | null;
   examSession: string;
 
-  // Step 4
   trialConfirmed: boolean;
-  trialReason: string; // 'Missed' | 'Different Day' | 'Call'
+  trialReason: string;
   trialPreferredDay: string;
 
-  // Step 5
   quranInterest: boolean;
   quranTiming: string;
   quranLevel: string;
 
-  // Quran Form Specific (when leadType is QURAN)
   quranStudents: QuranStudent[];
+  quranSubjects: string[];
   quranClassDays: string[];
   quranClassTime: string;
   quranStudentCountry: string;
 
-  // Tuition specific
-  tuitionRequirements: string; // Short answer for subjects, grades, class type
+  tuitionRequirements: string;
 
-  // Upsell data
-  upsellTuitionStudents: TuitionUpsellStudent[]; // For tuition upsell from school/quran
-  upsellSchoolStudents: Student[]; // For school upsell from tuition/quran
-  upsellQuranStudents: QuranStudent[]; // For quran upsell
-  fullTimeInterest: boolean; // For school upsell toggle
+  upsellTuitionStudents: TuitionUpsellStudent[];
+  upsellSchoolStudents: Student[];
+  upsellQuranStudents: QuranStudent[];
+  fullTimeInterest: boolean;
 
-  // Pending upsell form fields (separate for each upsell type)
   pendingSchoolName: string;
   pendingSchoolAge: string;
   pendingSchoolGrade: string;
+
   pendingTuitionName: string;
   pendingTuitionAge: string;
   pendingTuitionReq: string;
+
   pendingQuranName: string;
   pendingQuranAge: string;
   pendingQuranTime: string;
+  pendingQuranSubjects: string[];
 
-  // Final
   notes: string;
   couponCode: string;
   appliedCoupon: {
@@ -141,12 +129,16 @@ export interface FormData {
     discountValue: number;
     message: string;
   } | null;
+
   tuitionInterest: boolean;
 }
 
 export const INITIAL_DATA: FormData = {
+  otherCountryName: "",
   leadType: null,
+
   students: [],
+
   avatar: '',
   studentName: '',
   age: '',
@@ -156,45 +148,60 @@ export const INITIAL_DATA: FormData = {
   parentName: '',
   whatsapp: '',
   email: '',
+
   programType: null,
+
   curriculum: null,
   track: null,
   subjects: [],
   customSubject: '',
   tuitionBoard: '',
   preferredTimeSlots: [],
-  // crashCourseAgreement removed
+
   britishIslamicStudies: false,
   britishUrdu: false,
   learningNotes: '',
+
   igcseClassMode: null,
   examSession: '',
+
   trialConfirmed: true,
   trialReason: '',
   trialPreferredDay: '',
+
   quranInterest: false,
   quranTiming: '',
   quranLevel: '',
+
   quranStudents: [],
+  quranSubjects: [],
   quranClassDays: [],
   quranClassTime: '',
   quranStudentCountry: '',
+
   tuitionRequirements: '',
+
   upsellTuitionStudents: [],
   upsellSchoolStudents: [],
   upsellQuranStudents: [],
   fullTimeInterest: false,
+
   pendingSchoolName: '',
   pendingSchoolAge: '',
   pendingSchoolGrade: '',
+
   pendingTuitionName: '',
   pendingTuitionAge: '',
   pendingTuitionReq: '',
+
   pendingQuranName: '',
   pendingQuranAge: '',
   pendingQuranTime: '',
+  pendingQuranSubjects: [],
+
   notes: '',
   couponCode: '',
   appliedCoupon: null,
+
   tuitionInterest: false,
 };

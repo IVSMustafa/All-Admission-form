@@ -1,111 +1,146 @@
-import React, { useState, useEffect } from 'react';
+// SmartPanel.tsx - Premium Visual Edition with Natural Language
+import React, { useEffect, useMemo, useState } from "react";
 import {
-  Sparkles, Clock, BookOpen, GraduationCap, AlertCircle, Check,
-  Users, MapPin, Lightbulb, ChevronRight, X, MessageCircle,
-  BookHeart, DollarSign, Zap
-} from 'lucide-react';
-import { FormData, LeadType, ProgramType, Curriculum, ClassMode } from '../types';
-import { GRADES, getGradeValue, COUNTRIES } from '../constants';
+  Sparkles,
+  Clock,
+  BookOpen,
+  GraduationCap,
+  AlertCircle,
+  Check,
+  Users,
+  ChevronRight,
+  X,
+  MessageCircle,
+  DollarSign,
+  Zap,
+  TrendingUp,
+  Award,
+  Star,
+  Target,
+  Rocket,
+} from "lucide-react";
+import { FormData, LeadType, ProgramType, Curriculum } from "../types";
+import { getGradeValue } from "../constants";
 
 interface SmartPanelProps {
   data: FormData;
-  step: number;
+  step: number; // 0,1,2
   onApplySuggestion?: (field: string, value: any) => void;
 }
 
-// Onboarding step configuration
 const ONBOARDING_STEPS = [
-  { id: 1, label: 'Choose Program', requiredStep: 0 },
-  { id: 2, label: 'Student Details', requiredStep: 1 },
-  { id: 3, label: 'Final Steps', requiredStep: 2 },
+  { id: 1, label: "Choose Program", sub: "School, Tuition, Qur'an", requiredStep: 0 },
+  { id: 2, label: "Student Details", sub: "Name, grade, subjects", requiredStep: 1 },
+  { id: 3, label: "Review & Submit", sub: "Final confirmation", requiredStep: 2 },
 ];
 
-// Recommendation card component with animation
-const RecommendationCard: React.FC<{
-  icon: React.ReactNode;
-  title: string;
-  children: React.ReactNode;
-  variant?: 'info' | 'success' | 'warning' | 'purple' | 'orange';
-  onClick?: () => void;
-  actionLabel?: string;
-  delay?: number;
-}> = ({ icon, title, children, variant = 'info', onClick, actionLabel, delay = 0 }) => {
-  const [visible, setVisible] = useState(false);
+type Variant = "info" | "success" | "warning" | "purple" | "orange" | "gold";
 
-  useEffect(() => {
-    const timer = setTimeout(() => setVisible(true), delay);
-    return () => clearTimeout(timer);
-  }, [delay]);
-
-  const variantStyles: Record<string, string> = {
-    info: 'bg-blue-50 border-blue-100 text-blue-700',
-    success: 'bg-emerald-50 border-emerald-100 text-emerald-700',
-    warning: 'bg-amber-50 border-amber-100 text-amber-700',
-    purple: 'bg-purple-50 border-purple-100 text-purple-700',
-    orange: 'bg-orange-50 border-orange-100 text-orange-700',
-  };
+/* ── Circular Progress Ring with Glow ── */
+const CircularProgress: React.FC<{ percent: number }> = ({ percent }) => {
+  const size = 80;
+  const stroke = 7;
+  const radius = (size - stroke) / 2;
+  const circumference = 2 * Math.PI * radius;
+  const offset = circumference - (percent / 100) * circumference;
 
   return (
-    <div
-      className={`rec-animate space-y-2 ${visible ? 'rec-visible' : 'rec-hidden'}`}
-      style={{ animationDelay: `${delay}ms` }}
-    >
-      <div className="flex items-center gap-2 text-brand-darkText font-medium text-sm">
-        {icon}
-        <span>{title}</span>
-      </div>
-      <div
-        className={`p-3 rounded-lg border text-xs ${variantStyles[variant]} ${onClick ? 'cursor-pointer hover:shadow-md transition-shadow' : ''}`}
-        onClick={onClick}
-      >
-        {children}
-        {onClick && actionLabel && (
-          <div className="flex items-center gap-1 mt-2 font-semibold text-xs opacity-80">
-            <span>{actionLabel}</span>
-            <ChevronRight className="w-3 h-3" />
-          </div>
-        )}
+    <div className="sp-circleWrap" aria-label={`${percent}% complete`}>
+      <div className="sp-circleGlow" />
+      <svg width={size} height={size} style={{ transform: "rotate(-90deg)" }}>
+        {/* Track */}
+        <circle
+          cx={size / 2}
+          cy={size / 2}
+          r={radius}
+          fill="none"
+          stroke="rgba(255,255,255,0.15)"
+          strokeWidth={stroke}
+        />
+        {/* Fill with glow */}
+        <circle
+          cx={size / 2}
+          cy={size / 2}
+          r={radius}
+          fill="none"
+          stroke="url(#progressGradient)"
+          strokeWidth={stroke}
+          strokeDasharray={circumference}
+          strokeDashoffset={offset}
+          strokeLinecap="round"
+          style={{ 
+            transition: "stroke-dashoffset 0.8s cubic-bezier(0.4,0,0.2,1)",
+            filter: "drop-shadow(0 0 8px rgba(255,255,255,0.5))"
+          }}
+        />
+        <defs>
+          <linearGradient id="progressGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#ffffff" />
+            <stop offset="100%" stopColor="#93c5fd" />
+          </linearGradient>
+        </defs>
+      </svg>
+      {/* Center label with glow */}
+      <div className="sp-circleLabel">
+        <span className="sp-circlePercent">{percent}%</span>
       </div>
     </div>
   );
 };
 
-// Mobile drawer component
+const InsightCard: React.FC<{
+  icon: React.ReactNode;
+  title: string;
+  children: React.ReactNode;
+  variant?: Variant;
+  delay?: number;
+}> = ({ icon, title, children, variant = "info", delay = 0 }) => {
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const t = window.setTimeout(() => setVisible(true), delay);
+    return () => window.clearTimeout(t);
+  }, [delay]);
+
+  return (
+    <div className={`sp-insightWrap ${visible ? "sp-in" : "sp-out"}`} style={{ transitionDelay: `${delay}ms` }}>
+      <div className={`sp-insight sp-${variant}`}>
+        <div className="sp-insightHead">
+          <div className="sp-insightIco">{icon}</div>
+          <div className="sp-insightTitle">{title}</div>
+        </div>
+        <div className="sp-insightBody">{children}</div>
+      </div>
+    </div>
+  );
+};
+
 const MobileDrawer: React.FC<{
   isOpen: boolean;
   onClose: () => void;
   children: React.ReactNode;
 }> = ({ isOpen, onClose, children }) => {
   if (!isOpen) return null;
-
   return (
     <>
-      {/* Backdrop */}
-      <div
-        className="advisor-backdrop"
-        onClick={onClose}
-      />
-      {/* Drawer */}
-      <div className="advisor-drawer">
-        <div className="flex items-center justify-between p-4 border-b border-brand-lightGray/30">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-brand-orange/20 to-brand-burgundy/10 flex items-center justify-center">
-              <Sparkles className="w-4 h-4 text-brand-orange" />
+      <div className="sp-backdrop" onClick={onClose} />
+      <div className="sp-drawer" role="dialog" aria-modal="true" aria-label="Smart Advisor">
+        <div className="sp-drag" />
+        <div className="sp-drawerHead">
+          <div className="sp-drawerBrand">
+            <div className="sp-drawerIco">
+              <Sparkles className="w-5 h-5" />
             </div>
-            <h3 className="font-display font-bold text-sm text-brand-burgundy uppercase tracking-wider">
-              Smart Advisor
-            </h3>
+            <div>
+              <div className="sp-drawerTitle">Smart Advisor</div>
+              <div className="sp-drawerSub">Your enrollment assistant</div>
+            </div>
           </div>
-          <button
-            onClick={onClose}
-            className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition-colors"
-          >
-            <X className="w-4 h-4 text-gray-600" />
+          <button onClick={onClose} className="sp-close" aria-label="Close">
+            <X className="w-4 h-4" />
           </button>
         </div>
-        <div className="p-4 overflow-y-auto max-h-[70vh]">
-          {children}
-        </div>
+        <div className="sp-drawerBody">{children}</div>
       </div>
     </>
   );
@@ -114,516 +149,857 @@ const MobileDrawer: React.FC<{
 const SmartPanel: React.FC<SmartPanelProps> = ({ data, step, onApplySuggestion }) => {
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
 
-  // Logic to determine recommendations
-  const gradeVal = getGradeValue(data.grade);
-  const ageVal = parseInt(data.age) || 0;
-
-  const isMorningTrial = gradeVal >= 10; // Grade 8 (index 10) or higher
-  const isEveningTrial = gradeVal > 0 && gradeVal < 10; // KG1 to Grade 7
-
-  const recommendFederal = gradeVal >= 10 && gradeVal <= 14; // Grade 8-12
-  const recommendBritish = gradeVal > 0 && gradeVal <= 9; // KG1-7
-
-  const isIGCSE = data.curriculum === Curriculum.IGCSE_O_LEVEL || data.curriculum === Curriculum.A_LEVEL;
-
-  // Check for multiple students (sibling discount)
-  const hasSiblings = data.students.length > 1;
-
-  // Get student names for personalized messages
-  const studentNames = data.students.map(s => s.name).filter(Boolean);
-  const firstStudentName = studentNames[0] || data.studentName || '';
-  const allStudentNames = studentNames.length > 0
-    ? studentNames.length === 1
-      ? studentNames[0]
-      : studentNames.slice(0, -1).join(', ') + ' & ' + studentNames[studentNames.length - 1]
-    : '';
-
-  // Quran-specific student tracking
+  const students = data.students || [];
   const quranStudents = data.quranStudents || [];
-  const quranStudentNames = quranStudents.map(s => s.name).filter(Boolean);
-  const firstQuranStudentName = quranStudentNames[0] || data.studentName || '';
-  const hasQuranSiblings = quranStudents.length > 1;
-  const allQuranNames = quranStudentNames.length > 0
-    ? quranStudentNames.length === 1
-      ? quranStudentNames[0]
-      : quranStudentNames.slice(0, -1).join(', ') + ' & ' + quranStudentNames[quranStudentNames.length - 1]
-    : '';
 
-  // Get Grade 8+ students for board recommendation
-  const grade8PlusStudents = data.students.filter(s => getGradeValue(s.grade) >= 10);
-  const grade8PlusNames = grade8PlusStudents.map(s => s.name).filter(Boolean);
+  const gradeVal = getGradeValue(data.grade);
+  const ageVal = parseInt(String(data.age || "0"), 10) || 0;
 
-  // Check for science subjects
-  const hasScienceSubjects = data.subjects.some(s =>
-    ['Biology', 'Physics', 'Chemistry'].includes(s)
-  );
-  const hasMath = data.subjects.includes('Mathematics');
+  const hasSiblings = students.length > 1;
+  const studentNames = students.map((s) => s.name).filter(Boolean);
+  const firstStudentName = studentNames[0] || (data.studentName as any) || "";
+  const allStudentNames =
+    studentNames.length > 0
+      ? studentNames.length === 1
+        ? studentNames[0]
+        : studentNames.slice(0, -1).join(", ") + " & " + studentNames[studentNames.length - 1]
+      : "";
 
-  // Country-based recommendations
-  const isGulfCountry = ['Saudi Arabia', 'United Arab Emirates', 'Qatar', 'Kuwait', 'Oman', 'Bahrain'].includes(data.country);
-  const isQuranGulfCountry = ['Saudi Arabia', 'United Arab Emirates', 'Qatar', 'Kuwait', 'Oman', 'Bahrain'].includes(data.quranStudentCountry);
+  const grade8PlusStudents = students.filter((s) => getGradeValue(s.grade) >= 10);
 
-  // Determine which onboarding steps are complete
-  const getStepStatus = (onboardingStep: number): 'completed' | 'active' | 'pending' => {
+  const getStepStatus = (onboardingStep: number): "completed" | "active" | "pending" => {
     if (onboardingStep === 1) {
-      if (data.leadType) return 'completed';
-      return step === 0 ? 'active' : 'pending';
+      if (data.leadType) return "completed";
+      return step === 0 ? "active" : "pending";
     }
     if (onboardingStep === 2) {
-      // Check for students based on lead type
       if (data.leadType === LeadType.QURAN) {
-        if (quranStudents.length > 0 || data.studentName) return 'completed';
+        if (quranStudents.length > 0 || (data.studentName as any)) return "completed";
       } else {
-        if (data.students.length > 0 || data.studentName) return 'completed';
+        if (students.length > 0 || (data.studentName as any)) return "completed";
       }
-      if (step === 1) return 'active';
-      return 'pending';
+      if (step === 1) return "active";
+      return "pending";
     }
     if (onboardingStep === 3) {
-      if (step > 2) return 'completed';
-      if (step === 2) return 'active';
-      return 'pending';
+      if (step > 2) return "completed";
+      if (step === 2) return "active";
+      return "pending";
     }
-    return 'pending';
+    return "pending";
   };
 
-  const progress = Math.round((step / 2) * 100);
+  const progress = Math.max(0, Math.min(100, Math.round((step / 2) * 100)));
 
-  // Main content that will be shown in both desktop and mobile
+  const smartHint = useMemo(() => {
+    if (step === 0) return "Choose a program to get personalized guidance";
+    if (step === 1) return "Add student details to customize your experience";
+    if (step === 2) return "Review everything and complete your enrollment";
+    return "Almost there!";
+  }, [step]);
+
+  const headerSub = useMemo(() => {
+    if (step === 0) return "Start your adventure";
+    if (step === 1) return "Student information";
+    if (step === 2) return "Final review";
+    return "Application progress";
+  }, [step]);
+
+  const TimelineSteps = () => (
+    <div className="sp-timeline" aria-label="Registration timeline">
+      {ONBOARDING_STEPS.map((s, index) => {
+        const status = getStepStatus(s.id);
+        return (
+          <div key={s.id} className={`sp-timelineStep ${status}`}>
+            <div className="sp-timelineIcon">
+              {status === "completed" ? <Check className="w-5 h-5" /> : s.id}
+            </div>
+            <div className="sp-timelineContent">
+              <div className="sp-timelineTitle">{s.label}</div>
+              <div className="sp-timelineSub">{s.sub}</div>
+            </div>
+            {index < ONBOARDING_STEPS.length - 1 && <div className="sp-timelineLine" />}
+          </div>
+        );
+      })}
+    </div>
+  );
+
   const AdvisorContent = () => (
-    <div className="space-y-4">
-      {/* Welcome State */}
-      {step === 0 && (
-        <div className="text-brand-mediumText text-sm leading-relaxed bg-brand-beige/30 p-3 rounded-xl rec-animate">
-          <p>Welcome to IVS! Select a program or use the quick selectors above to see personalized recommendations.</p>
+    <div className="sp-advisorContent">
+      {/* Premium Tip Card with Glow */}
+      <div className="sp-tipCard">
+        <div className="sp-tipGlow" />
+        <div className="sp-tipIcon">
+          <Target className="w-5 h-5" />
         </div>
+        <div className="sp-tipText">
+          <div className="sp-tipHeader">Current Step</div>
+          <div className="sp-tipDescription">{smartHint}</div>
+        </div>
+      </div>
+
+      {/* Contextual Insights with Premium Look */}
+      {step === 0 && (
+        <InsightCard icon={<Rocket className="w-5 h-5" />} title="Welcome!" variant="info" delay={100}>
+          Choose the program that best fits your needs. You can add multiple programs later.
+        </InsightCard>
       )}
 
-      {/* Personalized Welcome when student name is available (not for Quran - has its own) */}
       {firstStudentName && step >= 1 && data.leadType !== LeadType.QURAN && (
-        <RecommendationCard
-          icon={<Sparkles className="w-4 h-4 text-brand-burgundy" />}
-          title="Welcome!"
-          variant="orange"
-          delay={50}
-        >
-          <strong>Great choice{allStudentNames ? `, ${allStudentNames}` : ''}!</strong> You're on your way to an amazing learning journey. Let's set up your perfect program! 🚀
-        </RecommendationCard>
+        <InsightCard icon={<Check className="w-5 h-5" />} title="Student Added" variant="success" delay={150}>
+          <strong>{allStudentNames}</strong> {students.length > 1 ? 'have' : 'has'} been added to your application.
+        </InsightCard>
       )}
 
-      {/* Sibling Discount Alert */}
       {hasSiblings && (
-        <RecommendationCard
-          icon={<Users className="w-4 h-4 text-brand-burgundy" />}
-          title="Family Discount"
-          variant="success"
-          delay={100}
-        >
-          <strong>Great news for the {studentNames[0]} family!</strong> You're enrolling {data.students.length} students ({allStudentNames}). You may qualify for our <strong>sibling discount</strong> – our team will share details during the trial call.
-        </RecommendationCard>
+        <InsightCard icon={<Users className="w-5 h-5" />} title="Family Enrollment" variant="success" delay={200}>
+          Enrolling <strong>{students.length} students</strong> together. Family discounts may be available!
+        </InsightCard>
       )}
 
-      {/* Age Warning */}
       {ageVal > 20 && data.leadType === LeadType.FULL_TIME && (
-        <RecommendationCard
-          icon={<AlertCircle className="w-4 h-4 text-yellow-600" />}
-          title="Age Check"
-          variant="warning"
-        >
-          Full-time school is typically for students under 20. We recommend our <strong>Tuition program</strong> for advanced learners.
-        </RecommendationCard>
+        <InsightCard icon={<AlertCircle className="w-5 h-5" />} title="Age Notice" variant="warning" delay={250}>
+          For students over 20, we recommend personalized tuition. Our advisor will help you choose the best option.
+        </InsightCard>
       )}
 
-      {/* Context-aware recommendations for Full-Time */}
-      {step >= 1 && data.leadType === LeadType.FULL_TIME && (
-        <>
-          {/* Board Recommendation for Grade 8+ */}
-          {grade8PlusStudents.length > 0 && (
-            <RecommendationCard
-              icon={<BookOpen className="w-4 h-4 text-brand-burgundy" />}
-              title="Board Recommendation"
-              variant="info"
-              delay={150}
-            >
-              <div className="space-y-2">
-                <p className="text-brand-darkText font-medium mb-2">
-                  {grade8PlusNames.length > 0
-                    ? `For ${grade8PlusNames.join(' & ')}'s grade level, choosing the right board is important:`
-                    : 'For Grade 8+, choosing the right board is important:'}
-                </p>
-                <p className="p-2 rounded bg-emerald-50/80 border border-emerald-100">
-                  <strong>Federal Board</strong> – Ideal for students planning to study in Pakistan (Matric/FSc).
-                </p>
-                <div className="p-2 rounded bg-sky-50/80 border border-sky-100 space-y-2">
-                  <p><strong>IGCSE/O-Level & A-Level</strong> – For international education pathways:</p>
-                  <ul className="ml-4 space-y-1 text-sky-700">
-                    <li>📚 <strong>Cambridge Board</strong> – Available in Group Classes & 1-on-1</li>
-                    <li>📖 <strong>Edexcel Board</strong> – Available in 1-on-1 sessions only</li>
-                  </ul>
-                </div>
-                <p className="p-2 rounded bg-purple-50/80 border border-purple-100 text-purple-700 mt-2">
-                  💡 <strong>Don't worry!</strong> Our Subject Advisor is available to guide you on the best board choice. Just book your trial class and she'll help you decide!
-                </p>
-              </div>
-            </RecommendationCard>
-          )}
-
-          {/* 1-on-1 recommendation for older students */}
-          {data.students.some(s => parseInt(s.age) > 17) && (
-            <RecommendationCard
-              icon={<GraduationCap className="w-4 h-4 text-brand-burgundy" />}
-              title="Learning Mode"
-              variant="purple"
-              delay={200}
-            >
-              For students above 17, we recommend our <strong>One-to-One Tuition</strong> program for personalized attention and flexible scheduling.
-            </RecommendationCard>
-          )}
-
-          {/* Class Timing */}
-          {data.students.length > 0 && (
-            <RecommendationCard
-              icon={<Clock className="w-4 h-4 text-brand-burgundy" />}
-              title="Class Timings"
-              variant="info"
-              delay={250}
-            >
-              <div className="space-y-2">
-                {data.students.some(s => {
-                  const gv = getGradeValue(s.grade);
-                  return gv >= 1 && gv <= 9;
-                }) && (
-                    <p><strong>Evening:</strong> FS1 to Grade 7 – 3:30 PM KSA</p>
-                  )}
-                {data.students.some(s => {
-                  const gv = getGradeValue(s.grade);
-                  return gv >= 10 && gv <= 14;
-                }) && (
-                    <p><strong>Morning:</strong> Grade 8 to 12 – 9:00 AM KSA</p>
-                  )}
-              </div>
-            </RecommendationCard>
-          )}
-
-          {/* Default message */}
-          {data.students.length === 0 && (
-            <div className="text-xs text-brand-mediumText rec-animate">
-              Add a student to see personalized recommendations for curriculum, class timings, and more.
+      {step >= 1 && data.leadType === LeadType.FULL_TIME && grade8PlusStudents.length > 0 && (
+        <InsightCard icon={<GraduationCap className="w-5 h-5" />} title="Curriculum Options" variant="purple" delay={300}>
+          <div className="sp-miniStack">
+            <div className="sp-miniText">
+              For Grade 8+ students, we offer:
             </div>
-          )}
-        </>
-      )}
-
-      {/* Context-aware recommendations for Quran */}
-      {step >= 1 && data.leadType === LeadType.QURAN && (
-        <>
-          {/* Personalized Welcome for Quran */}
-          {(firstQuranStudentName || quranStudents.length > 0) && (
-            <RecommendationCard
-              icon={<Sparkles className="w-4 h-4 text-brand-burgundy" />}
-              title="Welcome!"
-              variant="success"
-              delay={50}
-            >
-              <strong>Masha'Allah{allQuranNames ? `, ${allQuranNames}` : ''}!</strong> You're taking a beautiful step towards Quran education. We're here to support your journey! 📖
-            </RecommendationCard>
-          )}
-
-          {/* Sibling Discount for Quran */}
-          {hasQuranSiblings && (
-            <RecommendationCard
-              icon={<Users className="w-4 h-4 text-brand-burgundy" />}
-              title="Family Discount"
-              variant="success"
-              delay={100}
-            >
-              <strong>Great news!</strong> You're enrolling {quranStudents.length} students ({allQuranNames}). Our team will share <strong>sibling discount</strong> details during confirmation.
-            </RecommendationCard>
-          )}
-
-          {/* Class Schedule Summary */}
-          {quranStudents.length > 0 && (
-            <RecommendationCard
-              icon={<Clock className="w-4 h-4 text-brand-burgundy" />}
-              title="Class Schedule"
-              variant="info"
-              delay={150}
-            >
-              <div className="space-y-2">
-                {quranStudents.map((student, idx) => (
-                  <div key={student.id} className="p-2 bg-white/50 rounded-lg">
-                    <p className="font-medium">{student.name}'s Classes:</p>
-                    <p className="text-xs mt-1">
-                      📅 {student.classDays.map(d => d.slice(0, 3)).join(', ')} at <strong>{student.classTime}</strong>
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </RecommendationCard>
-          )}
-
-          {/* Location Timing for Quran */}
-          {data.quranStudentCountry && (
-            <RecommendationCard
-              icon={<MapPin className="w-4 h-4 text-brand-burgundy" />}
-              title="Time Confirmation"
-              variant="orange"
-              delay={200}
-            >
-              Your classes will be scheduled according to <strong>{data.quranStudentCountry}</strong> local time. Our coordinator will confirm exact timings via WhatsApp.
-            </RecommendationCard>
-          )}
-
-          {/* 24/7 Availability */}
-          <RecommendationCard
-            icon={<Clock className="w-4 h-4 text-brand-burgundy" />}
-            title="Flexible Scheduling"
-            variant="purple"
-            delay={250}
-          >
-            <strong>Available 24/7!</strong> Our Quran teachers are available around the clock. Choose any time that works for your family's schedule.
-          </RecommendationCard>
-
-          {/* No students yet */}
-          {quranStudents.length === 0 && !data.studentName && (
-            <div className="text-xs text-brand-mediumText rec-animate">
-              Add a student to see your personalized class schedule and recommendations.
+            <div className="sp-chip sp-chipGreen">
+              <Award className="w-3 h-3" />
+              Federal Board (Pakistan-focused)
             </div>
-          )}
-        </>
+            <div className="sp-chip sp-chipBlue">
+              <Star className="w-3 h-3" />
+              IGCSE / A-Level (International)
+            </div>
+            <div className="sp-miniText">Our team will help determine the best fit during your trial.</div>
+          </div>
+        </InsightCard>
       )}
 
-      {/* Subject-Specific Advice for IGCSE - NEW */}
-      {isIGCSE && data.subjects.length > 0 && (
-        <>
-          {hasScienceSubjects && (
-            <RecommendationCard
-              icon={<Zap className="w-4 h-4 text-brand-burgundy" />}
-              title="Science Subjects"
-              variant="purple"
-              delay={300}
-            >
-              <strong>Practicals are key!</strong> Our teachers guide you through virtual lab demonstrations and exam-style practical questions for Biology, Physics & Chemistry.
-            </RecommendationCard>
-          )}
-          {hasMath && (
-            <RecommendationCard
-              icon={<Lightbulb className="w-4 h-4 text-brand-burgundy" />}
-              title="Mathematics"
-              variant="info"
-              delay={350}
-            >
-              We cover both <strong>Core</strong> and <strong>Extended</strong> syllabi. Our teachers focus on past paper practice and exam techniques.
-            </RecommendationCard>
-          )}
-        </>
-      )}
-
-      {/* Country-Based Recommendations - NEW */}
-      {isGulfCountry && data.country && step >= 1 && (
-        <RecommendationCard
-          icon={<MapPin className="w-4 h-4 text-brand-burgundy" />}
-          title="Location Optimized"
-          variant="orange"
-          delay={400}
-        >
-          Classes are aligned with <strong>{data.country}</strong> school timings. Live sessions are scheduled for convenient after-school hours.
-        </RecommendationCard>
-      )}
-
-      {/* Standard curriculum recommendation for other types */}
-      {step >= 1 && data.grade && data.leadType !== LeadType.FULL_TIME && (
-        <RecommendationCard
-          icon={<BookOpen className="w-4 h-4 text-brand-burgundy" />}
-          title="Recommended Curriculum"
-          variant="info"
-          delay={150}
-          onClick={onApplySuggestion ? () => onApplySuggestion('curriculum', recommendFederal ? Curriculum.FEDERAL : Curriculum.BRITISH) : undefined}
-          actionLabel={onApplySuggestion ? "Apply suggestion" : undefined}
-        >
-          {recommendBritish && (
-            <p>For {data.grade}, we specialize in the <strong>British Curriculum</strong> to build strong foundations.</p>
-          )}
-          {recommendFederal && (
-            <p>Starting from Grade 8, we align with the <strong>Federal Board (FBISE)</strong> for matriculation/HSSC success.</p>
-          )}
-        </RecommendationCard>
-      )}
-
-      {/* Trial Timing */}
-      {step >= 1 && (data.grade || ageVal > 0) && data.leadType !== LeadType.FULL_TIME && (
-        <RecommendationCard
-          icon={<Clock className="w-4 h-4 text-brand-burgundy" />}
-          title="Trial Timing"
-          variant="info"
-          delay={200}
-        >
-          {data.leadType === LeadType.ONE_ON_ONE_SCHOOLING ? (
-            <p>Timing will be shared based on <strong>teacher availability</strong>. Our agent will guide you on call.</p>
-          ) : (
-            <>
-              {isEveningTrial && (
-                <p>Based on {data.grade}, trial classes will be in the <strong>Evening (3:30 PM KSA)</strong>.</p>
-              )}
-              {isMorningTrial && (
-                <p>High school classes (Grade 8+) have <strong>Morning (9:00 AM KSA)</strong> trials.</p>
-              )}
-              {ageVal > 20 && !data.grade && (
-                <p>Adult learners typically schedule flexible 1-on-1 demos.</p>
-              )}
-            </>
-          )}
-        </RecommendationCard>
-      )}
-
-      {/* Class Mode Recommendation */}
-      {(isIGCSE || data.programType === ProgramType.TUITION) && (
-        <RecommendationCard
-          icon={<GraduationCap className="w-4 h-4 text-brand-burgundy" />}
-          title="Class Mode"
-          variant="purple"
-          delay={250}
-        >
-          {(gradeVal >= 13) ? (
-            <p>For {data.grade} (A-Levels/HSSC-II), we highly recommend <strong>One-on-One</strong> for focused prep.</p>
-          ) : (
-            <p><strong>Small Groups</strong> are great for peer learning in lower grades, but 1-on-1 is available for personalized attention.</p>
-          )}
-        </RecommendationCard>
-      )}
-
-      {/* Quran Interest Suggestion - NEW */}
-      {step >= 3 && !data.quranInterest && (
-        <RecommendationCard
-          icon={<BookHeart className="w-4 h-4 text-brand-burgundy" />}
-          title="Holistic Education"
-          variant="success"
-          delay={450}
-          onClick={onApplySuggestion ? () => onApplySuggestion('quranInterest', true) : undefined}
-          actionLabel={onApplySuggestion ? "Add Quran classes" : undefined}
-        >
-          Complete your child's education with <strong>Quran classes</strong> – Qaida, Nazra, or Tajweed with certified teachers.
-        </RecommendationCard>
-      )}
-
-      {/* Session Frequency Info - NEW */}
       {data.leadType && step >= 1 && (
-        <RecommendationCard
-          icon={<DollarSign className="w-4 h-4 text-brand-burgundy" />}
-          title="What to Expect"
-          variant="orange"
-          delay={500}
-        >
-          {data.leadType === LeadType.FULL_TIME && (
-            <p><strong>Full-Time:</strong> 5 days/week • Complete curriculum • Certified teachers</p>
-          )}
-          {data.leadType === LeadType.TUITION && (
-            <p><strong>Tuition:</strong> 2-5 sessions/week • Flexible timing • Subject-focused</p>
-          )}
-          {data.leadType === LeadType.ONE_ON_ONE_SCHOOLING && (
-            <div className="space-y-1">
-              <p><strong>One-to-One Schooling:</strong></p>
-              <p>• Personal 1-on-1 classes like regular school</p>
-              <p>• Report cards & certificates included</p>
-              <p>• Min. 6 months • Fee per subject</p>
-            </div>
-          )}
-          {data.leadType === LeadType.QURAN && (
-            <p><strong>Quran:</strong> 3-5 sessions/week • One-on-one • Progress tracking</p>
-          )}
-        </RecommendationCard>
+        <InsightCard icon={<DollarSign className="w-5 h-5" />} title="Special Offers" variant="gold" delay={400}>
+          Enrollment promotions and referral discounts may be available for your selected program.
+        </InsightCard>
       )}
     </div>
   );
 
-  return (
+  const PanelInner = () => (
     <>
-      {/* Desktop Panel */}
-      <div className="hidden lg:block advisor-panel animate-fade-in-up sticky top-8">
-        {/* Header */}
-        <div className="flex items-center gap-2 p-4 border-b border-brand-lightGray/30">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-brand-orange/20 to-brand-burgundy/10 flex items-center justify-center">
-            <Sparkles className="w-4 h-4 text-brand-orange" />
+      {/* ── Premium Header with Gradient ── */}
+      <div className="sp-header">
+        <div className="sp-headerGlow" />
+        <div className="sp-brand">
+          <div className="sp-brandIcon">
+            <TrendingUp className="w-5 h-5" />
           </div>
-          <h3 className="font-display font-bold text-sm text-brand-burgundy uppercase tracking-wider">Smart Advisor</h3>
-        </div>
-
-        {/* Onboarding Steps */}
-        <div className="p-4 border-b border-brand-lightGray/20">
-          {ONBOARDING_STEPS.map((onboardStep) => {
-            const status = getStepStatus(onboardStep.id);
-            return (
-              <div
-                key={onboardStep.id}
-                className={`advisor-step ${status === 'active' ? 'active' : ''} ${status === 'completed' ? 'completed' : ''}`}
-              >
-                <div className={`step-indicator ${status}`}>
-                  {status === 'completed' ? (
-                    <Check className="w-3 h-3" />
-                  ) : (
-                    <span>{onboardStep.id}</span>
-                  )}
-                </div>
-                <span className={`text-sm ${status === 'active' ? 'font-medium text-brand-darkText' : 'text-brand-mediumText'}`}>
-                  {onboardStep.label}
-                </span>
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Progress Bar */}
-        <div className="p-4 border-b border-brand-lightGray/20">
-          <div className="flex justify-between text-xs text-brand-mediumText mb-2">
-            <span>Progress</span>
-            <span className="font-medium text-brand-burgundy">{progress}%</span>
-          </div>
-          <div className="h-2 w-full bg-brand-beige rounded-full overflow-hidden">
-            <div
-              className="h-full bg-gradient-to-r from-brand-burgundy to-brand-orange transition-all duration-500 ease-out rounded-full"
-              style={{ width: `${progress}%` }}
-            />
+          <div className="sp-brandText">
+            <div className="sp-brandTitle">SMART ADVISOR</div>
+            <div className="sp-brandSubtitle">{headerSub}</div>
           </div>
         </div>
 
-        {/* Contextual Content */}
-        <div className="p-4">
-          <AdvisorContent />
+        {/* ── Circular Progress with Glow ── */}
+        <CircularProgress percent={progress} />
+      </div>
+
+      <TimelineSteps />
+
+      {/* Premium Progress bar with glow */}
+      <div className="sp-progressBar">
+        <div className="sp-progressLabel">
+          <Clock className="w-3 h-3" />
+          Progress
+        </div>
+        <div className="sp-progressTrack">
+          <div className="sp-progressFill" style={{ width: `${progress}%` }} />
+          <div className="sp-progressGlow" style={{ width: `${progress}%` }} />
         </div>
       </div>
 
-      {/* Mobile Floating Button */}
-      <div className="lg:hidden fixed bottom-6 right-4 z-50">
-        <button
-          onClick={() => setMobileDrawerOpen(true)}
-          className="flex items-center gap-2 px-4 py-3 bg-gradient-to-r from-brand-burgundy to-brand-orange text-white font-semibold text-sm rounded-full shadow-lg hover:shadow-xl transition-shadow animate-float"
-        >
-          <MessageCircle className="w-4 h-4" />
-          <span>Smart Advisor</span>
-          {progress > 0 && (
-            <span className="ml-1 px-2 py-0.5 bg-white/20 rounded-full text-xs">
-              {progress}%
-            </span>
-          )}
+      <AdvisorContent />
+    </>
+  );
+
+  return (
+    <>
+      <style>{`
+        /* ── Premium Theme with Glows ── */
+        .sp-panel {
+          --primary:  #1d6fce;
+          --secondary:#0ea5e9;
+          --accent:   #38bdf8;
+          --success:  #22c55e;
+          --warning:  #f59e0b;
+          --info:     #0284c7;
+          --purple:   #a855f7;
+          --gold:     #f59e0b;
+          --bg:       #f8fafc;
+          --text:     #0f2d57;
+          --muted:    #64748b;
+
+          border-radius: 28px;
+          overflow: hidden;
+          background: linear-gradient(160deg, #ffffff 0%, #f0f7ff 100%);
+          border: 1px solid rgba(29,111,206,0.18);
+          box-shadow: 
+            0 0 40px rgba(29,111,206,0.15),
+            0 10px 40px rgba(0,0,0,0.08),
+            inset 0 1px 0 rgba(255,255,255,0.9);
+          backdrop-filter: blur(10px);
+          font-family: 'Inter', -apple-system, sans-serif;
+          position: relative;
+        }
+
+        /* Premium animations */
+        @keyframes sparkle {
+          0%, 100% { opacity: 0.7; transform: scale(1) rotate(0deg); }
+          50% { opacity: 1; transform: scale(1.15) rotate(180deg); }
+        }
+
+        @keyframes glow-pulse {
+          0%, 100% { opacity: 0.5; transform: scale(1); }
+          50% { opacity: 0.8; transform: scale(1.1); }
+        }
+
+        @keyframes float {
+          0%, 100% { transform: translateY(0px); }
+          50% { transform: translateY(-6px); }
+        }
+
+        @keyframes shimmer {
+          0% { transform: translateX(-100%); }
+          100% { transform: translateX(100%); }
+        }
+
+        /* ── Premium Header with Glow ── */
+        .sp-header {
+          padding: 24px 24px;
+          background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+          color: white;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          position: relative;
+          overflow: hidden;
+        }
+
+        .sp-headerGlow {
+          position: absolute;
+          top: -50%;
+          left: -50%;
+          width: 200%;
+          height: 200%;
+          background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%);
+          animation: glow-pulse 4s ease-in-out infinite;
+          pointer-events: none;
+        }
+
+        .sp-brand { display: flex; align-items: center; gap: 14px; z-index: 1; }
+        .sp-brandIcon {
+          background: rgba(255,255,255,0.25);
+          border-radius: 50%;
+          padding: 10px;
+          color: white;
+          box-shadow: 
+            0 0 20px rgba(255,255,255,0.4),
+            0 4px 12px rgba(0,0,0,0.2),
+            inset 0 1px 2px rgba(255,255,255,0.5);
+          animation: float 3s ease-in-out infinite;
+        }
+        .sp-brandTitle  { 
+          font-size: 15px; 
+          font-weight: 900; 
+          letter-spacing: 1.3px; 
+          text-transform: uppercase;
+          text-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+        .sp-brandSubtitle { 
+          font-size: 12px; 
+          opacity: 0.95; 
+          margin-top: 2px;
+          text-shadow: 0 1px 4px rgba(0,0,0,0.15);
+        }
+
+        /* ── Circular Progress with Glow ── */
+        .sp-circleWrap {
+          position: relative;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex-shrink: 0;
+          z-index: 1;
+        }
+
+        .sp-circleGlow {
+          position: absolute;
+          inset: -10px;
+          background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%);
+          animation: glow-pulse 3s ease-in-out infinite;
+          border-radius: 50%;
+        }
+
+        .sp-circleLabel {
+          position: absolute;
+          inset: 0;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          pointer-events: none;
+        }
+        .sp-circlePercent {
+          font-size: 17px;
+          font-weight: 900;
+          color: white;
+          line-height: 1;
+          letter-spacing: -0.5px;
+          text-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+
+        /* ── Timeline with Glows ── */
+        .sp-timeline {
+          padding: 22px 24px;
+          display: flex;
+          flex-direction: column;
+          gap: 0;
+        }
+        .sp-timelineStep {
+          display: flex;
+          align-items: flex-start;
+          position: relative;
+          padding-bottom: 22px;
+        }
+        .sp-timelineStep:last-child { padding-bottom: 0; }
+        .sp-timelineIcon {
+          width: 42px; height: 42px;
+          border-radius: 50%;
+          display: flex; align-items: center; justify-content: center;
+          background: var(--bg);
+          border: 2.5px solid rgba(29,111,206,0.2);
+          color: var(--muted);
+          font-weight: 800;
+          font-size: 15px;
+          flex-shrink: 0;
+          z-index: 1;
+          transition: all 0.4s cubic-bezier(0.4,0,0.2,1);
+          position: relative;
+        }
+
+        .sp-timelineIcon::before {
+          content: '';
+          position: absolute;
+          inset: -4px;
+          border-radius: 50%;
+          opacity: 0;
+          transition: opacity 0.4s;
+        }
+
+        .sp-timelineStep.completed .sp-timelineIcon {
+          background: linear-gradient(135deg, #22c55e, #10b981);
+          color: white;
+          border-color: transparent;
+          box-shadow: 
+            0 0 20px rgba(34,197,94,0.4),
+            0 4px 12px rgba(34,197,94,0.25);
+        }
+
+        .sp-timelineStep.active .sp-timelineIcon {
+          background: linear-gradient(135deg, var(--primary), var(--secondary));
+          color: white;
+          border-color: transparent;
+          box-shadow: 
+            0 0 25px rgba(29,111,206,0.5),
+            0 4px 16px rgba(29,111,206,0.3);
+          animation: pulse 2s infinite;
+        }
+
+        .sp-timelineStep.active .sp-timelineIcon::before {
+          background: radial-gradient(circle, rgba(29,111,206,0.3), transparent);
+          opacity: 1;
+          animation: glow-pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+          0%, 100% { transform: scale(1); }
+          50% { transform: scale(1.08); }
+        }
+
+        .sp-timelineContent { margin-left: 16px; padding-top: 8px; }
+        .sp-timelineTitle { font-weight: 800; font-size: 13px; color: var(--text); }
+        .sp-timelineSub   { color: var(--muted); font-size: 11px; margin-top: 3px; }
+        .sp-timelineLine  {
+          position: absolute;
+          left: 20px;
+          top: 42px;
+          width: 2.5px;
+          bottom: 0;
+          background: linear-gradient(to bottom, rgba(29,111,206,0.3), rgba(29,111,206,0.08));
+          border-radius: 2px;
+        }
+
+        /* ── Premium Progress bar with glow ── */
+        .sp-progressBar   { padding: 0 24px 20px; position: relative; }
+        .sp-progressLabel { 
+          font-size: 10px; 
+          color: var(--muted); 
+          margin-bottom: 8px; 
+          font-weight: 700; 
+          letter-spacing: 0.8px; 
+          text-transform: uppercase;
+          display: flex;
+          align-items: center;
+          gap: 6px;
+        }
+        .sp-progressTrack {
+          height: 8px;
+          background: rgba(29,111,206,0.1);
+          border-radius: 4px;
+          overflow: hidden;
+          position: relative;
+          box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .sp-progressFill  {
+          position: absolute;
+          top: 0;
+          left: 0;
+          height: 100%;
+          background: linear-gradient(90deg, var(--primary), var(--accent));
+          border-radius: 4px;
+          transition: width 0.8s cubic-bezier(0.4,0,0.2,1);
+          box-shadow: 0 0 12px rgba(29,111,206,0.4);
+        }
+
+        .sp-progressGlow {
+          position: absolute;
+          top: 0;
+          left: 0;
+          height: 100%;
+          background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+          border-radius: 4px;
+          animation: shimmer 2s infinite;
+        }
+
+        /* ── Advisor Content ── */
+        .sp-advisorContent { padding: 0 24px 24px; display: flex; flex-direction: column; gap: 14px; }
+
+        .sp-tipCard {
+          display: flex; align-items: flex-start; gap: 14px;
+          padding: 16px 18px;
+          border-radius: 18px;
+          background: linear-gradient(135deg, #dbeafe, #eff6ff);
+          border: 1px solid rgba(29,111,206,0.2);
+          box-shadow: 
+            0 4px 16px rgba(29,111,206,0.1),
+            inset 0 1px 0 rgba(255,255,255,0.8);
+          position: relative;
+          overflow: hidden;
+        }
+
+        .sp-tipGlow {
+          position: absolute;
+          top: -50%;
+          left: -50%;
+          width: 200%;
+          height: 200%;
+          background: radial-gradient(circle, rgba(29,111,206,0.1) 0%, transparent 70%);
+          animation: glow-pulse 5s ease-in-out infinite;
+        }
+
+        .sp-tipIcon {
+          background: linear-gradient(135deg, var(--primary), var(--secondary));
+          color: white;
+          padding: 9px;
+          border-radius: 50%;
+          box-shadow: 
+            0 0 16px rgba(29,111,206,0.4),
+            0 4px 12px rgba(29,111,206,0.2);
+          flex-shrink: 0;
+          z-index: 1;
+          animation: float 3.5s ease-in-out infinite;
+        }
+        .sp-tipHeader      { 
+          font-weight: 800; 
+          font-size: 12px; 
+          color: var(--primary); 
+          letter-spacing: 0.5px;
+          text-transform: uppercase;
+        }
+        .sp-tipDescription { 
+          color: var(--muted); 
+          font-size: 12px; 
+          margin-top: 3px; 
+          line-height: 1.6;
+          font-weight: 500;
+        }
+
+        /* ── Premium Insight Cards ── */
+        .sp-insightWrap { 
+          opacity: 0; 
+          transform: translateY(16px); 
+          transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.4,0,0.2,1); 
+        }
+        .sp-in { opacity: 1; transform: translateY(0); }
+        
+        .sp-insight {
+          padding: 16px 18px;
+          border-radius: 18px;
+          background: white;
+          border: 1px solid rgba(29,111,206,0.12);
+          box-shadow: 
+            0 4px 20px rgba(29,111,206,0.08),
+            inset 0 1px 0 rgba(255,255,255,1);
+          transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+          position: relative;
+          overflow: hidden;
+        }
+
+        .sp-insight::before {
+          content: '';
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(135deg, transparent, rgba(29,111,206,0.03));
+          opacity: 0;
+          transition: opacity 0.3s;
+        }
+
+        .sp-insight:hover {
+          transform: translateY(-4px);
+          box-shadow: 
+            0 8px 30px rgba(29,111,206,0.15),
+            inset 0 1px 0 rgba(255,255,255,1);
+        }
+
+        .sp-insight:hover::before { opacity: 1; }
+
+        .sp-insightHead   { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; z-index: 1; position: relative; }
+        .sp-insightIco    {
+          width: 36px; height: 36px;
+          border-radius: 12px;
+          display: flex; align-items: center; justify-content: center;
+          background: var(--bg);
+          color: var(--primary);
+          flex-shrink: 0;
+          box-shadow: 0 2px 8px rgba(29,111,206,0.15);
+          transition: all 0.3s;
+        }
+
+        .sp-insight:hover .sp-insightIco {
+          transform: scale(1.1) rotate(5deg);
+          box-shadow: 0 4px 12px rgba(29,111,206,0.25);
+        }
+
+        .sp-insightTitle  { font-weight: 800; font-size: 13px; color: var(--text); letter-spacing: 0.2px; }
+        .sp-insightBody   { color: var(--muted); font-size: 12px; line-height: 1.7; font-weight: 500; z-index: 1; position: relative; }
+
+        /* Variant colors with gradients */
+        .sp-success .sp-insightIco { 
+          background: linear-gradient(135deg, #dcfce7, #bbf7d0); 
+          color: #16a34a;
+          box-shadow: 0 0 16px rgba(34,197,94,0.25);
+        }
+        .sp-warning .sp-insightIco { 
+          background: linear-gradient(135deg, #fef3c7, #fde68a); 
+          color: #d97706;
+          box-shadow: 0 0 16px rgba(245,158,11,0.25);
+        }
+        .sp-info .sp-insightIco { 
+          background: linear-gradient(135deg, #dbeafe, #bfdbfe); 
+          color: #2563eb;
+          box-shadow: 0 0 16px rgba(37,99,235,0.25);
+        }
+        .sp-purple .sp-insightIco { 
+          background: linear-gradient(135deg, #ede9fe, #ddd6fe); 
+          color: #7c3aed;
+          box-shadow: 0 0 16px rgba(124,58,237,0.25);
+        }
+        .sp-gold .sp-insightIco { 
+          background: linear-gradient(135deg, #fef3c7, #fde68a); 
+          color: #f59e0b;
+          box-shadow: 0 0 16px rgba(245,158,11,0.3);
+        }
+
+        /* chips with icons */
+        .sp-miniStack { display: flex; flex-direction: column; gap: 8px; margin-top: 6px; }
+        .sp-miniText  { font-size: 11px; color: var(--muted); line-height: 1.6; }
+        .sp-chip { 
+          font-size: 11px; 
+          font-weight: 700; 
+          padding: 6px 12px; 
+          border-radius: 999px; 
+          width: fit-content;
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+          transition: all 0.2s;
+        }
+        .sp-chip:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+        }
+        .sp-chipGreen  { background: linear-gradient(135deg, #dcfce7, #bbf7d0); color: #166534; }
+        .sp-chipBlue   { background: linear-gradient(135deg, #dbeafe, #bfdbfe); color: #1e40af; }
+
+        /* ── Mobile Drawer ── */
+        .sp-backdrop { 
+          position: fixed; 
+          inset: 0; 
+          background: rgba(15,45,87,0.45); 
+          backdrop-filter: blur(8px); 
+          animation: fadeIn 0.3s ease; 
+          z-index: 49; 
+        }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        
+        .sp-drawer {
+          position: fixed; bottom: 0; left: 0; right: 0;
+          background: white;
+          border-top-left-radius: 28px; border-top-right-radius: 28px;
+          box-shadow: 0 -8px 50px rgba(29,111,206,0.2);
+          max-height: 90vh; overflow-y: auto;
+          animation: slideUp 0.4s cubic-bezier(0.32,0.72,0,1);
+          z-index: 50;
+        }
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        
+        .sp-drag { 
+          width: 48px; 
+          height: 5px; 
+          background: linear-gradient(135deg, #cbd5e1, #94a3b8); 
+          border-radius: 3px; 
+          margin: 14px auto 8px;
+          box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .sp-drawerHead { 
+          padding: 14px 22px; 
+          border-bottom: 1px solid rgba(29,111,206,0.1); 
+          display: flex; 
+          justify-content: space-between; 
+          align-items: center; 
+        }
+        .sp-drawerBrand{ display: flex; align-items: center; gap: 12px; }
+        .sp-drawerIco  { 
+          background: linear-gradient(135deg, #dbeafe, #eff6ff); 
+          padding: 9px; 
+          border-radius: 50%; 
+          color: var(--primary);
+          box-shadow: 0 2px 8px rgba(29,111,206,0.15);
+        }
+        .sp-drawerTitle{ font-weight: 800; color: var(--text); font-size: 15px; }
+        .sp-drawerSub  { color: var(--muted); font-size: 12px; margin-top: 2px; }
+        .sp-close      { 
+          background: #f1f5f9; 
+          padding: 8px; 
+          border-radius: 50%; 
+          color: var(--muted); 
+          border: none; 
+          cursor: pointer; 
+          transition: all 0.2s;
+          box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        }
+        .sp-close:hover { 
+          background: rgba(29,111,206,0.1); 
+          color: var(--primary);
+          transform: scale(1.05);
+        }
+
+        /* ── Premium FAB with Glow ── */
+        .sp-fab {
+          background: linear-gradient(135deg, var(--primary), var(--secondary));
+          color: white;
+          padding: 15px 26px;
+          border-radius: 999px;
+          box-shadow: 
+            0 0 20px rgba(29,111,206,0.4),
+            0 6px 24px rgba(29,111,206,0.3);
+          display: flex; 
+          align-items: center; 
+          gap: 10px;
+          font-weight: 800; 
+          font-size: 14px;
+          border: none; 
+          cursor: pointer;
+          transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+          position: relative;
+          overflow: hidden;
+        }
+
+        .sp-fab::before {
+          content: '';
+          position: absolute;
+          inset: 0;
+          background: radial-gradient(circle, rgba(255,255,255,0.2), transparent);
+          opacity: 0;
+          transition: opacity 0.3s;
+        }
+
+        .sp-fab:hover { 
+          transform: scale(1.08); 
+          box-shadow: 
+            0 0 30px rgba(29,111,206,0.5),
+            0 8px 32px rgba(29,111,206,0.4);
+        }
+
+        .sp-fab:hover::before { opacity: 1; }
+
+        @media (max-width: 768px) {
+          .sp-timeline { padding: 18px 20px; }
+          .sp-advisorContent { padding: 0 20px 20px; }
+        }
+
+        /* ===== PREMIUM HANGING EFFECT ===== */
+        .sp-hangWrap {
+          position: relative;
+          padding-top: 0;
+        }
+
+        .sp-hangDecor {
+          pointer-events: none;
+          position: absolute;
+          left: 50%;
+          transform: translateX(-50%);
+          top: -100px; /* Rope extends upward from panel */
+          width: 20px;
+          height: 100px;
+          z-index: 3;
+        }
+
+        /* Single centered rope attached to panel top */
+        .sp-rope {
+          position: absolute;
+          top: 0;
+          left: 50%;
+          transform: translateX(-50%);
+          width: 3px;
+          height: 95px; /* Extends to panel top */
+          border-radius: 2px;
+          background: linear-gradient(180deg, 
+            rgba(71,85,105,0.3) 0%,
+            rgba(100,116,139,0.9) 30%,
+            rgba(100,116,139,0.95) 60%,
+            rgba(100,116,139,1) 100%
+          );
+          box-shadow: 
+            0 4px 12px rgba(15,30,58,0.25),
+            inset 2px 0 2px rgba(255,255,255,0.3),
+            inset -2px 0 2px rgba(0,0,0,0.3);
+          filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+        }
+
+        /* Premium metal ring at panel connection point */
+        .sp-ring {
+          position: absolute;
+          top: 88px; /* Just above panel */
+          left: 50%;
+          transform: translateX(-50%);
+          width: 18px;
+          height: 18px;
+          border-radius: 50%;
+          background: linear-gradient(135deg, #f1f5f9, #cbd5e1, #94a3b8);
+          border: 3px solid rgba(71,85,105,0.9);
+          box-shadow: 
+            0 0 15px rgba(29,111,206,0.3),
+            0 4px 12px rgba(15,30,58,0.25),
+            inset 0 2px 4px rgba(255,255,255,0.6),
+            inset 0 -2px 4px rgba(0,0,0,0.2);
+          animation: ring-glow 3s ease-in-out infinite;
+        }
+
+        @keyframes ring-glow {
+          0%, 100% { box-shadow: 
+            0 0 15px rgba(29,111,206,0.3),
+            0 4px 12px rgba(15,30,58,0.25),
+            inset 0 2px 4px rgba(255,255,255,0.6),
+            inset 0 -2px 4px rgba(0,0,0,0.2);
+          }
+          50% { box-shadow: 
+            0 0 25px rgba(29,111,206,0.5),
+            0 6px 16px rgba(15,30,58,0.3),
+            inset 0 2px 4px rgba(255,255,255,0.8),
+            inset 0 -2px 4px rgba(0,0,0,0.2);
+          }
+        }
+
+        /* Decorative hook at ring */
+        .sp-hook {
+          position: absolute;
+          top: 92px;
+          left: 50%;
+          transform: translateX(-50%) rotate(42deg);
+          width: 14px;
+          height: 14px;
+          border-radius: 50%;
+          border: 2.5px solid rgba(71,85,105,0.7);
+          border-left-color: transparent;
+          border-top-color: transparent;
+          opacity: 0.9;
+          filter: drop-shadow(0 1px 3px rgba(0,0,0,0.2));
+        }
+
+        /* Very subtle sway animation for visual appeal */
+        @keyframes spSway {
+          0%, 100% { transform: rotate(0deg); }
+          50% { transform: rotate(0.5deg); }
+        }
+
+        .sp-hangSway {
+          transform-origin: 50% 0%;
+          animation: spSway 6s ease-in-out infinite;
+        }
+
+        /* Panel entrance animation */
+        @keyframes panel-enter {
+          from {
+            opacity: 0;
+            transform: translateY(-20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        .sp-panel {
+          animation: panel-enter 0.6s cubic-bezier(0.4,0,0.2,1);
+        }
+      `}</style>
+
+      {/* Desktop Panel - Sticky (Frozen in Place While Scrolling) */}
+      <div className="hidden lg:block">
+        {/* Sticky positioning keeps panel frozen while content scrolls */}
+        <div className="sp-hangWrap">
+          {/* Rope extends upward from panel top */}
+          <div className="sp-hangDecor" aria-hidden="true">
+            <span className="sp-rope" />
+            <span className="sp-ring" />
+            <span className="sp-hook" />
+          </div>
+
+          {/* Panel with subtle sway */}
+          <div className="sp-panel sp-hangSway">
+            <PanelInner />
+          </div>
+        </div>
+      </div>
+
+      {/* Mobile FAB with Premium Glow */}
+      <div className="lg:hidden fixed bottom-8 right-6 z-50">
+        <button onClick={() => setMobileDrawerOpen(true)} className="sp-fab">
+          <MessageCircle className="w-5 h-5" />
+          <span>Guide</span>
         </button>
       </div>
 
       {/* Mobile Drawer */}
       <MobileDrawer isOpen={mobileDrawerOpen} onClose={() => setMobileDrawerOpen(false)}>
-        {/* Progress in drawer */}
-        <div className="mb-4 pb-4 border-b border-brand-lightGray/20">
-          <div className="flex justify-between text-xs text-brand-mediumText mb-2">
-            <span>Progress</span>
-            <span className="font-medium text-brand-burgundy">{progress}%</span>
-          </div>
-          <div className="h-2 w-full bg-brand-beige rounded-full overflow-hidden">
-            <div
-              className="h-full bg-gradient-to-r from-brand-burgundy to-brand-orange transition-all duration-500 ease-out rounded-full"
-              style={{ width: `${progress}%` }}
-            />
-          </div>
-        </div>
-        <AdvisorContent />
+        <PanelInner />
       </MobileDrawer>
     </>
   );
