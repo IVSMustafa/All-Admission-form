@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@fontsource/great-vibes": "^5.2.8",
     "@google/genai": "latest",
     "flag-icons": "^7.5.0",
     "framer-motion": "^12.34.0",

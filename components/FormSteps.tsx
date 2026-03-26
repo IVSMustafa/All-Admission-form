@@ -1,7 +1,7 @@
 /**
  * FormSteps.tsx — Premium Redesign
  */
-
+import '@fontsource/great-vibes';
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { FormData, LeadType, ProgramType, Curriculum, Track, ClassMode, Student, QuranStudent } from '../types';
 import { GRADES, COUNTRIES, IGCSE_SUBJECTS, TIME_SLOTS, DAYS, QURAN_LEVELS, QURAN_CLASS_TIMES, getGradeValue as getGV } from '../constants';
@@ -386,7 +386,7 @@ export function Step0_Welcome({ data, updateData, nextStep }: StepProps) {
   };
 
   return (
-    <div className="animate-fade-in-up">
+    <div className="transition-all duration-300">
       <Navbar onNavigate={(s) => {
         if (s === 'school-trial') goByLead(LeadType.FULL_TIME);
         if (s === 'tuition-trial') goByLead(LeadType.TUITION);
@@ -534,16 +534,19 @@ export const Step1_Details = ({ data, updateData, errors }: StepProps) => {
 
   return (
     <div className="space-y-5">
-      <div className="text-center pf-e1">
-        <div className="pf-step-pill mx-auto w-fit mb-4">
-          <span className="pf-step-dot" />
-          {data.leadType === LeadType.ONE_ON_ONE_SCHOOLING ? 'One-to-One Schooling' : 'Step 2 · Student Details'}
-        </div>
-        <h2 className="pf-heading text-3xl sm:text-4xl font-display font-extrabold tracking-tight leading-tight mb-2">
-          {data.leadType === LeadType.ONE_ON_ONE_SCHOOLING ? 'One-to-One Schooling' : 'Student Information'}
-        </h2>
+<div className="text-center pf-e1">
+  {data.leadType !== LeadType.ONE_ON_ONE_SCHOOLING && (
+    <div className="pf-step-pill mx-auto w-fit mb-4">
+      <span className="pf-step-dot" />
+      Step 2 · Student Details
+    </div>
+  )}
+
+  <h2 className="pf-heading text-3xl sm:text-4xl font-display font-extrabold tracking-tight leading-tight mb-2">
+    {data.leadType === LeadType.ONE_ON_ONE_SCHOOLING ? 'One-to-One Schooling' : 'Student Information'}
+  </h2>
         <p className="text-sm text-brand-mediumText max-w-xs mx-auto">
-          Add each student who will be enrolling — we'll tailor everything.
+          Add each student who will be enrolling.
         </p>
       </div>
 
@@ -677,7 +680,7 @@ export const Step1_Details = ({ data, updateData, errors }: StepProps) => {
                 {realStudents.length > 0 ? 'Add Another Student' : 'Add Student'}
               </h3>
               <p className="text-xs text-brand-mediumText mt-0.5">
-                {realStudents.length > 0 ? 'Fill in details to enrol another student.' : 'Age auto-fills the grade for you ✨'}
+                {realStudents.length > 0 ? 'Fill in details to enrol another student.' : 'Age auto-fills the grade for you '}
               </p>
             </div>
           </div>
@@ -887,80 +890,32 @@ const QuranForm = ({ data, updateData, errors }: Pick<StepProps, "data" | "updat
     data.quranClassTime;
 
   return (
-    <div className="qf-page animate-fade-in-up">
-      <style>{`
+    <div className="qf-page transition-all duration-300">
+<style>{`
   .qf-page {
     position: relative;
-    min-height: 100%;
-    
+    min-height: 100vh;
+    width: 100vw;
+    margin-left: calc(50% - 50vw);
+    margin-right: calc(50% - 50vw);
+    overflow: hidden;
+
+    background: url('/images/quran-cover-blueee.png') no-repeat left center;
+    background-size: cover;
   }
 
   .qf-shell {
     position: relative;
     width: 100%;
-    max-width: none;
-    margin: 0;
-    min-height: 100%;
-    padding: 0 24px 24px;
-    overflow: visible;
+    min-height: 100vh;
+    padding: 24px 24px 36px;
   }
 
   .qf-main {
     position: relative;
-    z-index: 3;
     max-width: 640px;
-    margin: 0;
-  }
-
-  /* LEFT BACKGROUND ART */
-  .qf-art-left {
-    position: absolute;
-    left: -500px;
-    top: 310px;
-    width: 440px;
-    max-width: 32vw;
-    opacity: 0.13;
-    pointer-events: none;
-    user-select: none;
-    z-index: 0;
-    filter: saturate(0.9) blur(0.2px);
-  }
-
-  /* RIGHT BACKGROUND ART - FIXED TO FULL RIGHT */
-  .qf-art-right {
-    position: fixed;
-    right: -530px;
-    top: 54%;
-    transform: translateY(-50%);
-    width: 483px;
-    height: auto;
-    opacity: 0.14;
-    pointer-events: none;
-    user-select: none;
-    z-index: 1;
-    filter:
-      saturate(0.82)
-      brightness(1.03)
-      drop-shadow(0 12px 26px rgba(15, 45, 87, 0.05));
-  }
-
-  .qf-art-glow {
-    position: fixed;
-    right: 35px;
-    top: 54%;
-    transform: translateY(-50%);
-    width: 540px;
-    height: 540px;
-    border-radius: 999px;
-    background: radial-gradient(
-      circle,
-      rgba(14, 165, 233, 0.07) 0%,
-      rgba(14, 165, 233, 0.03) 42%,
-      transparent 72%
-    );
-    filter: blur(28px);
-    pointer-events: none;
-    z-index: 0;
+    margin-left: auto;
+    margin-right: 260px;
   }
 
   .qf-head {
@@ -1102,31 +1057,21 @@ const QuranForm = ({ data, updateData, errors }: Pick<StepProps, "data" | "updat
     cursor: not-allowed;
   }
 
-  @media (max-width: 1280px) {
-    .qf-art-left {
-      left: 10px;
-      width: 340px;
-      opacity: 0.1;
-    }
-
-    .qf-art-right {
-      right: 28px;
-      width: 360px;
-      opacity: 0.12;
-    }
-
-    .qf-art-glow {
-      right: 0;
-      width: 420px;
-      height: 420px;
+  @media (max-width: 1400px) {
+    .qf-main {
+      margin-right: 180px;
     }
   }
 
   @media (max-width: 1024px) {
-    .qf-art-left,
-    .qf-art-right,
-    .qf-art-glow {
-      display: none;
+    .qf-page {
+      background-position: center center;
+      background-size: cover;
+    }
+
+    .qf-shell {
+      padding: 18px 14px 24px;
+      min-height: auto;
     }
 
     .qf-main {
@@ -1137,28 +1082,51 @@ const QuranForm = ({ data, updateData, errors }: Pick<StepProps, "data" | "updat
 
   @media (max-width: 640px) {
     .qf-shell {
-      padding: 0 10px 20px;
+      padding: 12px 10px 20px;
     }
   }
+
+  @keyframes ivsVoucherFlyToCoupon {
+  0% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1) rotateX(0deg) rotateZ(0deg);
+  }
+  35% {
+    opacity: 1;
+    transform: translate3d(0, -18px, 0) scale(0.96) rotateZ(-2deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(-280px, 320px, 0) scale(0.26) rotateZ(-12deg);
+  }
+}
+
+@keyframes ivsCouponStickyPop {
+  0% {
+    opacity: 0;
+    transform: scale(0.82) rotate(-2deg);
+  }
+  55% {
+    opacity: 1;
+    transform: scale(1.05) rotate(1deg);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+.ivs-voucher-fly-away {
+  animation: ivsVoucherFlyToCoupon 0.82s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.ivs-coupon-sticky-pop {
+  animation: ivsCouponStickyPop 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
 `}</style>
 
       <div className="qf-shell">
-        {/* Left large Quran background */}
-        <img
-          src="/images/quran-cover-blue.png"
-          alt=""
-          aria-hidden="true"
-          className="qf-art-left"
-        />
 
-        {/* Right lantern/book artwork */}
-        <div className="qf-art-glow" />
-        <img
-          src="/images/quran-lantern-blue.png"
-          alt=""
-          aria-hidden="true"
-          className="qf-art-right"
-        />
 
         <div className="qf-main">
           <div className="qf-head pf-e1">
@@ -1397,7 +1365,7 @@ const QuranForm = ({ data, updateData, errors }: Pick<StepProps, "data" | "updat
 const TuitionForm = ({ data, updateData, errors }: Pick<StepProps,'data'|'updateData'|'errors'>) => {
   usePremiumStyles();
   return (
-    <div className="space-y-5 animate-fade-in-up">
+    <div className="space-y-5 transition-all duration-300">
       <div className="text-center pf-e1">
         <h2 className="pf-heading text-3xl font-display font-extrabold">One-to-One Tuition</h2>
         <p className="text-brand-mediumText text-sm mt-1">Our advisor will contact you shortly</p>
@@ -1452,7 +1420,7 @@ const TuitionForm = ({ data, updateData, errors }: Pick<StepProps,'data'|'update
 export const Step2_Program = ({ data, updateData }: StepProps) => {
   const ageNum = parseInt(data.age) || 0;
   return (
-    <div className="space-y-6 animate-fade-in-up">
+    <div className="space-y-6 transition-all duration-300">
       <div className="text-center mb-8"><h2 className="text-2xl font-display font-bold">Choose Program</h2><p className="text-brand-mediumText">Select the program that fits your goals.</p></div>
       <div className="grid gap-4">
         <OptionCard title="Full-time School" description="Regular schooling (KG1-12) with daily classes." icon={School} selected={data.programType===ProgramType.FULL_TIME} onClick={()=>updateData({programType:ProgramType.FULL_TIME})}/>
@@ -1481,7 +1449,7 @@ export const Step3_Academics = ({ data, updateData }: StepProps) => {
   };
 
   return (
-    <div className="space-y-8 animate-fade-in-up">
+    <div className="space-y-8 transition-all duration-300">
       <div className="text-center"><h2 className="text-2xl font-display font-bold">Academic Preferences</h2><p className="text-brand-mediumText">Customize the learning path.</p></div>
       {data.programType===ProgramType.FULL_TIME && (
         <div className="space-y-6">
@@ -1519,7 +1487,7 @@ export const Step4_Trial = ({ data, updateData }: StepProps) => {
   const studentName = data.students.filter(s=>s.id!==DRAFT_ID)[0]?.name||data.studentName||'your child';
 
   return (
-    <div className="space-y-8 animate-fade-in-up">
+    <div className="space-y-8 transition-all duration-300">
       <div className="text-center"><h2 className="text-2xl font-display font-bold">Confirm Trial Class</h2><p className="text-brand-mediumText">Almost there!</p></div>
       <div className="relative p-[1px] rounded-2xl bg-gradient-to-b from-brand-burgundy to-brand-orange">
         <div className="bg-brand-cream rounded-2xl p-8 text-center space-y-4">
@@ -1543,7 +1511,7 @@ export const Step4_Trial = ({ data, updateData }: StepProps) => {
 };
 
 export const Step5_Summary = ({ data, updateData }: StepProps) => (
-  <div className="space-y-8 animate-fade-in-up">
+  <div className="space-y-8 transition-all duration-300">
     <div className="text-center"><h2 className="text-2xl font-display font-bold">Final Steps</h2><p className="text-brand-mediumText">Review and add extras.</p></div>
     <textarea className="w-full glass-input rounded-xl p-4 text-sm h-24" placeholder="Final notes?" value={data.notes} onChange={e=>updateData({notes:e.target.value})}/>
   </div>
@@ -1559,45 +1527,429 @@ const validateCoupon=(code:string)=>{
   }catch{return null;}
 };
 
-interface CouponProps{data:FormData;updateData:(f:Partial<FormData>)=>void;}
-const CouponCodeSection=({data,updateData}:CouponProps)=>{
-  const[input,setInput]=useState(data.couponCode||'');
-  const[showPopup,setPopup]=useState(false);
-  const[err,setErr]=useState('');
-  const[checking,setChecking]=useState(false);
-  const apply=()=>{
-    if(!input.trim()){setErr('Please enter a code');return;}
-    setChecking(true);setErr('');
-    setTimeout(()=>{
-      const r=validateCoupon(input);
-      if(r){updateData({couponCode:input.toUpperCase(),appliedCoupon:r});setPopup(true);}
-      else{setErr('Invalid code.');updateData({couponCode:'',appliedCoupon:null});}
+interface CouponProps {
+  data: FormData;
+  updateData: (f: Partial<FormData>) => void;
+}
+
+const CouponCodeSection = ({ data, updateData }: CouponProps) => {
+  const [input, setInput] = useState(data.couponCode || "");
+  const [showPopup, setPopup] = useState(false);
+  const [err, setErr] = useState("");
+  const [checking, setChecking] = useState(false);
+  const [voucherAnimKey, setVoucherAnimKey] = useState(0);
+  const [pendingCoupon, setPendingCoupon] = useState<any>(null);
+  const [showAppliedVoucher, setShowAppliedVoucher] = useState(!!data.appliedCoupon);
+  const [isVoucherFlying, setIsVoucherFlying] = useState(false);
+
+  useEffect(() => {
+    setShowAppliedVoucher(!!data.appliedCoupon);
+  }, [data.appliedCoupon]);
+
+  const apply = () => {
+    if (!input.trim()) {
+      setErr("Please enter a code");
+      return;
+    }
+
+    setChecking(true);
+    setErr("");
+
+    setTimeout(() => {
+      const r = validateCoupon(input);
+
+      if (r) {
+        setPendingCoupon({
+          code: input.toUpperCase(),
+          data: r,
+        });
+        setPopup(true);
+      } else {
+        setErr("Invalid code.");
+        setPendingCoupon(null);
+        setShowAppliedVoucher(false);
+        updateData({
+          couponCode: "",
+          appliedCoupon: null,
+        });
+      }
+
       setChecking(false);
     }, 500);
   };
 
+  const handleRemoveVoucher = () => {
+    setInput("");
+    setErr("");
+    setPendingCoupon(null);
+    setShowAppliedVoucher(false);
+    updateData({
+      couponCode: "",
+      appliedCoupon: null,
+    });
+  };
+
   return (
     <>
+      <style>{`
+        @keyframes ivsPopupFlipIn {
+          0% {
+            opacity: 0;
+            transform: perspective(1400px) rotateX(-16deg) scale(0.95) translateY(20px);
+          }
+          60% {
+            opacity: 1;
+            transform: perspective(1400px) rotateX(4deg) scale(1.01) translateY(-4px);
+          }
+          100% {
+            opacity: 1;
+            transform: perspective(1400px) rotateX(0deg) scale(1) translateY(0);
+          }
+        }
+
+        @keyframes ivsPopupFloat {
+          0%, 100% {
+            transform: translateY(0px);
+          }
+          50% {
+            transform: translateY(-4px);
+          }
+        }
+
+        @keyframes ivsPopupGlow {
+          0%, 100% {
+            box-shadow:
+              0 20px 55px rgba(15,45,87,0.18),
+              0 8px 24px rgba(29,111,206,0.12);
+          }
+          50% {
+            box-shadow:
+              0 26px 70px rgba(15,45,87,0.22),
+              0 12px 30px rgba(29,111,206,0.16);
+          }
+        }
+
+        @keyframes ivsVoucherFlyToCard {
+          0% {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+          }
+          100% {
+            opacity: 0;
+            transform: translate(-220px, 240px) scale(0.28);
+          }
+        }
+
+        @keyframes ivsAppliedCardIn {
+          0% {
+            opacity: 0;
+            transform: translateY(26px) scale(0.94);
+            filter: blur(8px);
+          }
+          60% {
+            opacity: 1;
+            transform: translateY(-6px) scale(1.01);
+            filter: blur(0);
+          }
+          100% {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            filter: blur(0);
+          }
+        }
+
+        @keyframes ivsShine {
+          0% {
+            transform: translateX(-140%) skewX(-18deg);
+            opacity: 0;
+          }
+          20% {
+            opacity: 0.18;
+          }
+          100% {
+            transform: translateX(220%) skewX(-18deg);
+            opacity: 0;
+          }
+        }
+
+        .ivs-popup-card {
+          animation: ivsPopupFlipIn 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+          transform-style: preserve-3d;
+          will-change: transform, opacity;
+        }
+
+        .ivs-popup-card-inner {
+          animation: ivsPopupFloat 5s ease-in-out infinite, ivsPopupGlow 4.5s ease-in-out infinite;
+        }
+
+        .ivs-popup-fly-away {
+          animation: ivsVoucherFlyToCard 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        }
+
+        .ivs-applied-voucher {
+          animation: ivsAppliedCardIn 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+          position: relative;
+          overflow: hidden;
+        }
+
+        .ivs-applied-voucher::after {
+          content: "";
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(
+            115deg,
+            transparent 0%,
+            rgba(255,255,255,0.00) 35%,
+            rgba(255,255,255,0.22) 50%,
+            rgba(255,255,255,0.00) 65%,
+            transparent 100%
+          );
+          animation: ivsShine 4.8s ease-in-out infinite;
+          pointer-events: none;
+        }
+      `}</style>
+
       <GlassCard>
-        <div className="flex items-center gap-3 mb-4"><div className="p-2 bg-brand-orange/20 text-brand-orange rounded-lg"><ShieldCheck className="w-5 h-5"/></div><div><h4 className="font-bold text-brand-darkText">Coupon / Referral Code</h4><p className="text-xs text-brand-mediumText">Optional</p></div></div>
-        {data.appliedCoupon?(
-          <div className="flex items-center justify-between p-4 bg-emerald-50 border border-emerald-200 rounded-xl"><div className="flex items-center gap-3"><div className="w-10 h-10 bg-emerald-500 rounded-full flex items-center justify-center"><CheckCircle className="w-5 h-5 text-white"/></div><div><p className="font-semibold text-emerald-700">{data.couponCode}</p><p className="text-xs text-emerald-600">{data.appliedCoupon.discountValue}% off</p></div></div><button onClick={()=>{setInput('');updateData({couponCode:'',appliedCoupon:null});}} className="text-sm text-red-500 font-medium">Remove</button></div>
-        ):(
+        <div className="flex items-center gap-3 mb-4">
+          <div className="p-2 bg-brand-orange/20 text-brand-orange rounded-lg">
+            <ShieldCheck className="w-5 h-5" />
+          </div>
+          <div>
+            <h4 className="font-bold text-brand-darkText">Coupon / Referral Code</h4>
+            <p className="text-xs text-brand-mediumText">Optional</p>
+          </div>
+        </div>
+
+        {data.appliedCoupon && showAppliedVoucher ? (
+          <div
+            key={voucherAnimKey}
+            className="ivs-applied-voucher rounded-[28px] border border-[rgba(29,111,206,0.14)] bg-[linear-gradient(135deg,rgba(241,250,255,0.98)_0%,rgba(232,246,255,0.98)_48%,rgba(245,251,255,0.98)_100%)] shadow-[0_16px_34px_rgba(29,111,206,0.10),0_6px_16px_rgba(15,45,87,0.05)]"
+          >
+            <div className="grid md:grid-cols-[1.2fr_auto] items-stretch">
+              <div className="relative px-6 py-6 md:px-7 md:py-7">
+                <div className="absolute left-0 top-0 bottom-0 w-[6px] bg-gradient-to-b from-[#1d6fce] via-[#38bdf8] to-[#10b981]" />
+
+                <div className="flex items-start gap-4">
+                  <div className="shrink-0 w-16 h-16 rounded-[20px] flex items-center justify-center bg-[linear-gradient(135deg,#1d6fce_0%,#0ea5e9_100%)] shadow-[0_12px_24px_rgba(29,111,206,0.22)]">
+                    <CheckCircle className="w-8 h-8 text-white" />
+                  </div>
+
+                  <div className="min-w-0 flex-1">
+                    <div className="flex flex-wrap items-center gap-3">
+                      <span className="inline-flex items-center rounded-full px-3 py-1 text-[11px] font-extrabold tracking-[0.12em] uppercase border text-[#1d6fce] bg-[rgba(29,111,206,0.08)] border-[rgba(29,111,206,0.14)]">
+                        Voucher Applied
+                      </span>
+
+                      <span className="inline-flex items-center rounded-full px-3 py-1 text-[11px] font-extrabold tracking-[0.12em] uppercase border text-[#059669] bg-[rgba(16,185,129,0.10)] border-[rgba(16,185,129,0.18)]">
+                        Verified
+                      </span>
+                    </div>
+
+                    <h4 className="mt-3 text-[30px] leading-none font-black tracking-[0.01em] text-[#0f2d57]">
+                      {data.couponCode}
+                    </h4>
+
+                    <p className="mt-3 text-[16px] font-semibold text-[#23527c]">
+                      {data.appliedCoupon.discountValue}% off on{" "}
+                      {data.appliedCoupon.discountType === "REGISTRATION_FEE"
+                        ? "registration fee"
+                        : "first month fee"}
+                    </p>
+
+                    <p className="mt-2 text-sm text-[#5c7593] leading-relaxed max-w-[520px]">
+                      Your referral reward has been securely attached and is now reserved for this application.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="relative px-5 py-5 md:px-6 md:py-6 flex md:flex-col items-center justify-center gap-3 border-t md:border-t-0 md:border-l border-[rgba(29,111,206,0.12)] bg-[linear-gradient(180deg,rgba(255,255,255,0.68)_0%,rgba(235,246,255,0.90)_100%)]">
+                <div className="text-center">
+                  <p className="text-[11px] uppercase tracking-[0.16em] font-extrabold text-[#6c87a7]">
+                    Savings
+                  </p>
+                  <p className="mt-1 text-[34px] leading-none font-black bg-[linear-gradient(135deg,#1d6fce_0%,#0ea5e9_100%)] bg-clip-text text-transparent">
+                    {data.appliedCoupon.discountValue}%
+                  </p>
+                  <p className="mt-1 text-xs font-semibold text-[#5c7593]">
+                    Premium Reward
+                  </p>
+                </div>
+
+                <button
+                  onClick={handleRemoveVoucher}
+                  className="mt-2 inline-flex items-center justify-center rounded-full px-4 py-2 text-xs font-bold transition-all hover:scale-[1.04] text-[#b45309] bg-[linear-gradient(135deg,rgba(255,248,236,0.95),rgba(255,242,220,0.95))] border border-[rgba(245,158,11,0.20)] shadow-[0_8px_18px_rgba(245,158,11,0.10)]"
+                >
+                  Remove voucher
+                </button>
+              </div>
+            </div>
+          </div>
+        ) : (
           <div className="space-y-3">
-            <div className="flex gap-3"><input type="text" value={input} onChange={e=>{setInput(e.target.value.toUpperCase());setErr('');}} placeholder="e.g. WELCOME2024" className="flex-1 px-4 py-3 rounded-xl border border-brand-lightGray bg-white text-brand-darkText focus:outline-none focus:ring-2 focus:ring-brand-orange/30 focus:border-brand-orange transition-all"/><button onClick={apply} disabled={checking||!input.trim()} className="px-5 py-3 bg-brand-burgundy text-white font-semibold rounded-xl transition-all disabled:opacity-50 flex items-center gap-2">{checking?<><Loader2 className="w-4 h-4 animate-spin"/>Checking…</>:'Apply'}</button></div>
-            {err&&<p className="text-sm text-red-500 flex items-center gap-1"><AlertTriangle className="w-4 h-4"/>{err}</p>}
+            <div className="flex gap-3">
+              <input
+                type="text"
+                value={input}
+                onChange={(e) => {
+                  setInput(e.target.value.toUpperCase());
+                  setErr("");
+                }}
+                placeholder="e.g. WELCOME2024"
+                className="flex-1 px-4 py-3 rounded-xl border border-brand-lightGray bg-white text-brand-darkText focus:outline-none focus:ring-2 focus:ring-brand-orange/30 focus:border-brand-orange transition-all"
+              />
+              <button
+                onClick={apply}
+                disabled={checking || !input.trim()}
+                className="px-5 py-3 bg-brand-burgundy text-white font-semibold rounded-xl transition-all disabled:opacity-50 flex items-center gap-2"
+              >
+                {checking ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Checking…
+                  </>
+                ) : (
+                  "Apply"
+                )}
+              </button>
+            </div>
+
+            {err && (
+              <p className="text-sm text-red-500 flex items-center gap-1">
+                <AlertTriangle className="w-4 h-4" />
+                {err}
+              </p>
+            )}
           </div>
         )}
       </GlassCard>
-      {showPopup&&data.appliedCoupon&&(
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/25 backdrop-blur-sm">
-          <div className="bg-white rounded-3xl shadow-2xl max-w-md w-full overflow-hidden">
-            <div className="bg-gradient-to-br from-brand-burgundy via-brand-orange to-yellow-400 p-8 text-center"><div className="w-20 h-20 mx-auto mb-4 bg-white rounded-full flex items-center justify-center shadow-lg"><Sparkles className="w-10 h-10 text-brand-orange"/></div><h2 className="text-3xl font-display font-bold text-white">🎉 Congratulations!</h2></div>
-            <div className="p-8 text-center"><p className="text-lg text-brand-darkText mb-4">You are with the reference of</p><div className="inline-block px-6 py-3 bg-brand-orange/10 rounded-xl border border-brand-orange/30 mb-4"><p className="text-2xl font-bold text-brand-burgundy">{data.appliedCoupon.referrerName}</p></div><p className="text-xl text-brand-darkText font-medium mb-6">{data.appliedCoupon.message}</p><div className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-100 text-emerald-700 rounded-full text-sm font-semibold mb-6"><CheckCircle className="w-4 h-4"/>{data.appliedCoupon.discountValue}% OFF {data.appliedCoupon.discountType==='REGISTRATION_FEE'?'Registration Fee':'First Month'}</div><button onClick={()=>setPopup(false)} className="w-full py-4 bg-brand-burgundy text-white font-bold rounded-xl hover:bg-brand-burgundy/90 transition-all text-lg">Continue</button></div>
+
+      {showPopup && pendingCoupon && (
+        <div
+          className="fixed inset-0 z-[9999] flex items-center justify-center bg-[rgba(15,23,42,0.28)] backdrop-blur-[6px] p-4 sm:p-6"
+          onClick={() => setPopup(false)}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className={`ivs-popup-card w-full max-w-[980px] ${isVoucherFlying ? "ivs-popup-fly-away" : ""}`}
+          >
+            <div className="ivs-popup-card-inner rounded-[34px] overflow-hidden border border-[rgba(180,205,230,0.95)] bg-[#f7fbff]">
+              <div className="grid lg:grid-cols-[1.2fr_0.75fr]">
+                <div className="relative p-6 sm:p-8 md:p-10 bg-[linear-gradient(135deg,#eef6ff_0%,#dbeeff_46%,#f5fbff_100%)]">
+                  <div className="absolute inset-0 opacity-30 pointer-events-none bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.8),transparent_45%),radial-gradient(circle_at_bottom_right,rgba(14,165,233,0.10),transparent_40%)]" />
+
+                  <p className="relative z-10 text-[11px] sm:text-[12px] uppercase tracking-[0.28em] font-bold text-[#1d6fce]/80 mb-3">
+                    Luxury Discount Voucher
+                  </p>
+
+                  <h2 className="relative z-10 font-display text-[34px] sm:text-[44px] leading-none font-extrabold text-[#0f2d57]">
+                    Congratulations
+                  </h2>
+
+                  <p className="relative z-10 mt-4 text-[15px] sm:text-[18px] leading-relaxed text-[#4d647f] max-w-[500px]">
+                    Your referral benefit has been successfully unlocked for this registration.
+                  </p>
+
+                  <div className="relative z-10 mt-7 rounded-[24px] border border-[rgba(29,111,206,0.12)] bg-white/75 backdrop-blur-sm px-4 py-4 shadow-[0_8px_20px_rgba(15,45,87,0.06)] flex items-center gap-4">
+                    <div className="w-14 h-14 rounded-[18px] flex items-center justify-center text-[28px] bg-[linear-gradient(135deg,#1d6fce_0%,#0ea5e9_100%)] text-white shadow-[0_10px_24px_rgba(29,111,206,0.22)]">
+                      🎁
+                    </div>
+
+                    <div>
+                      <p className="text-[11px] uppercase tracking-[0.2em] font-bold text-[#6e85a0] mb-1">
+                        Referred by
+                      </p>
+                      <p className="text-[24px] sm:text-[28px] font-extrabold text-[#0f2d57] leading-none">
+                        {pendingCoupon.data.referrerName}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="relative z-10 mt-6 flex flex-wrap gap-3">
+                    <div className="inline-flex items-center rounded-full border border-emerald-200 bg-emerald-50 px-4 py-2 text-emerald-700 text-sm font-bold shadow-sm">
+                      ✓ Verified Referral
+                    </div>
+
+                    <div className="inline-flex items-center rounded-full border border-sky-200 bg-sky-50 px-4 py-2 text-sky-700 text-sm font-bold shadow-sm">
+                      ✓ Premium Reward
+                    </div>
+                  </div>
+                </div>
+
+                <div className="relative px-6 sm:px-8 py-8 sm:py-10 flex flex-col items-center justify-center bg-[linear-gradient(160deg,#ffffff_0%,#f6fbff_100%)] border-t lg:border-t-0 lg:border-l border-[rgba(29,111,206,0.12)]">
+                  <div className="relative text-center w-full max-w-[240px]">
+                    <div className="relative mx-auto w-[190px] h-[190px] rounded-[28px] flex flex-col items-center justify-center bg-[linear-gradient(145deg,#ffffff_0%,#f4faff_52%,#e8f3ff_100%)] border border-[rgba(29,111,206,0.16)] shadow-[0_24px_40px_rgba(15,45,87,0.14),inset_0_2px_0_rgba(255,255,255,0.95)]">
+                      <div className="absolute inset-3 rounded-[22px] border-2 border-dashed border-[rgba(29,111,206,0.25)]" />
+                      <div className="absolute -top-3 -right-3 rounded-full bg-[linear-gradient(135deg,#0ea5e9,#1d6fce)] text-white text-[11px] font-black px-3 py-2 shadow-[0_10px_22px_rgba(29,111,206,0.26)]">
+                        ACTIVE
+                      </div>
+
+                      <p className="text-[13px] uppercase tracking-[0.24em] font-black text-[#6a84a0]">
+                        Save
+                      </p>
+                      <p className="text-[64px] leading-none font-black text-[#0f2d57] mt-1">
+                        {pendingCoupon.data.discountValue}%
+                      </p>
+                      <p className="text-[16px] font-bold text-[#1d6fce] tracking-[0.2em] uppercase mt-1">
+                        OFF
+                      </p>
+                    </div>
+
+                    <div className="mt-6 rounded-[22px] border border-[rgba(29,111,206,0.12)] bg-[#f8fbff] px-4 py-4 shadow-[0_8px_20px_rgba(15,45,87,0.05)]">
+                      <p className="text-[11px] uppercase tracking-[0.18em] text-[#7a8ea5] font-bold">
+                        Applied On
+                      </p>
+                      <p className="mt-2 text-[18px] font-bold text-[#0f2d57] leading-snug">
+                        {pendingCoupon.data.discountType === "REGISTRATION_FEE"
+                          ? "Registration Fee"
+                          : "First Month Fee"}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="px-6 sm:px-8 md:px-10 py-6 sm:py-7 bg-[linear-gradient(180deg,#ffffff_0%,#fbfdff_100%)] border-t border-[rgba(29,111,206,0.10)] text-center">
+                <p className="text-[20px] sm:text-[26px] font-semibold text-[#23374f] leading-relaxed">
+                  You'll get {pendingCoupon.data.discountValue}% off on{" "}
+                  {pendingCoupon.data.discountType === "REGISTRATION_FEE"
+                    ? "registration fee"
+                    : "first month fee"}
+                </p>
+
+                <p className="mt-2 text-sm text-[#6b7f97]">
+                  This offer will be attached to your registration details.
+                </p>
+
+                <div className="mt-6">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsVoucherFlying(true);
+
+                      setTimeout(() => {
+                        updateData({
+                          couponCode: pendingCoupon.code,
+                          appliedCoupon: pendingCoupon.data,
+                        });
+                        setPopup(false);
+                        setIsVoucherFlying(false);
+                        setPendingCoupon(null);
+                        setVoucherAnimKey((prev) => prev + 1);
+                        setShowAppliedVoucher(true);
+                      }, 800);
+                    }}
+                    className="w-full py-4 rounded-[18px] text-white font-bold shadow-[0_16px_34px_rgba(29,111,206,0.24)] hover:translate-y-[-1px] transition-all bg-[linear-gradient(135deg,#1d6fce_0%,#0ea5e9_100%)]"
+                  >
+                    Continue
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
-          </div>
-        )}
-      </>
+        </div>
+      )}
+    </>
   );
 };
 
@@ -1665,50 +2017,126 @@ export const Step2_FinalSteps = ({ data, updateData }: StepProps) => {
     }
   }, [data.fullTimeInterest]);
 
+  const hasPackageDeal =
+    (data.tuitionInterest && data.quranInterest) ||
+    (data.tuitionInterest && data.fullTimeInterest) ||
+    (data.quranInterest && data.fullTimeInterest);
+
+  const hasAdditionalPrograms =
+    (data.upsellSchoolStudents || []).length > 0 ||
+    (data.upsellTuitionStudents || []).length > 0 ||
+    (data.upsellQuranStudents || []).length > 0;
+
   return (
-    <div className="space-y-8 animate-fade-in-up">
-      <div className="text-center pf-e1">
-        <div className="pf-step-pill mx-auto w-fit mb-4">
-          <span className="pf-step-dot" />
-          Step 3 · Final Review
-        </div>
-        <h2 className="pf-heading text-3xl font-display font-extrabold">Final Steps</h2>
-        <p className="text-brand-mediumText">Review your application and add optional programs.</p>
+    <div className="space-y-8 transition-all duration-300">
+   <div className="text-center pf-e1">
+  <h2 className="pf-heading text-3xl sm:text-4xl font-display font-extrabold">
+    Final Steps
+  </h2>
+        <p className="text-brand-mediumText text-base sm:text-lg mt-2">
+          Review your details and add extra programs if needed.
+        </p>
       </div>
 
+      {hasPackageDeal && (
+        <div className="pf-card p-5 sm:p-6 border border-amber-200 bg-gradient-to-r from-amber-50 via-orange-50 to-amber-50 shadow-[0_12px_40px_rgba(245,158,11,0.10)]">
+          <div className="flex items-start gap-4">
+            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-3xl shadow-[0_10px_25px_rgba(245,158,11,0.22)]">
+              🎁
+            </div>
+            <div>
+              <h3 className="text-2xl font-extrabold text-amber-800">Package Deal!</h3>
+              <p className="text-base text-amber-700 mt-1 leading-relaxed">
+                Register for multiple programs and get a discounted package. Our advisor will share details!
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
       {(data.leadType === LeadType.TUITION || data.leadType === LeadType.QURAN) && (
-        <div className="pf-card p-5 sm:p-6">
+        <div className="pf-card p-5 sm:p-6 shadow-[0_18px_50px_rgba(29,111,206,0.06)]">
           <div className="flex items-start justify-between gap-4 flex-wrap">
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-4">
               <div className="pf-icon">
                 <School className="w-5 h-5 text-white" />
               </div>
               <div>
-                <h4 className="font-extrabold text-brand-darkText text-sm">Full-Time School</h4>
-                <p className="text-xs text-brand-mediumText">3-day free trial</p>
+                <h4 className="font-extrabold text-brand-darkText text-base">Full-Time School</h4>
+                <p className="text-sm text-brand-mediumText">1-day free trial</p>
               </div>
             </div>
             <Toggle label="Interested?" checked={data.fullTimeInterest} onChange={(v) => updateData({ fullTimeInterest: v })} />
           </div>
 
           {data.fullTimeInterest && (
-            <div className="mt-5 pt-5 border-t border-brand-lightGray space-y-4">
-              <div className="rounded-2xl border border-blue-200 bg-blue-50/70 px-4 py-3">
-                <p className="text-sm font-semibold text-blue-700">Student details are pre-filled from your application. You can edit them below.</p>
+            <div className="mt-5 pt-5 border-t border-brand-lightGray space-y-4 animate-fade-in">
+              <div className="rounded-2xl border border-blue-200 bg-blue-50/80 px-4 py-3 shadow-[0_8px_24px_rgba(59,130,246,0.08)]">
+                <p className="text-sm font-semibold text-blue-700">
+                  Student details are pre-filled from your application. You can edit them below.
+                </p>
               </div>
 
+              {(data.upsellSchoolStudents || []).length > 0 && (
+                <div className="space-y-3">
+                  {data.upsellSchoolStudents.map((student, idx) => (
+                    <div key={student.id} className="flex items-center justify-between p-4 bg-blue-50/80 rounded-2xl border border-blue-200 shadow-[0_10px_30px_rgba(59,130,246,0.06)]">
+                      <div className="flex items-center gap-3">
+                        <span className="w-9 h-9 bg-gradient-to-br from-blue-500 to-sky-500 text-white rounded-full flex items-center justify-center text-sm font-extrabold shadow-[0_8px_20px_rgba(59,130,246,0.24)]">
+                          {idx + 1}
+                        </span>
+                        <div>
+                          <p className="text-sm font-bold text-blue-800">{student.name}</p>
+                          <p className="text-xs text-blue-600">
+                            Age {student.age} • {student.grade}
+                          </p>
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          updateData({
+                            upsellSchoolStudents: data.upsellSchoolStudents.filter((s) => s.id !== student.id),
+                          })
+                        }
+                        className="text-xs font-semibold text-red-500 hover:text-red-600"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+
               <div className="grid sm:grid-cols-3 gap-3">
-                <InputField label="Name" value={data.pendingSchoolName} onChange={(e) => updateData({ pendingSchoolName: e.target.value })} placeholder="Ahmed" />
-                <InputField label="Age" type="number" value={data.pendingSchoolAge} onChange={(e) => updateData({ pendingSchoolAge: e.target.value })} placeholder="10" />
-                <SelectField label="Grade" value={data.pendingSchoolGrade} onChange={(e) => updateData({ pendingSchoolGrade: e.target.value })} options={GRADES} />
+                <InputField
+                  label="Name"
+                  value={data.pendingSchoolName}
+                  onChange={(e) => updateData({ pendingSchoolName: e.target.value })}
+                  placeholder="Ahmed"
+                />
+                <InputField
+                  label="Age"
+                  type="number"
+                  value={data.pendingSchoolAge}
+                  onChange={(e) => updateData({ pendingSchoolAge: e.target.value })}
+                  placeholder="10"
+                />
+                <SelectField
+                  label="Grade"
+                  value={data.pendingSchoolGrade}
+                  onChange={(e) => updateData({ pendingSchoolGrade: e.target.value })}
+                  options={GRADES}
+                />
               </div>
 
               <button
+                type="button"
                 onClick={() => {
                   if (data.pendingSchoolName && data.pendingSchoolAge && data.pendingSchoolGrade) {
                     updateData({
                       upsellSchoolStudents: [
-                        ...data.upsellSchoolStudents,
+                        ...(data.upsellSchoolStudents || []),
                         {
                           id: Date.now().toString(),
                           name: data.pendingSchoolName,
@@ -1724,7 +2152,7 @@ export const Step2_FinalSteps = ({ data, updateData }: StepProps) => {
                   }
                 }}
                 disabled={!data.pendingSchoolName || !data.pendingSchoolAge || !data.pendingSchoolGrade}
-                className="w-full py-3 rounded-2xl bg-blue-500/10 border border-blue-500/30 text-blue-700 font-bold text-sm disabled:opacity-40"
+                className="w-full py-3.5 rounded-2xl bg-blue-500/10 border border-blue-500/30 text-blue-700 font-bold text-sm disabled:opacity-40 hover:bg-blue-500/15 hover:shadow-[0_10px_30px_rgba(59,130,246,0.10)] transition-all"
               >
                 + Add to Full-Time
               </button>
@@ -1734,39 +2162,90 @@ export const Step2_FinalSteps = ({ data, updateData }: StepProps) => {
       )}
 
       {data.leadType !== LeadType.TUITION && (
-        <div className="pf-card p-5 sm:p-6">
+        <div className="pf-card p-5 sm:p-6 shadow-[0_18px_50px_rgba(139,92,246,0.06)]">
           <div className="flex items-start justify-between gap-4 flex-wrap">
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-4">
               <div className="pf-icon" style={{ background: "linear-gradient(135deg,#8b5cf6,#a78bfa)" }}>
                 <GraduationCap className="w-5 h-5 text-white" />
               </div>
               <div>
-                <h4 className="font-extrabold text-brand-darkText text-sm">1-on-1 Tuition</h4>
-                <p className="text-xs text-brand-mediumText">Extra coaching support</p>
+                <h4 className="font-extrabold text-brand-darkText text-base">1-on-1 Tuition</h4>
+                <p className="text-sm text-brand-mediumText">1-day free trial</p>
               </div>
             </div>
             <Toggle label="Interested?" checked={data.tuitionInterest} onChange={(v) => updateData({ tuitionInterest: v })} />
           </div>
 
           {data.tuitionInterest && (
-            <div className="mt-5 pt-5 border-t border-brand-lightGray space-y-4">
-              <div className="rounded-2xl border border-purple-200 bg-purple-50/70 px-4 py-3">
-                <p className="text-sm font-semibold text-purple-700">Student details are pre-filled from your application. You can edit them below.</p>
+            <div className="mt-5 pt-5 border-t border-brand-lightGray space-y-4 animate-fade-in">
+              <div className="rounded-2xl border border-purple-200 bg-purple-50/80 px-4 py-3 shadow-[0_8px_24px_rgba(139,92,246,0.08)]">
+                <p className="text-sm font-semibold text-purple-700">
+                  Student details are pre-filled from your application. You can edit them below.
+                </p>
               </div>
+
+              {(data.upsellTuitionStudents || []).length > 0 && (
+                <div className="space-y-3">
+                  {data.upsellTuitionStudents.map((student, idx) => (
+                    <div key={student.id} className="flex items-center justify-between p-4 bg-purple-50/80 rounded-2xl border border-purple-200 shadow-[0_10px_30px_rgba(139,92,246,0.06)]">
+                      <div className="flex items-center gap-3">
+                        <span className="w-9 h-9 bg-gradient-to-br from-purple-500 to-fuchsia-500 text-white rounded-full flex items-center justify-center text-sm font-extrabold shadow-[0_8px_20px_rgba(139,92,246,0.24)]">
+                          {idx + 1}
+                        </span>
+                        <div>
+                          <p className="text-sm font-bold text-purple-800">{student.name}</p>
+                          <p className="text-xs text-purple-600">
+                            Age {student.age}
+                            {student.requirements ? ` • ${student.requirements}` : ""}
+                          </p>
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          updateData({
+                            upsellTuitionStudents: data.upsellTuitionStudents.filter((s) => s.id !== student.id),
+                          })
+                        }
+                        className="text-xs font-semibold text-red-500 hover:text-red-600"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
 
               <div className="grid sm:grid-cols-2 gap-3">
-                <InputField label="Name" value={data.pendingTuitionName || ""} onChange={(e) => updateData({ pendingTuitionName: e.target.value })} placeholder="Ahmed" />
-                <InputField label="Age" type="number" value={data.pendingTuitionAge || ""} onChange={(e) => updateData({ pendingTuitionAge: e.target.value })} placeholder="10" />
+                <InputField
+                  label="Name"
+                  value={data.pendingTuitionName || ""}
+                  onChange={(e) => updateData({ pendingTuitionName: e.target.value })}
+                  placeholder="Ahmed"
+                />
+                <InputField
+                  label="Age"
+                  type="number"
+                  value={data.pendingTuitionAge || ""}
+                  onChange={(e) => updateData({ pendingTuitionAge: e.target.value })}
+                  placeholder="10"
+                />
               </div>
 
-              <InputField label="Requirements" value={data.pendingTuitionReq || ""} onChange={(e) => updateData({ pendingTuitionReq: e.target.value })} placeholder="e.g. Math Grade 8, Science support, exam prep..." />
+              <InputField
+                label="Requirements"
+                value={data.pendingTuitionReq || ""}
+                onChange={(e) => updateData({ pendingTuitionReq: e.target.value })}
+                placeholder="e.g. Math Grade 8, Science support, exam prep..."
+              />
 
               <button
+                type="button"
                 onClick={() => {
                   if (data.pendingTuitionName && data.pendingTuitionAge) {
                     updateData({
                       upsellTuitionStudents: [
-                        ...data.upsellTuitionStudents,
+                        ...(data.upsellTuitionStudents || []),
                         {
                           id: Date.now().toString(),
                           name: data.pendingTuitionName,
@@ -1781,7 +2260,7 @@ export const Step2_FinalSteps = ({ data, updateData }: StepProps) => {
                   }
                 }}
                 disabled={!data.pendingTuitionName || !data.pendingTuitionAge}
-                className="w-full py-3 rounded-2xl bg-purple-500/10 border border-purple-500/30 text-purple-700 font-bold text-sm disabled:opacity-40"
+                className="w-full py-3.5 rounded-2xl bg-purple-500/10 border border-purple-500/30 text-purple-700 font-bold text-sm disabled:opacity-40 hover:bg-purple-500/15 hover:shadow-[0_10px_30px_rgba(139,92,246,0.10)] transition-all"
               >
                 + Add to Tuition
               </button>
@@ -1791,29 +2270,74 @@ export const Step2_FinalSteps = ({ data, updateData }: StepProps) => {
       )}
 
       {data.leadType !== LeadType.QURAN && (
-        <div className="pf-card p-5 sm:p-6">
+        <div className="pf-card p-5 sm:p-6 shadow-[0_18px_50px_rgba(16,185,129,0.06)]">
           <div className="flex items-start justify-between gap-4 flex-wrap">
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-4">
               <div className="pf-icon pf-icon-green">
                 <BookOpen className="w-5 h-5 text-white" />
               </div>
               <div>
-                <h4 className="font-extrabold text-brand-darkText text-sm">Online Quran</h4>
-                <p className="text-xs text-brand-mediumText">24/7 · Flexible timings</p>
+                <h4 className="font-extrabold text-brand-darkText text-base">Online Quran</h4>
+                <p className="text-sm text-brand-mediumText">3-day free trial</p>
               </div>
             </div>
             <Toggle label="Interested?" checked={data.quranInterest} onChange={(v) => updateData({ quranInterest: v })} />
           </div>
 
           {data.quranInterest && (
-            <div className="mt-5 pt-5 border-t border-brand-lightGray space-y-4">
-              <div className="rounded-2xl border border-emerald-200 bg-emerald-50/70 px-4 py-3">
-                <p className="text-sm font-semibold text-emerald-700">Student details are pre-filled from your application. You can edit them below.</p>
+            <div className="mt-5 pt-5 border-t border-brand-lightGray space-y-4 animate-fade-in">
+              <div className="rounded-2xl border border-emerald-200 bg-emerald-50/80 px-4 py-3 shadow-[0_8px_24px_rgba(16,185,129,0.08)]">
+                <p className="text-sm font-semibold text-emerald-700">
+                  Student details are pre-filled from your application. You can edit them below.
+                </p>
               </div>
 
+              {(data.upsellQuranStudents || []).length > 0 && (
+                <div className="space-y-3">
+                  {data.upsellQuranStudents.map((student, idx) => (
+                    <div key={student.id} className="flex items-center justify-between p-4 bg-emerald-50/80 rounded-2xl border border-emerald-200 shadow-[0_10px_30px_rgba(16,185,129,0.06)]">
+                      <div className="flex items-center gap-3">
+                        <span className="w-9 h-9 bg-gradient-to-br from-emerald-500 to-teal-500 text-white rounded-full flex items-center justify-center text-sm font-extrabold shadow-[0_8px_20px_rgba(16,185,129,0.24)]">
+                          {idx + 1}
+                        </span>
+                        <div>
+                          <p className="text-sm font-bold text-emerald-800">{student.name}</p>
+                          <p className="text-xs text-emerald-600">
+                            Age {student.age}
+                            {student.classTime ? ` • ${student.classTime}` : ""}
+                          </p>
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          updateData({
+                            upsellQuranStudents: data.upsellQuranStudents.filter((s) => s.id !== student.id),
+                          })
+                        }
+                        className="text-xs font-semibold text-red-500 hover:text-red-600"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+
               <div className="grid sm:grid-cols-2 gap-3">
-                <InputField label="Name" value={data.pendingQuranName || ""} onChange={(e) => updateData({ pendingQuranName: e.target.value })} placeholder="Ahmed" />
-                <InputField label="Age" type="number" value={data.pendingQuranAge || ""} onChange={(e) => updateData({ pendingQuranAge: e.target.value })} placeholder="10" />
+                <InputField
+                  label="Name"
+                  value={data.pendingQuranName || ""}
+                  onChange={(e) => updateData({ pendingQuranName: e.target.value })}
+                  placeholder="Ahmed"
+                />
+                <InputField
+                  label="Age"
+                  type="number"
+                  value={data.pendingQuranAge || ""}
+                  onChange={(e) => updateData({ pendingQuranAge: e.target.value })}
+                  placeholder="10"
+                />
               </div>
 
               <div>
@@ -1821,7 +2345,7 @@ export const Step2_FinalSteps = ({ data, updateData }: StepProps) => {
                   What does the student want to learn?
                 </label>
                 <div className="grid sm:grid-cols-2 gap-2">
-                  {QURAN_SUBJECT_OPTIONS.map(subject => {
+                  {QURAN_SUBJECT_OPTIONS.map((subject) => {
                     const active = (data.pendingQuranSubjects || []).includes(subject);
                     return (
                       <button
@@ -1830,14 +2354,14 @@ export const Step2_FinalSteps = ({ data, updateData }: StepProps) => {
                         onClick={() =>
                           updateData({
                             pendingQuranSubjects: active
-                              ? (data.pendingQuranSubjects || []).filter(x => x !== subject)
-                              : [...(data.pendingQuranSubjects || []), subject]
+                              ? (data.pendingQuranSubjects || []).filter((x) => x !== subject)
+                              : [...(data.pendingQuranSubjects || []), subject],
                           })
                         }
                         className={`px-3 py-3 rounded-xl border text-sm font-semibold text-left transition-all ${
                           active
-                            ? 'bg-emerald-500 text-white border-emerald-500'
-                            : 'bg-white text-brand-darkText border-brand-lightGray hover:border-emerald-400'
+                            ? "bg-emerald-500 text-white border-emerald-500 shadow-[0_10px_22px_rgba(16,185,129,0.16)]"
+                            : "bg-white text-brand-darkText border-brand-lightGray hover:border-emerald-400 hover:bg-emerald-50/60"
                         }`}
                       >
                         {subject}
@@ -1855,11 +2379,12 @@ export const Step2_FinalSteps = ({ data, updateData }: StepProps) => {
               />
 
               <button
+                type="button"
                 onClick={() => {
                   if (data.pendingQuranName && data.pendingQuranAge) {
                     updateData({
                       upsellQuranStudents: [
-                        ...data.upsellQuranStudents,
+                        ...(data.upsellQuranStudents || []),
                         {
                           id: Date.now().toString(),
                           name: data.pendingQuranName,
@@ -1877,7 +2402,7 @@ export const Step2_FinalSteps = ({ data, updateData }: StepProps) => {
                   }
                 }}
                 disabled={!data.pendingQuranName || !data.pendingQuranAge}
-                className="w-full py-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-700 font-bold text-sm disabled:opacity-40"
+                className="w-full py-3.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-700 font-bold text-sm disabled:opacity-40 hover:bg-emerald-500/15 hover:shadow-[0_10px_30px_rgba(16,185,129,0.10)] transition-all"
               >
                 + Add to Quran
               </button>
@@ -1886,9 +2411,98 @@ export const Step2_FinalSteps = ({ data, updateData }: StepProps) => {
         </div>
       )}
 
+      {hasAdditionalPrograms && (
+        <div className="pf-card p-6 sm:p-8 border border-amber-200 bg-gradient-to-br from-amber-50/90 via-orange-50/75 to-amber-50/80 shadow-[0_16px_45px_rgba(245,158,11,0.10)]">
+          <h4 className="text-lg sm:text-xl font-extrabold text-amber-800 border-b border-amber-200 pb-4 mb-6 flex items-center gap-3 uppercase tracking-wide">
+            <span className="text-3xl">🎁</span>
+            Additional Programs (Package Deal)
+          </h4>
+
+          {(data.upsellTuitionStudents || []).length > 0 && (
+            <div className="mb-6">
+              <p className="text-lg font-extrabold text-purple-600 uppercase mb-4">
+                1-on-1 Tuition ({data.upsellTuitionStudents.length})
+              </p>
+              <div className="space-y-3">
+                {data.upsellTuitionStudents.map((student, idx) => (
+                  <div
+                    key={student.id}
+                    className="flex items-center gap-4 rounded-3xl border border-purple-200 bg-white/75 px-5 py-4 shadow-[0_10px_28px_rgba(139,92,246,0.06)]"
+                  >
+                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-fuchsia-500 text-white flex items-center justify-center text-lg font-extrabold shadow-[0_8px_20px_rgba(139,92,246,0.20)]">
+                      {idx + 1}
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-lg font-bold text-purple-700 truncate">{student.name}</p>
+                      <p className="text-sm text-purple-500 truncate">
+                        Age {student.age}
+                        {student.requirements ? ` • ${student.requirements}` : ""}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {(data.upsellQuranStudents || []).length > 0 && (
+            <div className="mb-6">
+              <p className="text-lg font-extrabold text-emerald-600 uppercase mb-4">
+                Quran Classes ({data.upsellQuranStudents.length})
+              </p>
+              <div className="space-y-3">
+                {data.upsellQuranStudents.map((student, idx) => (
+                  <div
+                    key={student.id}
+                    className="flex items-center gap-4 rounded-3xl border border-emerald-200 bg-white/75 px-5 py-4 shadow-[0_10px_28px_rgba(16,185,129,0.06)]"
+                  >
+                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-emerald-500 to-teal-500 text-white flex items-center justify-center text-lg font-extrabold shadow-[0_8px_20px_rgba(16,185,129,0.20)]">
+                      {idx + 1}
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-lg font-bold text-emerald-700 truncate">{student.name}</p>
+                      <p className="text-sm text-emerald-600 truncate">
+                        Age {student.age}
+                        {student.classTime ? ` • ${student.classTime}` : ""}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {(data.upsellSchoolStudents || []).length > 0 && (
+            <div>
+              <p className="text-lg font-extrabold text-blue-600 uppercase mb-4">
+                Full-Time School ({data.upsellSchoolStudents.length})
+              </p>
+              <div className="space-y-3">
+                {data.upsellSchoolStudents.map((student, idx) => (
+                  <div
+                    key={student.id}
+                    className="flex items-center gap-4 rounded-3xl border border-blue-200 bg-white/75 px-5 py-4 shadow-[0_10px_28px_rgba(59,130,246,0.06)]"
+                  >
+                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-sky-500 text-white flex items-center justify-center text-lg font-extrabold shadow-[0_8px_20px_rgba(59,130,246,0.20)]">
+                      {idx + 1}
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-lg font-bold text-blue-700 truncate">{student.name}</p>
+                      <p className="text-sm text-blue-600 truncate">
+                        Age {student.age} • {student.grade}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
       <CouponCodeSection data={data} updateData={updateData} />
 
-      <div className="pf-card p-5 sm:p-6">
+      <div className="pf-card p-5 sm:p-6 shadow-[0_16px_45px_rgba(15,45,87,0.05)]">
         <div className="flex items-center justify-between gap-3 flex-wrap mb-5">
           <div>
             <h4 className="text-xs font-black uppercase tracking-widest text-gray-500">
@@ -1899,7 +2513,7 @@ export const Step2_FinalSteps = ({ data, updateData }: StepProps) => {
             </p>
           </div>
 
-          <div className="px-4 py-2 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-sm font-bold">
+          <div className="px-4 py-2 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-sm font-bold shadow-sm">
             Students ({summaryStudents.length})
           </div>
         </div>
@@ -1912,7 +2526,7 @@ export const Step2_FinalSteps = ({ data, updateData }: StepProps) => {
                 s.curriculum || (gv < 10 && s.grade !== "-" ? "British Curriculum" : "—");
 
               return (
-                <div key={s.id || i} className="pf-student-row flex items-center gap-3 p-4">
+                <div key={s.id || i} className="pf-student-row flex items-center gap-3 p-4 hover:shadow-[0_10px_24px_rgba(15,45,87,0.04)] transition-all">
                   <div className="pf-badge" style={{ width: 34, height: 34, fontSize: 13 }}>
                     {i + 1}
                   </div>
@@ -1946,9 +2560,9 @@ export const Step2_FinalSteps = ({ data, updateData }: StepProps) => {
         </div>
 
         <div className="grid sm:grid-cols-2 gap-4 pt-5 border-t border-black/8 mt-5">
-          <div className="rounded-2xl bg-white/70 border border-black/6 p-4">
+          <div className="rounded-2xl bg-white/80 border border-black/6 p-5 shadow-[0_8px_24px_rgba(15,45,87,0.04)]">
             <p className="text-gray-500 text-xs mb-1">Program</p>
-            <p className="font-bold text-brand-burgundy">
+            <p className="font-bold text-brand-burgundy text-2xl">
               {data.leadType === LeadType.FULL_TIME
                 ? "Full-Time School"
                 : data.leadType === LeadType.TUITION
@@ -1959,26 +2573,50 @@ export const Step2_FinalSteps = ({ data, updateData }: StepProps) => {
             </p>
           </div>
 
-          <div className="rounded-2xl bg-white/70 border border-black/6 p-4">
-            <p className="text-gray-500 text-xs mb-1">Trial</p>
+          <div className="rounded-2xl bg-white/80 border border-black/6 p-5 shadow-[0_8px_24px_rgba(15,45,87,0.04)]">
+            <p className="text-gray-500 text-xs mb-3">
+              Trial Schedule ({data.leadType === LeadType.QURAN ? "3 Days" : "1 Day"})
+            </p>
+
             {data.leadType === LeadType.TUITION ? (
-              <p className="text-sm text-purple-700 font-semibold">📞 Teacher availability</p>
+              <div className="p-4 rounded-2xl bg-purple-50 border border-purple-200 shadow-[0_8px_20px_rgba(139,92,246,0.06)]">
+                <p className="text-sm text-purple-700 font-semibold">📚 1 Day Free Trial</p>
+                <p className="text-lg text-purple-800 font-bold mt-1">
+                  Timing based on teacher availability
+                </p>
+                <p className="text-sm text-purple-600 mt-2">
+                  Our agent will guide you on call
+                </p>
+              </div>
             ) : data.leadType === LeadType.ONE_ON_ONE_SCHOOLING ? (
-              <p className="text-sm text-blue-700 font-semibold">📚 Teacher availability</p>
+              <div className="p-4 rounded-2xl bg-purple-50 border border-purple-200 shadow-[0_8px_20px_rgba(139,92,246,0.06)]">
+                <p className="text-sm text-purple-700 font-semibold">📚 1 Day Free Trial</p>
+                <p className="text-lg text-purple-800 font-bold mt-1">
+                  Timing based on teacher availability
+                </p>
+                <p className="text-sm text-purple-600 mt-2">
+                  Our agent will guide you on call
+                </p>
+              </div>
             ) : data.leadType === LeadType.QURAN ? (
-              <p className="text-sm text-emerald-700 font-semibold">📖 Flexible Quran schedule</p>
+              <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 shadow-[0_8px_20px_rgba(16,185,129,0.06)]">
+                <p className="text-sm text-emerald-700 font-semibold">📖 3 Days Free Trial</p>
+                <p className="text-lg text-emerald-800 font-bold mt-1">
+                  Timing based on your local country time
+                </p>
+                <p className="text-sm text-emerald-600 mt-2">
+                  Our coordinator will confirm the class schedule on WhatsApp
+                </p>
+              </div>
             ) : (
-              <div className="space-y-1">
-                {summaryStudents.some((s) => getGV(s.grade) >= 10) && (
-                  <p className="text-xs text-amber-700 font-semibold">
-                    🕒 9:30 AM KSA | 10:30 AM UAE | 11:30 AM PAK
-                  </p>
-                )}
-                {summaryStudents.some((s) => getGV(s.grade) > 0 && getGV(s.grade) < 10) && (
-                  <p className="text-xs text-emerald-700 font-semibold">
-                    🕒 3:30 PM KSA | 4:30 PM UAE | 5:30 PM PAK
-                  </p>
-                )}
+              <div className="p-4 rounded-2xl bg-blue-50 border border-blue-200 shadow-[0_8px_20px_rgba(59,130,246,0.06)]">
+                <p className="text-sm text-blue-700 font-semibold">🏫 1 Day Free Trial</p>
+                <p className="text-lg text-blue-800 font-bold mt-1">
+                  Timing based on teacher availability
+                </p>
+                <p className="text-sm text-blue-600 mt-2">
+                  Our advisor will guide you with the trial slot
+                </p>
               </div>
             )}
           </div>
@@ -1988,7 +2626,7 @@ export const Step2_FinalSteps = ({ data, updateData }: StepProps) => {
       <div className="pt-2">
         <label className="text-sm font-medium text-brand-darkText mb-2 block">Final notes?</label>
         <textarea
-          className="w-full glass-input rounded-xl p-4 text-sm h-24"
+          className="w-full glass-input rounded-2xl p-4 text-sm h-28 shadow-[0_10px_25px_rgba(15,45,87,0.03)]"
           placeholder="Any special requirements..."
           value={data.notes}
           onChange={(e) => updateData({ notes: e.target.value })}
