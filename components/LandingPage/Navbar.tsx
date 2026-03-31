@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Menu, X } from "lucide-react";
+import { Menu, X, School, UserRound, BookOpen } from "lucide-react";
 
 interface NavbarProps {
   onSchoolTrial?: () => void;
@@ -9,9 +9,9 @@ interface NavbarProps {
 }
 
 const NAV_ITEMS = [
-  { label: "School Free Trial", key: "school", emoji: "🏫" },
-  { label: "Tuition Trial Class", key: "tuition", emoji: "👤" },
-  { label: "Quran Trial Classes", key: "quran", emoji: "📖" },
+  { label: "School Free Trial", key: "school", Icon: School },
+  { label: "Tuition Trial Class", key: "tuition", Icon: UserRound },
+  { label: "Quran Trial Classes", key: "quran", Icon: BookOpen },
 ];
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -41,23 +41,29 @@ export const Navbar: React.FC<NavbarProps> = ({
   }, []);
 
   useEffect(() => {
-    const key = hoverKey ?? activeKey;
-    if (!key) {
-      setPillStyle({ left: 0, width: 0 });
-      return;
-    }
+    const updatePill = () => {
+      const key = hoverKey ?? activeKey;
+      if (!key) {
+        setPillStyle({ left: 0, width: 0 });
+        return;
+      }
 
-    const btn = itemRefs.current[key];
-    const nav = navRef.current;
-    if (!btn || !nav) return;
+      const btn = itemRefs.current[key];
+      const nav = navRef.current;
+      if (!btn || !nav) return;
 
-    const bRect = btn.getBoundingClientRect();
-    const nRect = nav.getBoundingClientRect();
+      const bRect = btn.getBoundingClientRect();
+      const nRect = nav.getBoundingClientRect();
 
-    setPillStyle({
-      left: bRect.left - nRect.left,
-      width: bRect.width,
-    });
+      setPillStyle({
+        left: bRect.left - nRect.left,
+        width: bRect.width,
+      });
+    };
+
+    updatePill();
+    window.addEventListener("resize", updatePill);
+    return () => window.removeEventListener("resize", updatePill);
   }, [hoverKey, activeKey]);
 
   const triggerAction = (key: string) => {
@@ -88,115 +94,206 @@ export const Navbar: React.FC<NavbarProps> = ({
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap');
 
+        @keyframes ivsNavFadeIn {
+          0% {
+            opacity: 0;
+            transform: translateY(-16px) scale(0.985);
+          }
+          100% {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+          }
+        }
+
+        @keyframes ivsNavGlow {
+          0%, 100% {
+            box-shadow:
+              0 18px 48px rgba(15,23,42,0.06),
+              0 6px 20px rgba(15,23,42,0.04),
+              inset 0 1px 0 rgba(255,255,255,0.92);
+          }
+          50% {
+            box-shadow:
+              0 24px 62px rgba(15,23,42,0.08),
+              0 10px 24px rgba(15,23,42,0.05),
+              inset 0 1px 0 rgba(255,255,255,0.94);
+          }
+        }
+
+        @keyframes ivsShineSweep {
+          0% {
+            transform: translateX(-140%) skewX(-20deg);
+            opacity: 0;
+          }
+          18% {
+            opacity: 0.18;
+          }
+          100% {
+            transform: translateX(220%) skewX(-20deg);
+            opacity: 0;
+          }
+        }
+
+        @keyframes ivsFloatIcon {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-2px); }
+        }
+
         .ivs-nav-outer {
           position: sticky;
           top: 0;
           z-index: 100;
-          padding: 10px 12px 0;
+          padding: 12px 14px 0;
           font-family: 'DM Sans', system-ui, sans-serif;
           opacity: 0;
-          transform: translateY(-14px);
-          transition: opacity 0.55s ease, transform 0.55s ease;
+          transform: translateY(-16px);
         }
 
         .ivs-nav-outer.in {
-          opacity: 1;
-          transform: translateY(0);
+          animation: ivsNavFadeIn 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
         }
 
         .ivs-nav-shell {
-          max-width: 1440px;
+          max-width: 1480px;
           margin: 0 auto;
         }
 
         .ivs-nav-bar {
-          border-radius: 24px;
-          border: 1px solid rgba(15,23,42,0.08);
-          background: rgba(255,255,255,0.82);
-          backdrop-filter: blur(20px) saturate(1.5);
-          -webkit-backdrop-filter: blur(20px) saturate(1.5);
-          box-shadow:
-            0 4px 24px rgba(15,23,42,0.07),
-            0 1px 4px rgba(15,23,42,0.04),
-            inset 0 1px 0 rgba(255,255,255,0.90);
-          transition: box-shadow 0.3s ease, background 0.3s ease, border-color 0.3s ease;
-          display: flex;
-          align-items: center;
-          padding: 14px 18px;
-          gap: 14px;
           position: relative;
           overflow: hidden;
+          display: flex;
+          align-items: center;
+          gap: 18px;
+          padding: 16px 18px;
+          border-radius: 30px;
+          border: 1px solid rgba(15, 23, 42, 0.08);
+          background:
+            linear-gradient(180deg, rgba(255,255,255,0.94), rgba(255,255,255,0.84));
+          backdrop-filter: blur(22px) saturate(1.35);
+          -webkit-backdrop-filter: blur(22px) saturate(1.35);
+          box-shadow:
+            0 18px 48px rgba(15,23,42,0.06),
+            0 6px 20px rgba(15,23,42,0.04),
+            inset 0 1px 0 rgba(255,255,255,0.92);
+          transition: transform 0.25s ease, background 0.25s ease;
+          animation: ivsNavGlow 6s ease-in-out infinite;
         }
 
         .ivs-nav-bar.scrolled {
-          box-shadow:
-            0 8px 32px rgba(15,23,42,0.10),
-            0 2px 8px rgba(15,23,42,0.05),
-            inset 0 1px 0 rgba(255,255,255,0.90);
-          background: rgba(255,255,255,0.92);
+          background:
+            linear-gradient(180deg, rgba(255,255,255,0.97), rgba(255,255,255,0.90));
         }
 
         .ivs-nav-bar::before {
           content: "";
           position: absolute;
-          top: 0;
-          left: 0;
-          right: 0;
+          inset: 0 0 auto 0;
           height: 1.5px;
           background: linear-gradient(
             90deg,
             transparent 0%,
-            rgba(29,111,206,0.35) 35%,
-            rgba(14,165,233,0.35) 65%,
+            rgba(29,111,206,0.18) 18%,
+            rgba(14,165,233,0.30) 52%,
+            rgba(29,111,206,0.18) 82%,
             transparent 100%
           );
+        }
+
+        .ivs-nav-bar::after {
+          content: "";
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(
+            115deg,
+            transparent 0%,
+            rgba(255,255,255,0.00) 35%,
+            rgba(255,255,255,0.16) 50%,
+            rgba(255,255,255,0.00) 65%,
+            transparent 100%
+          );
+          animation: ivsShineSweep 6.5s ease-in-out infinite;
+          pointer-events: none;
+        }
+
+        .ivs-nav-orb {
+          position: absolute;
+          width: 240px;
+          height: 240px;
+          border-radius: 999px;
+          background: radial-gradient(circle, rgba(14,165,233,0.08), transparent 68%);
+          pointer-events: none;
+        }
+
+        .ivs-nav-orb.left {
+          top: -110px;
+          left: -70px;
+        }
+
+        .ivs-nav-orb.right {
+          top: -90px;
+          right: -40px;
         }
 
         .ivs-logo {
           display: flex;
           align-items: center;
           gap: 14px;
-          flex-shrink: 0;
-          text-decoration: none;
-          cursor: pointer;
-          padding: 6px 8px;
-          border-radius: 14px;
-          transition: background 0.2s ease;
           min-width: 0;
-        }
-
-        .ivs-logo:hover {
-          background: rgba(29,111,206,0.06);
+          flex-shrink: 0;
+          padding: 4px 6px;
+          border-radius: 18px;
+          position: relative;
+          z-index: 2;
         }
 
         .ivs-logo-ring {
-          width: 58px;
-          height: 58px;
-          border-radius: 16px;
-          background: rgba(255,255,255,0.95);
-          border: 1px solid rgba(15,23,42,0.09);
+          width: 78px;
+          height: 78px;
+          border-radius: 20px;
+          background: linear-gradient(180deg, rgba(255,255,255,0.99), rgba(247,250,255,0.90));
+          border: 1px solid rgba(15,23,42,0.08);
           display: flex;
           align-items: center;
           justify-content: center;
-          box-shadow: 0 3px 10px rgba(15,23,42,0.08);
-          flex-shrink: 0;
+          box-shadow:
+            0 12px 28px rgba(15,23,42,0.08),
+            inset 0 1px 0 rgba(255,255,255,0.96);
           overflow: hidden;
+          flex-shrink: 0;
+          animation: ivsFloatIcon 4s ease-in-out infinite;
         }
 
         .ivs-logo-ring img {
-          width: 40px;
-          height: 40px;
+          width: 56px;
+          height: 56px;
           object-fit: contain;
+        }
+
+        .ivs-logo-copy {
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          min-width: 0;
+          line-height: 1.05;
         }
 
         .ivs-logo-text {
           font-size: 24px;
           font-weight: 800;
-          letter-spacing: -0.03em;
-          background: linear-gradient(110deg, #7b1736 0%, #b91c4d 60%, #9b1d40 100%);
+          letter-spacing: -0.04em;
+          background: linear-gradient(110deg, #7b1736 0%, #b91c4d 58%, #9b1d40 100%);
           -webkit-background-clip: text;
           background-clip: text;
           color: transparent;
+          white-space: nowrap;
+        }
+
+        .ivs-logo-sub {
+          margin-top: 4px;
+          font-size: 12px;
+          font-weight: 700;
+          letter-spacing: 0.02em;
+          color: #7a879a;
           white-space: nowrap;
         }
 
@@ -208,19 +305,28 @@ export const Navbar: React.FC<NavbarProps> = ({
           position: relative;
           display: flex;
           align-items: center;
-          gap: 2px;
+          gap: 6px;
+          padding: 6px;
+          border-radius: 22px;
+          background: rgba(248,250,252,0.88);
+          border: 1px solid rgba(15,23,42,0.05);
+          box-shadow: inset 0 1px 0 rgba(255,255,255,0.82);
+          z-index: 2;
         }
 
         .ivs-slide-pill {
           position: absolute;
-          top: 0;
-          height: 100%;
-          border-radius: 12px;
-          background: rgba(29,111,206,0.08);
+          top: 6px;
+          bottom: 6px;
+          border-radius: 16px;
+          background: linear-gradient(135deg, rgba(29,111,206,0.14), rgba(14,165,233,0.10));
+          box-shadow:
+            0 10px 22px rgba(29,111,206,0.10),
+            inset 0 1px 0 rgba(255,255,255,0.78);
           transition:
-            left 0.28s cubic-bezier(0.22,1,0.36,1),
-            width 0.28s cubic-bezier(0.22,1,0.36,1),
-            opacity 0.2s;
+            left 0.30s cubic-bezier(0.22,1,0.36,1),
+            width 0.30s cubic-bezier(0.22,1,0.36,1),
+            opacity 0.2s ease;
           pointer-events: none;
           opacity: 0;
           z-index: 0;
@@ -236,154 +342,106 @@ export const Navbar: React.FC<NavbarProps> = ({
           display: inline-flex;
           align-items: center;
           gap: 10px;
-          padding: 12px 16px;
-          border-radius: 12px;
+          height: 54px;
+          padding: 0 18px;
           border: none;
+          border-radius: 16px;
           background: transparent;
+          color: #334155;
           font-family: inherit;
           font-size: 14px;
           font-weight: 800;
-          color: #334155;
-          cursor: pointer;
           white-space: nowrap;
-          transition: color 0.2s ease;
+          cursor: pointer;
+          transition: color 0.22s ease, transform 0.22s ease;
         }
 
         .ivs-nav-btn:hover {
-          color: #1d6fce;
+          color: #0f5fbd;
+          transform: translateY(-1px);
         }
 
         .ivs-nav-btn.active {
-          color: #1d6fce;
+          color: #0f5fbd;
         }
 
-        .ivs-nav-emoji {
-          font-size: 18px;
-          transition: transform 0.25s cubic-bezier(0.22,1,0.36,1);
-          line-height: 1;
-        }
-
-        .ivs-nav-btn:hover .ivs-nav-emoji {
-          transform: scale(1.18) rotate(-5deg);
-        }
-
-        .ivs-nav-cta {
-          position: relative;
-          overflow: hidden;
+        .ivs-nav-icon-wrap {
+          width: 30px;
+          height: 30px;
+          border-radius: 999px;
           display: inline-flex;
           align-items: center;
-          gap: 10px;
-          margin-left: 8px;
-          padding: 14px 24px;
-          border-radius: 999px;
-          border: none;
-          background: linear-gradient(100deg, #1d6fce 0%, #0ea5e9 100%);
-          color: white;
-          font-family: inherit;
-          font-size: 15px;
-          font-weight: 800;
-          cursor: pointer;
-          box-shadow: 0 6px 18px rgba(29,111,206,0.26);
-          transition: transform 0.2s ease, box-shadow 0.2s ease;
-          white-space: nowrap;
+          justify-content: center;
+          background: rgba(29,111,206,0.08);
+          color: #1d6fce;
+          transition: transform 0.22s cubic-bezier(0.22,1,0.36,1), background 0.2s ease;
           flex-shrink: 0;
         }
 
-        .ivs-nav-cta::after {
-          content: "";
-          position: absolute;
-          top: 0;
-          left: -100%;
-          width: 55%;
-          height: 100%;
-          background: linear-gradient(90deg, transparent, rgba(255,255,255,0.22), transparent);
-          transition: left 0.5s ease;
-        }
-
-        .ivs-nav-cta:hover {
-          transform: translateY(-1px);
-          box-shadow: 0 10px 26px rgba(29,111,206,0.30);
-        }
-
-        .ivs-nav-cta:hover::after {
-          left: 160%;
-        }
-
-        .ivs-nav-cta:active {
-          transform: translateY(0);
-        }
-
-        .ivs-cta-dot {
-          width: 7px;
-          height: 7px;
-          border-radius: 50%;
-          background: rgba(255,255,255,0.90);
-          animation: ctaPulse 2.2s ease-in-out infinite;
-          flex-shrink: 0;
-        }
-
-        @keyframes ctaPulse {
-          0%,100% { opacity: 1; transform: scale(1); }
-          50% { opacity: 0.55; transform: scale(0.72); }
+        .ivs-nav-btn:hover .ivs-nav-icon-wrap,
+        .ivs-nav-btn.active .ivs-nav-icon-wrap {
+          transform: scale(1.08);
+          background: rgba(29,111,206,0.14);
         }
 
         .ivs-mobile-toggle {
           display: none;
-          width: 46px;
-          height: 46px;
-          border-radius: 14px;
+          width: 48px;
+          height: 48px;
+          border-radius: 16px;
           border: 1px solid rgba(15,23,42,0.08);
-          background: rgba(255,255,255,0.78);
+          background: linear-gradient(180deg, rgba(255,255,255,0.99), rgba(248,250,252,0.90));
           align-items: center;
           justify-content: center;
-          cursor: pointer;
           color: #334155;
+          cursor: pointer;
+          box-shadow: 0 10px 22px rgba(15,23,42,0.06);
           flex-shrink: 0;
+          z-index: 2;
         }
 
         .ivs-mobile-menu {
           display: none;
         }
 
-        @media (max-width: 1100px) {
+        @media (max-width: 1180px) {
+          .ivs-logo-text {
+            font-size: 22px;
+          }
+
+          .ivs-nav-btn {
+            padding: 0 14px;
+            font-size: 13px;
+          }
+        }
+
+        @media (max-width: 960px) {
+          .ivs-nav-bar {
+            padding: 14px;
+            border-radius: 24px;
+            gap: 12px;
+          }
+
+          .ivs-logo-ring {
+            width: 68px;
+            height: 68px;
+            border-radius: 18px;
+          }
+
+          .ivs-logo-ring img {
+            width: 46px;
+            height: 46px;
+          }
+
           .ivs-logo-text {
             font-size: 20px;
           }
 
-          .ivs-nav-btn {
-            padding: 11px 13px;
-            font-size: 13px;
+          .ivs-logo-sub {
+            font-size: 11px;
           }
 
-          .ivs-nav-cta {
-            padding: 12px 18px;
-            font-size: 14px;
-          }
-        }
-
-        @media (max-width: 900px) {
-          .ivs-nav-bar {
-            padding: 12px 14px;
-            border-radius: 20px;
-            gap: 10px;
-          }
-
-          .ivs-logo-ring {
-            width: 50px;
-            height: 50px;
-          }
-
-          .ivs-logo-ring img {
-            width: 34px;
-            height: 34px;
-          }
-
-          .ivs-logo-text {
-            font-size: 18px;
-          }
-
-          .ivs-nav-items,
-          .ivs-nav-cta {
+          .ivs-nav-items {
             display: none;
           }
 
@@ -394,22 +452,23 @@ export const Navbar: React.FC<NavbarProps> = ({
 
           .ivs-mobile-menu {
             display: block;
-            margin-top: 10px;
-            border-radius: 20px;
+            margin-top: 12px;
+            border-radius: 22px;
             border: 1px solid rgba(15,23,42,0.08);
-            background: rgba(255,255,255,0.92);
+            background:
+              linear-gradient(180deg, rgba(255,255,255,0.97), rgba(255,255,255,0.90));
             backdrop-filter: blur(18px);
             -webkit-backdrop-filter: blur(18px);
             box-shadow:
-              0 10px 28px rgba(15,23,42,0.08),
-              0 2px 8px rgba(15,23,42,0.04);
+              0 18px 38px rgba(15,23,42,0.08),
+              0 4px 12px rgba(15,23,42,0.04);
             overflow: hidden;
             max-height: 0;
             opacity: 0;
             transform: translateY(-8px);
             pointer-events: none;
             transition:
-              max-height 0.3s ease,
+              max-height 0.32s ease,
               opacity 0.25s ease,
               transform 0.25s ease;
           }
@@ -434,15 +493,15 @@ export const Navbar: React.FC<NavbarProps> = ({
             gap: 12px;
             width: 100%;
             padding: 14px 14px;
-            border-radius: 14px;
+            border-radius: 16px;
             border: 1px solid rgba(15,23,42,0.06);
-            background: rgba(255,255,255,0.76);
+            background: rgba(255,255,255,0.78);
             color: #334155;
             font-family: inherit;
             font-size: 14px;
             font-weight: 800;
-            cursor: pointer;
             text-align: left;
+            cursor: pointer;
             transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
           }
 
@@ -453,32 +512,20 @@ export const Navbar: React.FC<NavbarProps> = ({
           }
 
           .ivs-mobile-btn.active {
-            background: rgba(29,111,206,0.10);
+            background: linear-gradient(135deg, rgba(29,111,206,0.10), rgba(14,165,233,0.08));
             color: #1d6fce;
           }
 
-          .ivs-mobile-emoji {
-            font-size: 18px;
-            line-height: 1;
-          }
-
-          .ivs-mobile-cta {
-            margin-top: 4px;
+          .ivs-mobile-icon-wrap {
+            width: 34px;
+            height: 34px;
+            border-radius: 12px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
-            width: 100%;
-            padding: 14px 18px;
-            border-radius: 999px;
-            border: none;
-            background: linear-gradient(100deg, #1d6fce 0%, #0ea5e9 100%);
-            color: white;
-            font-family: inherit;
-            font-size: 14px;
-            font-weight: 800;
-            cursor: pointer;
-            box-shadow: 0 6px 18px rgba(29,111,206,0.20);
+            background: rgba(29,111,206,0.08);
+            color: #1d6fce;
+            flex-shrink: 0;
           }
         }
 
@@ -488,43 +535,56 @@ export const Navbar: React.FC<NavbarProps> = ({
           }
 
           .ivs-nav-bar {
-            border-radius: 18px;
-            padding: 10px 12px;
+            border-radius: 20px;
+            padding: 12px;
           }
 
           .ivs-logo {
             gap: 10px;
-            padding: 4px 4px;
+            padding: 2px;
           }
 
           .ivs-logo-ring {
-            width: 44px;
-            height: 44px;
-            border-radius: 12px;
+            width: 58px;
+            height: 58px;
+            border-radius: 14px;
           }
 
           .ivs-logo-ring img {
-            width: 28px;
-            height: 28px;
+            width: 38px;
+            height: 38px;
           }
 
           .ivs-logo-text {
-            font-size: 16px;
-            max-width: 150px;
+            font-size: 17px;
+            max-width: 170px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+
+          .ivs-logo-sub {
+            font-size: 10px;
+            max-width: 170px;
             overflow: hidden;
             text-overflow: ellipsis;
           }
 
           .ivs-mobile-toggle {
-            width: 42px;
-            height: 42px;
-            border-radius: 12px;
+            width: 44px;
+            height: 44px;
+            border-radius: 14px;
           }
         }
 
         @media (max-width: 420px) {
           .ivs-logo-text {
-            display: none;
+            font-size: 15px;
+            max-width: 135px;
+          }
+
+          .ivs-logo-sub {
+            font-size: 9px;
+            max-width: 135px;
           }
         }
       `}</style>
@@ -532,19 +592,18 @@ export const Navbar: React.FC<NavbarProps> = ({
       <div className={`ivs-nav-outer ${mounted ? "in" : ""}`}>
         <div className="ivs-nav-shell">
           <nav className={`ivs-nav-bar ${scrolled ? "scrolled" : ""}`} aria-label="Main navigation">
-            <div
-              className="ivs-logo"
-              role="button"
-              tabIndex={0}
-              onClick={() => triggerAction("school")}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" || e.key === " ") triggerAction("school");
-              }}
-            >
+            <span className="ivs-nav-orb left" />
+            <span className="ivs-nav-orb right" />
+
+            <div className="ivs-logo">
               <div className="ivs-logo-ring">
                 <img src="/images/ivs-logo.png" alt="IVS Logo" />
               </div>
-              <span className="ivs-logo-text">Iqra Virtual School</span>
+
+              <div className="ivs-logo-copy">
+                <span className="ivs-logo-text">Iqra Virtual School</span>
+                <span className="ivs-logo-sub">Pakistan First Online School</span>
+              </div>
             </div>
 
             <div className="ivs-nav-gap" />
@@ -555,32 +614,28 @@ export const Navbar: React.FC<NavbarProps> = ({
                 style={{ left: pillStyle.left, width: pillStyle.width }}
               />
 
-              {NAV_ITEMS.map((item) => (
-                <button
-                  key={item.key}
-                  ref={(el) => {
-                    itemRefs.current[item.key] = el;
-                  }}
-                  className={`ivs-nav-btn ${activeKey === item.key ? "active" : ""}`}
-                  onMouseEnter={() => setHoverKey(item.key)}
-                  onMouseLeave={() => setHoverKey(null)}
-                  onClick={() => triggerAction(item.key)}
-                  type="button"
-                >
-                  <span className="ivs-nav-emoji">{item.emoji}</span>
-                  {item.label}
-                </button>
-              ))}
+              {NAV_ITEMS.map((item) => {
+                const Icon = item.Icon;
+                return (
+                  <button
+                    key={item.key}
+                    ref={(el) => {
+                      itemRefs.current[item.key] = el;
+                    }}
+                    className={`ivs-nav-btn ${activeKey === item.key ? "active" : ""}`}
+                    onMouseEnter={() => setHoverKey(item.key)}
+                    onMouseLeave={() => setHoverKey(null)}
+                    onClick={() => triggerAction(item.key)}
+                    type="button"
+                  >
+                    <span className="ivs-nav-icon-wrap">
+                      <Icon className="w-4 h-4" />
+                    </span>
+                    {item.label}
+                  </button>
+                );
+              })}
             </div>
-
-            <button
-              className="ivs-nav-cta"
-              type="button"
-              onClick={() => triggerAction("school")}
-            >
-              <span className="ivs-cta-dot" />
-              Enroll Now
-            </button>
 
             <button
               type="button"
@@ -594,26 +649,22 @@ export const Navbar: React.FC<NavbarProps> = ({
 
           <div className={`ivs-mobile-menu ${mobileOpen ? "open" : ""}`}>
             <div className="ivs-mobile-inner">
-              {NAV_ITEMS.map((item) => (
-                <button
-                  key={item.key}
-                  type="button"
-                  className={`ivs-mobile-btn ${activeKey === item.key ? "active" : ""}`}
-                  onClick={() => triggerAction(item.key)}
-                >
-                  <span className="ivs-mobile-emoji">{item.emoji}</span>
-                  <span>{item.label}</span>
-                </button>
-              ))}
-
-              <button
-                type="button"
-                className="ivs-mobile-cta"
-                onClick={() => triggerAction("school")}
-              >
-                <span className="ivs-cta-dot" />
-                Enroll Now
-              </button>
+              {NAV_ITEMS.map((item) => {
+                const Icon = item.Icon;
+                return (
+                  <button
+                    key={item.key}
+                    type="button"
+                    className={`ivs-mobile-btn ${activeKey === item.key ? "active" : ""}`}
+                    onClick={() => triggerAction(item.key)}
+                  >
+                    <span className="ivs-mobile-icon-wrap">
+                      <Icon className="w-4 h-4" />
+                    </span>
+                    <span>{item.label}</span>
+                  </button>
+                );
+              })}
             </div>
           </div>
         </div>

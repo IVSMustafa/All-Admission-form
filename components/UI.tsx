@@ -300,17 +300,36 @@ export const PhoneInput = ({
   }, [search]);
 
   /* ── portal dropdown position ── */
-  const [pos, setPos] = useState({ top: 0, left: 0, width: 360 });
+  const [pos, setPos] = useState<{ top: number; left: number; width: number } | null>(null);
 
-  const updatePos = () => {
-    const rect = btnWrapRef.current?.getBoundingClientRect();
-    if (!rect) return;
-    setPos({
-      top  : rect.bottom + 8,
-      left : rect.left,
-      width: Math.min(440, Math.max(320, rect.width)),
-    });
-  };
+const updatePos = () => {
+  const rect = btnWrapRef.current?.getBoundingClientRect();
+  if (!rect) return;
+
+  setPos({
+    top: rect.bottom + 8,
+    left: rect.left,
+    width: Math.min(440, Math.max(320, rect.width)),
+  });
+};
+
+const toggleCountryDropdown = () => {
+  if (isOpen) {
+    setIsOpen(false);
+    return;
+  }
+
+  const rect = btnWrapRef.current?.getBoundingClientRect();
+  if (!rect) return;
+
+  setPos({
+    top: rect.bottom + 8,
+    left: rect.left,
+    width: Math.min(440, Math.max(320, rect.width)),
+  });
+
+  setIsOpen(true);
+};
 
   useEffect(() => {
     if (!isOpen) return;
@@ -392,7 +411,7 @@ export const PhoneInput = ({
         <div ref={btnWrapRef} className="shrink-0">
           <button
             type="button"
-            onClick={() => { setIsOpen((v) => !v); setTimeout(updatePos, 0); }}
+            onClick={toggleCountryDropdown}
             className="h-14 pl-4 pr-3 flex items-center gap-2 hover:bg-black/5 transition-colors focus:outline-none"
           >
             {/* Flag */}
@@ -469,7 +488,7 @@ export const PhoneInput = ({
       </div>
 
       {/* ── Portal dropdown ── */}
-      {isOpen && createPortal(
+      {isOpen && pos && createPortal(
         <div
           ref={portalRef}
           style={{

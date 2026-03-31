@@ -9,7 +9,7 @@ import { GlassCard, InputField, SelectField, Button, OptionCard, Toggle, PhoneIn
 import { HeroCard, ProgramCard, TrustStrip, PROGRAM_CARDS_DATA, Navbar } from './LandingPage';
 import {
   School, BookOpen, GraduationCap, CheckCircle, Calendar, AlertTriangle,
-  Phone, User, Sparkles, Loader2, UserRound, Clock, ShieldCheck, Globe2, Zap, Star,
+  Phone, User, Sparkles, Loader2, UserRound, Clock, ShieldCheck, Globe2, Zap, Star, ChevronDown,
 } from 'lucide-react';
 
 const PREMIUM_CSS = `
@@ -189,17 +189,19 @@ const PREMIUM_CSS = `
 }
 
 .pf-input-wrap {
-  background: white;
+  background: rgba(255,255,255,0.78);
   border: 1.5px solid rgba(15,45,87,0.10);
   border-radius: 14px;
   transition:
     border-color 0.18s ease,
-    box-shadow 0.18s ease;
+    box-shadow 0.18s ease,
+    background 0.18s ease;
 }
 
 .pf-input-wrap:focus-within {
+  background: #ffffff;
   border-color: rgba(29,111,206,0.45);
-  box-shadow: 0 0 0 3px rgba(29,111,206,0.08);
+  box-shadow: 0 0 0 2px rgba(29,111,206,0.18);
 }
 
 .pf-input-wrap input,
@@ -213,6 +215,20 @@ const PREMIUM_CSS = `
   color: #0f2d57;
   font-size: 14px;
   font-weight: 600;
+}
+
+.pf-input-wrap input:focus,
+.pf-input-wrap select:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+.pf-input-wrap select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  padding-right: 42px;
+  background-image: none !important;
 }
 
 .pf-chip {
@@ -453,34 +469,23 @@ export const Step1_Details = ({ data, updateData, errors }: StepProps) => {
     17: 'Grade 12',
   };
 
-  const ageNum = parseInt(currentAge, 10) || 0;
+   const ageNum = parseInt(currentAge, 10) || 0;
   const recommendedGrade = ageNum >= 3 && ageNum <= 17 ? AGE_TO_GRADE[ageNum] || '' : '';
-  const isAgeAboveLimit = ageNum > 17;
-  const isAgeBelowLimit = ageNum > 0 && ageNum < 3;
+  const showAgeGuidance = ageNum > 0 && (ageNum < 3 || ageNum > 17);
   const gradeVal = getGV(currentGrade);
   const showCurriculum = gradeVal >= 10;
-
   useEffect(() => {
     if (!currentAge) return;
 
-    if (ageNum >= 3 && ageNum <= 17) {
-      if (recommendedGrade && currentGrade !== recommendedGrade) {
-        setCurrentGrade(recommendedGrade);
-      }
-    } else {
-      if (currentGrade) setCurrentGrade('');
-      if (currentCurriculum) setCurrentCurriculum(null);
+    if (ageNum >= 3 && ageNum <= 17 && recommendedGrade && currentGrade !== recommendedGrade) {
+      setCurrentGrade(recommendedGrade);
     }
-  }, [ageNum, currentAge, recommendedGrade]);
-
+  }, [ageNum, currentAge, recommendedGrade, currentGrade]);
   const pendingIsValid =
     currentName.trim().length > 0 &&
     currentAge.length > 0 &&
-    ageNum >= 3 &&
-    ageNum <= 17 &&
     currentGrade.length > 0 &&
     (!showCurriculum || !!currentCurriculum);
-
   useEffect(() => {
     if (pendingIsValid) {
       const draft: Student = {
@@ -708,7 +713,7 @@ export const Step1_Details = ({ data, updateData, errors }: StepProps) => {
                   max={25}
                 />
               </div>
-              {ageNum > 0 && !isAgeAboveLimit && !isAgeBelowLimit && recommendedGrade && (
+              {ageNum > 0 && !showAgeGuidance && recommendedGrade && (
                 <div className="pf-chip">
                   <Zap className="w-3 h-3" />
                   Auto-set: {recommendedGrade}
@@ -722,22 +727,16 @@ export const Step1_Details = ({ data, updateData, errors }: StepProps) => {
                   <option value="">Select Grade</option>
                   {GRADES.map(g => <option key={g} value={g}>{g}</option>)}
                 </select>
-                <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-[#0f2d57]/40">
-                  <svg className="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clipRule="evenodd"/>
-                  </svg>
-                </div>
+               
               </div>
             </PField>
           </div>
 
-          {(isAgeAboveLimit || isAgeBelowLimit) && (
+              {showAgeGuidance && (
             <div className="mt-4 flex items-center gap-3 p-3.5 rounded-2xl bg-amber-50 border border-amber-200">
               <AlertTriangle className="w-5 h-5 text-amber-500 shrink-0" />
               <p className="text-sm text-amber-800 font-medium">
-                {isAgeAboveLimit
-                  ? "This age does not match school-grade auto placement. Our advisor will guide you with the best option."
-                  : "This age is below the standard school-grade range. Our advisor will guide you with the best option."}
+                <strong>Don't worry!</strong> Our advisor will guide you through the best options for your child's age.
               </p>
             </div>
           )}
@@ -819,7 +818,7 @@ export const Step1_Details = ({ data, updateData, errors }: StepProps) => {
 
 const QuranForm = ({ data, updateData, errors }: Pick<StepProps, "data" | "updateData" | "errors">) => {
   usePremiumStyles();
-
+  const [isSubjectDropdownOpen, setIsSubjectDropdownOpen] = useState(false);
   const toggleDay = (day: string) => {
     const d = data.quranClassDays || [];
     updateData({
@@ -892,24 +891,24 @@ const QuranForm = ({ data, updateData, errors }: Pick<StepProps, "data" | "updat
   return (
     <div className="qf-page transition-all duration-300">
 <style>{`
-  .qf-page {
-    position: relative;
-    min-height: 100vh;
-    width: 100vw;
-    margin-left: calc(50% - 50vw);
-    margin-right: calc(50% - 50vw);
-    overflow: hidden;
+.qf-page {
+  position: relative;
+  min-height: auto;
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+  overflow: hidden;
 
-    background: url('/images/quran-cover-blueee.png') no-repeat left center;
-    background-size: cover;
-  }
+  background: url('/images/quran-cover-blueee.png') no-repeat left center;
+  background-size: cover;
+}
 
-  .qf-shell {
-    position: relative;
-    width: 100%;
-    min-height: 100vh;
-    padding: 24px 24px 36px;
-  }
+.qf-shell {
+  position: relative;
+  width: 100%;
+  min-height: auto;
+  padding: 24px 24px 8px;
+}
 
   .qf-main {
     position: relative;
@@ -1123,6 +1122,120 @@ const QuranForm = ({ data, updateData, errors }: Pick<StepProps, "data" | "updat
 .ivs-coupon-sticky-pop {
   animation: ivsCouponStickyPop 0.5s cubic-bezier(0.22, 1, 0.36, 1);
 }
+
+
+
+  .qf-multi {
+    position: relative;
+  }
+
+  .qf-multi-trigger {
+    width: 100%;
+    min-height: 58px;
+    padding: 12px 14px;
+    border-radius: 16px;
+    border: 1px solid rgba(15, 45, 87, 0.12);
+    background: rgba(255, 255, 255, 0.96);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    cursor: pointer;
+    transition: all 0.18s ease;
+    text-align: left;
+  }
+
+  .qf-multi-trigger:hover {
+    border-color: rgba(16, 185, 129, 0.32);
+  }
+
+  .qf-multi-trigger.active {
+    border-color: rgba(16, 185, 129, 0.45);
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.08);
+  }
+
+  .qf-multi-value {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    flex: 1;
+  }
+
+  .qf-multi-placeholder {
+    color: #94a3b8;
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  .qf-multi-chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 10px;
+    border-radius: 999px;
+    background: rgba(16, 185, 129, 0.10);
+    border: 1px solid rgba(16, 185, 129, 0.22);
+    color: #059669;
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  .qf-multi-menu {
+    margin-top: 10px;
+    padding: 10px;
+    border-radius: 16px;
+    border: 1px solid rgba(15, 45, 87, 0.10);
+    background: rgba(255, 255, 255, 0.98);
+    box-shadow:
+      0 16px 36px rgba(15, 45, 87, 0.08),
+      0 4px 12px rgba(15, 45, 87, 0.04);
+    display: grid;
+    gap: 8px;
+    max-height: 280px;
+    overflow-y: auto;
+  }
+
+  .qf-multi-option {
+    width: 100%;
+    padding: 12px 14px;
+    border-radius: 12px;
+    border: 1px solid rgba(15, 45, 87, 0.10);
+    background: rgba(255, 255, 255, 0.98);
+    color: #0f2d57;
+    font-size: 14px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    text-align: left;
+    transition: all 0.18s ease;
+    cursor: pointer;
+  }
+
+  .qf-multi-option:hover {
+    border-color: rgba(16, 185, 129, 0.32);
+    transform: translateY(-1px);
+  }
+
+  .qf-multi-option.active {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+    border-color: transparent;
+    box-shadow: 0 10px 22px rgba(16, 185, 129, 0.18);
+  }
+
+  .qf-multi-check {
+    width: 20px;
+    height: 20px;
+    border-radius: 999px;
+    border: 2px solid currentColor;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 900;
+    flex-shrink: 0;
+  }
 `}</style>
 
       <div className="qf-shell">
@@ -1270,34 +1383,67 @@ const QuranForm = ({ data, updateData, errors }: Pick<StepProps, "data" | "updat
                 />
               </div>
 
-              <div className="mt-4 space-y-3">
-                <label className="text-sm font-semibold text-brand-darkText block">
-                  What does the student want to learn? <span className="text-red-500">*</span>
-                </label>
+<div className="mt-4 space-y-3">
+  <label className="text-sm font-semibold text-brand-darkText block">
+    What does the student want to learn? <span className="text-red-500">*</span>
+  </label>
 
-                <div className="grid sm:grid-cols-2 gap-2">
-                  {QURAN_SUBJECT_OPTIONS.map((subject) => {
-                    const active = (data.quranSubjects || []).includes(subject);
-                    return (
-                      <button
-                        key={subject}
-                        type="button"
-                        onClick={() => toggleQuranSubject(subject)}
-                        className={`qf-subject-btn ${active ? "active" : ""}`}
-                      >
-                        {subject}
-                      </button>
-                    );
-                  })}
-                </div>
+  <div className="qf-multi">
+    <button
+      type="button"
+      onClick={() => setIsSubjectDropdownOpen((prev) => !prev)}
+      className={`qf-multi-trigger ${isSubjectDropdownOpen ? "active" : ""}`}
+    >
+      <div className="qf-multi-value">
+        {(data.quranSubjects || []).length > 0 ? (
+          (data.quranSubjects || []).map((subject) => (
+            <span key={subject} className="qf-multi-chip">
+              {subject}
+            </span>
+          ))
+        ) : (
+          <span className="qf-multi-placeholder">Select one or more lessons</span>
+        )}
+      </div>
 
-                {errors.quranSubjects && (
-                  <p className="qf-error">
-                    <AlertTriangle className="w-4 h-4" />
-                    {errors.quranSubjects}
-                  </p>
-                )}
-              </div>
+      <ChevronDown
+        className={`w-5 h-5 shrink-0 transition-transform ${isSubjectDropdownOpen ? "rotate-180" : ""}`}
+      />
+    </button>
+
+    {isSubjectDropdownOpen && (
+      <div className="qf-multi-menu">
+        {QURAN_SUBJECT_OPTIONS.map((subject) => {
+          const active = (data.quranSubjects || []).includes(subject);
+          return (
+            <button
+              key={subject}
+              type="button"
+              onClick={() => toggleQuranSubject(subject)}
+              className={`qf-multi-option ${active ? "active" : ""}`}
+            >
+              <span>{subject}</span>
+              <span className="qf-multi-check">{active ? "✓" : ""}</span>
+            </button>
+          );
+        })}
+      </div>
+    )}
+  </div>
+
+  {(data.quranSubjects || []).length > 0 && (
+    <p className="text-xs text-emerald-600 font-semibold">
+      {(data.quranSubjects || []).length} lesson{(data.quranSubjects || []).length > 1 ? "s" : ""} selected
+    </p>
+  )}
+
+  {errors.quranSubjects && (
+    <p className="qf-error">
+      <AlertTriangle className="w-4 h-4" />
+      {errors.quranSubjects}
+    </p>
+  )}
+</div>
 
               <div className="mt-4 space-y-3">
                 <div className="flex items-center justify-between">
@@ -1976,7 +2122,24 @@ export const Step2_FinalSteps = ({ data, updateData }: StepProps) => {
   const primaryAge = fallbackStudent?.age || "";
   const primaryGrade = fallbackStudent?.grade || "";
   const primaryCurriculum = fallbackStudent?.curriculum || null;
+const hasLowerGrades = summaryStudents.some((s) => getGV(s.grade) < 10);
 
+const schoolTrialTime = hasLowerGrades
+  ? "3:30 PM KSA | 4:30 PM UAE | 5:30 PM PAK"
+  : "9:30 AM KSA | 10:30 AM UAE | 11:30 AM PAK";
+
+const schoolTrialLabel = hasLowerGrades
+  ? "KG1 to Grade 7"
+  : "Grade 8 to 12";
+
+const selectedQuranStudent = (data.quranStudents || [])[0];
+const selectedQuranTime =
+  selectedQuranStudent?.classTime || data.quranClassTime || "To be confirmed on WhatsApp";
+
+const selectedQuranDays =
+  selectedQuranStudent?.classDays?.length
+    ? selectedQuranStudent.classDays.join(", ")
+    : "Based on your selected days";
   React.useEffect(() => {
     if (data.tuitionInterest) {
       const needsPrefill = !data.pendingTuitionName && !data.pendingTuitionAge;
@@ -2499,132 +2662,197 @@ export const Step2_FinalSteps = ({ data, updateData }: StepProps) => {
           )}
         </div>
       )}
+<CouponCodeSection data={data} updateData={updateData} />
+<div className="pf-card p-5 sm:p-6 border border-brand-lightGray bg-white/80 shadow-[0_12px_34px_rgba(15,45,87,0.05)]">
+  <div className="flex items-center justify-between gap-3 flex-wrap mb-5">
+    <div>
+      <h4 className="text-xs font-black uppercase tracking-widest text-gray-500">
+        Application Summary
+      </h4>
+      <p className="text-sm text-brand-mediumText mt-1">
+        Review the main student details before final submission.
+      </p>
+    </div>
 
-      <CouponCodeSection data={data} updateData={updateData} />
+    <div className="px-4 py-2 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-sm font-bold shadow-sm">
+      Students ({summaryStudents.length})
+    </div>
+  </div>
 
-      <div className="pf-card p-5 sm:p-6 shadow-[0_16px_45px_rgba(15,45,87,0.05)]">
-        <div className="flex items-center justify-between gap-3 flex-wrap mb-5">
-          <div>
-            <h4 className="text-xs font-black uppercase tracking-widest text-gray-500">
-              Application Summary
-            </h4>
-            <p className="text-sm text-brand-mediumText mt-1">
-              Review the main student details before final submission.
-            </p>
-          </div>
+  <div className="space-y-3">
+    {summaryStudents.length > 0 ? (
+      summaryStudents.map((s, i) => {
+        const gv = getGV(s.grade);
+        const displayCurriculum =
+          s.curriculum || (gv < 10 && s.grade !== "-" ? "British Curriculum" : "—");
 
-          <div className="px-4 py-2 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-sm font-bold shadow-sm">
-            Students ({summaryStudents.length})
-          </div>
-        </div>
-
-        <div className="space-y-3">
-          {summaryStudents.length > 0 ? (
-            summaryStudents.map((s, i) => {
-              const gv = getGV(s.grade);
-              const displayCurriculum =
-                s.curriculum || (gv < 10 && s.grade !== "-" ? "British Curriculum" : "—");
-
-              return (
-                <div key={s.id || i} className="pf-student-row flex items-center gap-3 p-4 hover:shadow-[0_10px_24px_rgba(15,45,87,0.04)] transition-all">
-                  <div className="pf-badge" style={{ width: 34, height: 34, fontSize: 13 }}>
-                    {i + 1}
-                  </div>
-
-                  <div className="flex-1 grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm">
-                    <div>
-                      <p className="text-gray-500 text-xs">Name</p>
-                      <p className="font-semibold text-[#0f2d57]">{s.name}</p>
-                    </div>
-                    <div>
-                      <p className="text-gray-500 text-xs">Age</p>
-                      <p className="font-semibold text-[#0f2d57]">{s.age}</p>
-                    </div>
-                    <div>
-                      <p className="text-gray-500 text-xs">Grade</p>
-                      <p className="font-semibold text-[#0f2d57]">{s.grade}</p>
-                    </div>
-                    <div>
-                      <p className="text-gray-500 text-xs">Curriculum</p>
-                      <p className="font-semibold text-[#0f2d57]">{displayCurriculum}</p>
-                    </div>
-                  </div>
-                </div>
-              );
-            })
-          ) : (
-            <div className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-4 text-sm font-medium text-amber-800">
-              No student details found yet. Please go back and complete student information.
-            </div>
-          )}
-        </div>
-
-        <div className="grid sm:grid-cols-2 gap-4 pt-5 border-t border-black/8 mt-5">
-          <div className="rounded-2xl bg-white/80 border border-black/6 p-5 shadow-[0_8px_24px_rgba(15,45,87,0.04)]">
-            <p className="text-gray-500 text-xs mb-1">Program</p>
-            <p className="font-bold text-brand-burgundy text-2xl">
-              {data.leadType === LeadType.FULL_TIME
-                ? "Full-Time School"
-                : data.leadType === LeadType.TUITION
-                ? "One-to-One Tuition"
-                : data.leadType === LeadType.QURAN
-                ? "Quran Classes"
-                : "One-to-One Schooling"}
-            </p>
-          </div>
-
-          <div className="rounded-2xl bg-white/80 border border-black/6 p-5 shadow-[0_8px_24px_rgba(15,45,87,0.04)]">
-            <p className="text-gray-500 text-xs mb-3">
-              Trial Schedule ({data.leadType === LeadType.QURAN ? "3 Days" : "1 Day"})
-            </p>
-
-            {data.leadType === LeadType.TUITION ? (
-              <div className="p-4 rounded-2xl bg-purple-50 border border-purple-200 shadow-[0_8px_20px_rgba(139,92,246,0.06)]">
-                <p className="text-sm text-purple-700 font-semibold">📚 1 Day Free Trial</p>
-                <p className="text-lg text-purple-800 font-bold mt-1">
-                  Timing based on teacher availability
-                </p>
-                <p className="text-sm text-purple-600 mt-2">
-                  Our agent will guide you on call
-                </p>
-              </div>
-            ) : data.leadType === LeadType.ONE_ON_ONE_SCHOOLING ? (
-              <div className="p-4 rounded-2xl bg-purple-50 border border-purple-200 shadow-[0_8px_20px_rgba(139,92,246,0.06)]">
-                <p className="text-sm text-purple-700 font-semibold">📚 1 Day Free Trial</p>
-                <p className="text-lg text-purple-800 font-bold mt-1">
-                  Timing based on teacher availability
-                </p>
-                <p className="text-sm text-purple-600 mt-2">
-                  Our agent will guide you on call
-                </p>
-              </div>
-            ) : data.leadType === LeadType.QURAN ? (
-              <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 shadow-[0_8px_20px_rgba(16,185,129,0.06)]">
-                <p className="text-sm text-emerald-700 font-semibold">📖 3 Days Free Trial</p>
-                <p className="text-lg text-emerald-800 font-bold mt-1">
-                  Timing based on your local country time
-                </p>
-                <p className="text-sm text-emerald-600 mt-2">
-                  Our coordinator will confirm the class schedule on WhatsApp
-                </p>
-              </div>
-            ) : (
-              <div className="p-4 rounded-2xl bg-blue-50 border border-blue-200 shadow-[0_8px_20px_rgba(59,130,246,0.06)]">
-                <p className="text-sm text-blue-700 font-semibold">🏫 1 Day Free Trial</p>
-                <p className="text-lg text-blue-800 font-bold mt-1">
-                  Timing based on teacher availability
-                </p>
-                <p className="text-sm text-blue-600 mt-2">
-                  Our advisor will guide you with the trial slot
-                </p>
-              </div>
-            )}
-          </div>
-        </div>
+return (
+  <div
+    key={s.id || i}
+    className="rounded-[22px] border border-[rgba(29,111,206,0.10)] bg-[linear-gradient(135deg,#fbfdff_0%,#f4f9ff_100%)] px-4 py-4 sm:px-5 sm:py-5 shadow-[0_8px_22px_rgba(15,45,87,0.04)]"
+  >
+    <div className="grid gap-4 md:grid-cols-[64px_1fr] items-start">
+      <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-[linear-gradient(135deg,#1d6fce,#0ea5e9)] text-white flex items-center justify-center text-lg sm:text-xl font-extrabold shadow-[0_10px_22px_rgba(29,111,206,0.20)]">
+        {i + 1}
       </div>
 
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-x-5 gap-y-4">
+        <div>
+          <p className="text-[11px] uppercase tracking-[0.10em] text-gray-500 font-semibold mb-1">
+            Name
+          </p>
+          <p className="text-[15px] sm:text-[16px] font-bold text-[#163761] leading-snug break-words">
+            {s.name}
+          </p>
+        </div>
+
+        <div>
+          <p className="text-[11px] uppercase tracking-[0.10em] text-gray-500 font-semibold mb-1">
+            Age
+          </p>
+          <p className="text-[15px] sm:text-[16px] font-bold text-[#163761] leading-snug">
+            {s.age} yrs
+          </p>
+        </div>
+
+        <div>
+          <p className="text-[11px] uppercase tracking-[0.10em] text-gray-500 font-semibold mb-1">
+            Grade
+          </p>
+          <p className="text-[15px] sm:text-[16px] font-bold text-[#163761] leading-snug break-words">
+            {s.grade}
+          </p>
+        </div>
+
+        <div>
+          <p className="text-[11px] uppercase tracking-[0.10em] text-gray-500 font-semibold mb-1">
+            Curriculum
+          </p>
+          <p className="text-[15px] sm:text-[16px] font-bold text-[#163761] leading-snug break-words">
+            {displayCurriculum}
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+);
+      })
+    ) : (
+      <div className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-4 text-sm font-medium text-amber-800">
+        No student details yet. Please go back and complete student information.
+      </div>
+    )}
+  </div>
+
+  <div className="grid sm:grid-cols-2 gap-4 pt-5 border-t border-black/8 mt-5">
+    <div className="rounded-2xl bg-white/80 border border-black/6 p-5 shadow-[0_8px_24px_rgba(15,45,87,0.04)]">
+      <p className="text-gray-500 text-xs mb-1">Program</p>
+      <p className="font-bold text-brand-burgundy text-2xl sm:text-3xl leading-tight">
+        {data.leadType === LeadType.FULL_TIME
+          ? "Full-Time School"
+          : data.leadType === LeadType.TUITION
+          ? "One-to-One Tuition"
+          : data.leadType === LeadType.QURAN
+          ? "Quran Classes"
+          : "One-to-One Schooling"}
+      </p>
+    </div>
+
+    <div className="rounded-2xl bg-white/80 border border-black/6 p-5 shadow-[0_8px_24px_rgba(15,45,87,0.04)]">
+      <p className="text-gray-500 text-xs mb-3">
+        Trial Schedule ({data.leadType === LeadType.QURAN || data.leadType === LeadType.FULL_TIME ? "3 Days" : "1 Day"})
+      </p>
+
+      {data.leadType === LeadType.TUITION ? (
+        <div className="p-4 rounded-2xl bg-purple-50 border border-purple-200 shadow-[0_8px_20px_rgba(139,92,246,0.06)]">
+          <p className="text-sm text-purple-700 font-semibold">1 Day Free Trial</p>
+          <p className="text-lg text-purple-800 font-bold mt-1">
+            Timing based on teacher availability
+          </p>
+          <p className="text-sm text-purple-600 mt-2">
+            Our advisor will guide you on call
+          </p>
+        </div>
+      ) : data.leadType === LeadType.ONE_ON_ONE_SCHOOLING ? (
+        <div className="p-4 rounded-2xl bg-purple-50 border border-purple-200 shadow-[0_8px_20px_rgba(139,92,246,0.06)]">
+          <p className="text-sm text-purple-700 font-semibold">1 Day Free Trial</p>
+          <p className="text-lg text-purple-800 font-bold mt-1">
+            {schoolTrialTime}
+          </p>
+          <p className="text-sm text-purple-600 mt-2">
+            {schoolTrialLabel}
+          </p>
+        </div>
+      ) : data.leadType === LeadType.QURAN ? (
+        <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 shadow-[0_8px_20px_rgba(16,185,129,0.06)]">
+          <p className="text-sm text-emerald-700 font-semibold">3 Days Free Trial Classes</p>
+          <p className="text-lg text-emerald-800 font-bold mt-1">
+            {selectedQuranTime}
+          </p>
+          <p className="text-sm text-emerald-600 mt-2">
+            {selectedQuranDays}
+          </p>
+        </div>
+      ) : (
+  <div className="p-4 rounded-2xl bg-[linear-gradient(135deg,#f7fbff_0%,#f1f8ff_100%)] border border-blue-100 shadow-[0_8px_20px_rgba(59,130,246,0.05)]">
+    <div className="flex items-center gap-2">
+      <div className="w-7 h-7 rounded-full bg-white border border-blue-100 flex items-center justify-center shadow-sm">
+        <Clock className="w-3.5 h-3.5 text-blue-500" />
+      </div>
+      <p className="text-sm text-blue-700 font-semibold">3 Days Free Trial Classes</p>
+    </div>
+
+    <div className="grid grid-cols-3 gap-3 mt-4">
+      {[
+        {
+          tz: "KSA",
+          time: hasLowerGrades ? "3:30" : "9:30",
+          accent: "text-blue-600",
+          border: "border-blue-100",
+        },
+        {
+          tz: "UAE",
+          time: hasLowerGrades ? "4:30" : "10:30",
+          accent: "text-sky-600",
+          border: "border-blue-100",
+        },
+        {
+          tz: "PAK",
+          time: hasLowerGrades ? "5:30" : "11:30",
+          accent: "text-cyan-600",
+          border: "border-blue-100",
+        },
+      ].map((item) => (
+        <div
+          key={item.tz}
+          className={`rounded-2xl border ${item.border} bg-white px-3 py-3.5 text-center shadow-[0_4px_12px_rgba(15,45,87,0.03)]`}
+        >
+          <div className="flex items-center justify-center gap-1.5 mb-2">
+            <Clock className={`w-3 h-3 ${item.accent}`} />
+            <p className={`text-[11px] font-bold ${item.accent}`}>{item.tz}</p>
+          </div>
+
+          <p className="text-lg font-extrabold text-[#0f2d57] leading-none">
+            <span className="block">{item.time}</span>
+            <span className="block mt-2">AM</span>
+          </p>
+        </div>
+      ))}
+    </div>
+
+    <p className="text-sm text-blue-600 mt-4 font-medium">
+      {schoolTrialLabel}
+    </p>
+  </div>
+)}
+
+    </div>
+  </div>
+</div>
       <div className="pt-2">
-        <label className="text-sm font-medium text-brand-darkText mb-2 block">Final notes?</label>
+        <label className="text-sm font-medium text-brand-darkText mb-2 block">
+          Final notes?
+        </label>
         <textarea
           className="w-full glass-input rounded-2xl p-4 text-sm h-28 shadow-[0_10px_25px_rgba(15,45,87,0.03)]"
           placeholder="Any special requirements..."
