@@ -251,8 +251,8 @@ export const HeroCard: React.FC<HeroCardProps> = ({
     background: linear-gradient(
       105deg,
       rgba(255,255,255,0.72) 0%,
-      rgba(245,251,255,0.58) 50%,
-      rgba(230,244,255,0.34) 100%
+      rgba(245,251,255,0.60) 50%,
+      rgba(230,244,255,0.36) 100%
     );
   }
 
@@ -300,13 +300,13 @@ export const HeroCard: React.FC<HeroCardProps> = ({
     padding: 8px 14px;
     border-radius: 999px;
     background:
-      linear-gradient(180deg, rgba(255,255,255,0.20), rgba(255,255,255,0.08));
-    border: 1px solid rgba(255,255,255,0.42);
+      linear-gradient(180deg, rgba(255,255,255,0.22), rgba(255,255,255,0.09));
+    border: 1px solid rgba(255,255,255,0.48);
     color: #1e293b;
     font-size: 12.5px;
     font-weight: 700;
     box-shadow:
-      inset 0 1px 0 rgba(255,255,255,0.48),
+      inset 0 1px 0 rgba(255,255,255,0.62),
       0 6px 16px rgba(15,23,42,0.06);
     backdrop-filter: blur(12px) saturate(145%);
     -webkit-backdrop-filter: blur(12px) saturate(145%);
@@ -364,9 +364,9 @@ export const HeroCard: React.FC<HeroCardProps> = ({
     --pi-glow: rgba(37,99,235,0.22);
 
     position: relative;
-    width: 50px;
-    height: 50px;
-    border-radius: 16px;
+    width: 56px;
+    height: 56px;
+    border-radius: 18px;
     flex-shrink: 0;
     isolation: isolate;
     transition: transform 0.3s cubic-bezier(0.22,1,0.36,1);
@@ -377,9 +377,9 @@ export const HeroCard: React.FC<HeroCardProps> = ({
   }
 
   .premium-ico-sm {
-    width: 38px;
-    height: 38px;
-    border-radius: 12px;
+    width: 42px;
+    height: 42px;
+    border-radius: 14px;
   }
 
   .premium-ico-back {
@@ -387,35 +387,34 @@ export const HeroCard: React.FC<HeroCardProps> = ({
     inset: 0;
     border-radius: inherit;
     background:
-      radial-gradient(circle at top right, rgba(255,255,255,0.20), transparent 36%),
-      linear-gradient(180deg, rgba(255,255,255,0.16), rgba(255,255,255,0.03));
-    border: 1px solid rgba(255,255,255,0.34);
+      radial-gradient(circle at top right, rgba(255,255,255,0.24), transparent 36%),
+      linear-gradient(180deg, rgba(255,255,255,0.22), rgba(255,255,255,0.05));
+    border: 1px solid rgba(255,255,255,0.54);
     box-shadow:
-      inset 0 1px 0 rgba(255,255,255,0.62),
+      inset 0 1px 0 rgba(255,255,255,0.82),
       inset 0 -1px 0 rgba(255,255,255,0.04),
-      0 6px 14px rgba(15,23,42,0.05),
-      0 1px 4px rgba(15,23,42,0.03);
+      0 8px 16px rgba(122,184,230,0.10),
+      0 2px 6px rgba(15,23,42,0.03);
   }
 
   .premium-ico-orb {
     position: absolute;
     inset: 6px;
-    border-radius: 11px;
+    border-radius: 12px;
     background:
-      radial-gradient(circle at 28% 20%, rgba(255,255,255,0.92), transparent 45%),
-      radial-gradient(circle at 70% 75%, var(--pi-soft), transparent 55%),
+      radial-gradient(circle at 28% 20%, rgba(255,255,255,0.96), transparent 45%),
+      radial-gradient(circle at 72% 78%, var(--pi-soft), transparent 55%),
       linear-gradient(
         155deg,
-        rgba(255,255,255,0.40) 0%,
-        var(--pi-soft) 35%,
-        rgba(255,255,255,0.35) 65%,
-        var(--pi-soft) 100%
+        rgba(255,255,255,0.34) 0%,
+        rgba(255,255,255,0.06) 45%,
+        rgba(255,255,255,0.14) 100%
       );
   }
 
   .premium-ico-sm .premium-ico-orb {
     inset: 5px;
-    border-radius: 9px;
+    border-radius: 10px;
   }
 
   .premium-ico-ring {
@@ -435,14 +434,14 @@ export const HeroCard: React.FC<HeroCardProps> = ({
   .premium-ico-shine {
     position: absolute;
     top: 5px;
-    left: 8px;
+    left: 9px;
     width: 52%;
     height: 28%;
     border-radius: 999px;
     background: linear-gradient(
       125deg,
-      rgba(255,255,255,0.85) 0%,
-      rgba(255,255,255,0.20) 70%,
+      rgba(255,255,255,0.88) 0%,
+      rgba(255,255,255,0.22) 70%,
       transparent
     );
     transform: rotate(-8deg);
@@ -456,7 +455,7 @@ export const HeroCard: React.FC<HeroCardProps> = ({
     width: 35%;
     height: 18%;
     border-radius: 999px;
-    background: linear-gradient(225deg, rgba(255,255,255,0.45) 0%, transparent 65%);
+    background: linear-gradient(225deg, rgba(255,255,255,0.42) 0%, transparent 65%);
     transform: rotate(12deg);
     z-index: 1;
   }
@@ -478,8 +477,8 @@ export const HeroCard: React.FC<HeroCardProps> = ({
 
   .premium-ico-inner svg {
     filter:
-      drop-shadow(0 1px 2px rgba(255,255,255,0.80))
-      drop-shadow(0 3px 8px rgba(0,0,0,0.08))
+      drop-shadow(0 1px 2px rgba(255,255,255,0.84))
+      drop-shadow(0 3px 8px rgba(0,0,0,0.06))
       drop-shadow(0 1px 1px var(--pi-glow));
   }
 
@@ -487,15 +486,15 @@ export const HeroCard: React.FC<HeroCardProps> = ({
     position: absolute;
     right: 5px;
     top: 5px;
-    width: 7px;
-    height: 7px;
+    width: 8px;
+    height: 8px;
     border-radius: 999px;
     background:
-      radial-gradient(circle at 30% 30%, rgba(255,255,255,0.95), transparent 60%),
+      radial-gradient(circle at 30% 30%, rgba(255,255,255,0.96), transparent 60%),
       linear-gradient(135deg, #ffffff 0%, color-mix(in srgb, var(--pi-color) 50%, white) 100%);
     box-shadow:
-      0 0 0 1px rgba(255,255,255,0.50),
-      0 1px 3px rgba(0,0,0,0.12),
+      0 0 0 1px rgba(255,255,255,0.52),
+      0 1px 3px rgba(0,0,0,0.10),
       0 0 8px var(--pi-glow);
     z-index: 3;
   }
@@ -526,118 +525,318 @@ export const HeroCard: React.FC<HeroCardProps> = ({
         rgba(255,255,255,0.03) 1px,
         rgba(255,255,255,0.03) 2px
       );
-    opacity: 0.4;
+    opacity: 0.38;
     z-index: 1;
     pointer-events: none;
   }
 
-  /* ── Top glass feature cards ── */
-/* ─────────────────────────────────────────────────────────────
-   PATCH: Replace ALL existing .feat-* rules in your <style> block
-   with these to get the pill-capsule glass look from Image 1
-   ───────────────────────────────────────────────────────────── */
+  /* ── TOP flipping cards: back to old style, only refined ── */
+  .feat-grid {
+    display: grid;
+    grid-template-columns: repeat(2,1fr);
+    gap: 14px;
+  }
 
-.feat-grid {
+  .feat-scene {
+    perspective: 1200px;
+    height: 96px;
+    cursor: default;
+  }
+
+  .feat-card {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transform-style: preserve-3d;
+    transition: transform 0.55s cubic-bezier(0.22,1,0.36,1);
+  }
+
+  .feat-scene:hover .feat-card {
+    transform: rotateY(180deg);
+  }
+
+  .feat-face {
+    position: absolute;
+    inset: 0;
+    border-radius: 18px;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    border: 1px solid rgba(15,23,42,0.07);
+    background: rgba(255,255,255,0.52);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.76),
+      0 8px 18px rgba(15,23,42,0.05),
+      0 2px 8px rgba(15,23,42,0.03);
+    transition: box-shadow 0.22s, transform 0.22s, background 0.22s;
+    overflow: hidden;
+  }
+
+  .feat-face::before {
+    content: "";
+    position: absolute;
+    left: 12px;
+    right: 12px;
+    top: 6px;
+    height: 30%;
+    border-radius: 999px;
+    background: linear-gradient(
+      180deg,
+      rgba(255,255,255,0.70),
+      rgba(255,255,255,0.08)
+    );
+    opacity: 0.9;
+    pointer-events: none;
+  }
+
+  .feat-face.back {
+    transform: rotateY(180deg);
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 4px;
+    text-align: center;
+    background: linear-gradient(135deg, rgba(240,248,255,0.86), rgba(231,244,255,0.82));
+  }
+
+  .feat-scene:hover .feat-face {
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.84),
+      0 10px 24px rgba(15,23,42,0.08),
+      0 4px 10px rgba(15,23,42,0.04);
+  }
+
+  /* ── CTA buttons: glossy blue like your reference ── */
+  .hero-cta-p {
+    position: relative;
+    overflow: hidden;
+    border-radius: 999px;
+    padding: 14px 28px;
+    min-width: 192px;
+    border: 1px solid rgba(255,255,255,0.20);
+    background: linear-gradient(
+      180deg,
+      #5aa9f7 0%,
+      #3d92e8 18%,
+      #2878d3 55%,
+      #1f67c1 100%
+    );
+    color: #ffffff;
+    font-weight: 800;
+    font-size: 15px;
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.34),
+      inset 0 -2px 0 rgba(0,0,0,0.10),
+      0 14px 28px rgba(29,111,206,0.24),
+      0 6px 16px rgba(15,23,42,0.08);
+    cursor: pointer;
+    transition: transform 0.22s, box-shadow 0.22s, filter 0.22s;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+  }
+
+  .hero-cta-p::before {
+    content: "";
+    position: absolute;
+    left: 14px;
+    right: 14px;
+    top: 7px;
+    height: 17px;
+    border-radius: 999px;
+    background: linear-gradient(
+      180deg,
+      rgba(255,255,255,0.46),
+      rgba(255,255,255,0.08)
+    );
+    opacity: 0.95;
+    pointer-events: none;
+  }
+
+  .hero-cta-p::after {
+    content: "";
+    position: absolute;
+    top: -18%;
+    left: -38%;
+    width: 32%;
+    height: 140%;
+    transform: rotate(18deg);
+    background: linear-gradient(
+      90deg,
+      rgba(255,255,255,0),
+      rgba(255,255,255,0.14),
+      rgba(255,255,255,0.50),
+      rgba(255,255,255,0.14),
+      rgba(255,255,255,0)
+    );
+    opacity: 0;
+    transition:
+      left 0.65s ease,
+      opacity 0.24s ease;
+    pointer-events: none;
+  }
+
+  .hero-cta-p:hover {
+    transform: translateY(-2px);
+    filter: saturate(1.04);
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.38),
+      inset 0 -2px 0 rgba(0,0,0,0.12),
+      0 18px 34px rgba(29,111,206,0.28),
+      0 8px 18px rgba(15,23,42,0.10);
+  }
+
+  .hero-cta-p:hover::after {
+    left: 118%;
+    opacity: 1;
+  }
+
+  .hero-cta-s {
+    position: relative;
+    overflow: hidden;
+    border-radius: 999px;
+    padding: 14px 28px;
+    min-width: 192px;
+    border: 1px solid rgba(255,255,255,0.22);
+    background: linear-gradient(
+      180deg,
+      rgba(255,255,255,0.76),
+      rgba(255,255,255,0.58)
+    );
+    color: #172033;
+    font-weight: 800;
+    font-size: 15px;
+    cursor: pointer;
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.72),
+      0 10px 24px rgba(15,23,42,0.06);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    transition: transform 0.22s, box-shadow 0.22s, background 0.22s;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+  }
+
+  .hero-cta-s::before {
+    content: "";
+    position: absolute;
+    left: 14px;
+    right: 14px;
+    top: 7px;
+    height: 17px;
+    border-radius: 999px;
+    background: linear-gradient(
+      180deg,
+      rgba(255,255,255,0.55),
+      rgba(255,255,255,0.06)
+    );
+    opacity: 0.92;
+    pointer-events: none;
+  }
+
+  .hero-cta-s:hover {
+    transform: translateY(-1px);
+    background: linear-gradient(
+      180deg,
+      rgba(255,255,255,0.84),
+      rgba(255,255,255,0.66)
+    );
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.80),
+      0 12px 28px rgba(15,23,42,0.08);
+  }
+
+/* ═══════════════════════════════════════════════════════
+   REPLACE ONLY these rules in your HeroCard <style> block:
+   .svc-grid  and  .svc-chip + its ::before ::after :hover
+   Everything else stays EXACTLY as-is.
+   ═══════════════════════════════════════════════════════ */
+
+.svc-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 14px;
 }
 
-/* Taller scene to give the thick capsule feel */
-.feat-scene {
-  perspective: 1400px;
-  height: 82px;          /* was 96px – now matches the squat pill proportions */
-  cursor: default;
-}
-
-.feat-card {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  transform-style: preserve-3d;
-  transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.feat-scene:hover .feat-card {
-  transform: rotateY(180deg);
-}
-
-/* ── Shared face base ── */
-.feat-face {
-  position: absolute;
-  inset: 0;
-
-  /* KEY: very large radius = pill / capsule shape */
-  border-radius: 28px;
-
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
+.svc-chip {
   display: flex;
   align-items: center;
-  gap: 16px;
-  padding: 0 22px;
+  gap: 12px;
+  padding: 0 18px;
+  height: 72px;                          /* fixed height = pill thickness */
+  border-radius: 999px;                  /* full pill shape */
+  position: relative;
   overflow: hidden;
   isolation: isolate;
+  cursor: default;
 
-  /* ── Blue-tinted frosted glass background ── */
+  /* ── Transparent glass — bg bleeds through ── */
   background:
-    radial-gradient(ellipse at 18% 30%, rgba(255,255,255,0.52) 0%, transparent 55%),
-    radial-gradient(ellipse at 85% 70%, rgba(180,225,255,0.28) 0%, transparent 50%),
+    radial-gradient(ellipse at 20% 30%, rgba(255,255,255,0.36) 0%, transparent 55%),
+    radial-gradient(ellipse at 80% 72%, rgba(190,228,255,0.18) 0%, transparent 50%),
     linear-gradient(
-      145deg,
-      rgba(255,255,255,0.38) 0%,
-      rgba(210,238,255,0.28) 35%,
-      rgba(185,225,255,0.22) 65%,
-      rgba(200,235,255,0.30) 100%
+      160deg,
+      rgba(255,255,255,0.22) 0%,
+      rgba(215,238,255,0.12) 50%,
+      rgba(200,232,255,0.08) 100%
     );
-  backdrop-filter: blur(18px) saturate(160%);
-  -webkit-backdrop-filter: blur(18px) saturate(160%);
+  backdrop-filter: blur(16px) saturate(150%);
+  -webkit-backdrop-filter: blur(16px) saturate(150%);
 
-  /* ── Border: bright top, subtle sides ── */
-  border: 1px solid rgba(255,255,255,0.60);
-  border-bottom-color: rgba(160,210,245,0.35);
+  /* ── Crystal border ── */
+  border: 1.5px solid rgba(255,255,255,0.62);
+  border-bottom-color: rgba(175,213,240,0.42);
+  border-right-color:  rgba(210,235,255,0.32);
 
-  /* ── Deep 3-D shadow that gives the "thick slab" illusion ── */
+  /* ── 3-D extruded slab shadows ── */
   box-shadow:
-    /* top inner highlight */
-    inset 0 2px 0   rgba(255,255,255,0.90),
-    /* bottom inner shadow */
-    inset 0 -3px 0  rgba(140,195,235,0.30),
-    /* left edge glow */
-    inset 3px 0 6px rgba(255,255,255,0.18),
-    /* ambient lift */
-    0  6px  0   rgba(140,195,235,0.55),
-    0 10px  4px rgba(100,170,220,0.28),
-    0 18px 14px rgba(90,160,215,0.18),
-    0 28px 24px rgba(80,150,210,0.10),
-    /* crisp colour drop-shadow for depth */
-    0  4px 18px rgba(100,175,230,0.22);
+    /* top inner specular */
+    inset 0  2px 0   rgba(255,255,255,0.92),
+    /* bottom inner depth */
+    inset 0 -2px 0   rgba(155,205,238,0.38),
+    /* left inner glint */
+    inset 3px 0 8px  rgba(255,255,255,0.18),
 
-  transition:
-    box-shadow 0.22s,
-    border-color 0.22s;
+    /* hard bottom edge — the "physical thickness" */
+    0  5px  0   rgba(148,200,235,0.62),
+    /* blur layers */
+    0  9px  3px rgba(118,178,220,0.32),
+    0 16px 12px rgba(100,165,215,0.20),
+    0 24px 22px rgba(80, 150,210,0.12),
+    /* ambient card glow */
+    0  2px 20px rgba(118,185,230,0.18);
+
+  transition: transform 0.22s, box-shadow 0.22s, border-color 0.22s;
 }
 
-/* ── Top gloss streak (the bright horizontal sheen across the top) ── */
-.feat-face::after {
+/* ── Top gloss streak ── */
+.svc-chip::after {
   content: "";
   position: absolute;
-  left: 22px;
-  right: 22px;
+  left: 18px;
+  right: 18px;
   top: 8px;
-  height: 20px;
+  height: 17px;
   border-radius: 999px;
   background: linear-gradient(
     180deg,
     rgba(255,255,255,0.88) 0%,
-    rgba(255,255,255,0.10) 100%
+    rgba(255,255,255,0.05) 100%
   );
   pointer-events: none;
   z-index: 1;
 }
 
-/* ── Gradient border ring (the animated rim on ::before) ── */
-.feat-face::before {
+/* ── Gradient rim border ── */
+.svc-chip::before {
   content: "";
   position: absolute;
   inset: 0;
@@ -645,13 +844,13 @@ export const HeroCard: React.FC<HeroCardProps> = ({
   padding: 1.5px;
   background: linear-gradient(
     135deg,
-    rgba(255,255,255,0.96) 0%,
-    rgba(200,235,255,0.70) 18%,
-    rgba(150,210,245,0.30) 38%,
-    rgba(255,255,255,0.08) 52%,
-    rgba(140,205,245,0.30) 70%,
-    rgba(205,238,255,0.72) 88%,
-    rgba(255,255,255,0.96) 100%
+    rgba(255,255,255,0.95) 0%,
+    rgba(210,238,255,0.65) 20%,
+    rgba(160,215,248,0.25) 42%,
+    rgba(255,255,255,0.06) 55%,
+    rgba(155,210,248,0.28) 72%,
+    rgba(210,240,255,0.68) 88%,
+    rgba(255,255,255,0.95) 100%
   );
   -webkit-mask:
     linear-gradient(#000 0 0) content-box,
@@ -661,180 +860,32 @@ export const HeroCard: React.FC<HeroCardProps> = ({
   pointer-events: none;
 }
 
-.feat-face.front {
-  /* nothing extra needed – base styles cover it */
-}
-
-.feat-face.back {
-  transform: rotateY(180deg);
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: 5px;
-  text-align: center;
-}
-
-.feat-scene:hover .feat-face {
-  border-color: rgba(255,255,255,0.68);
+.svc-chip:hover {
+  transform: translateY(-2px);
+  border-color: rgba(255,255,255,0.72);
   box-shadow:
-    inset 0 2px 0   rgba(255,255,255,0.95),
-    inset 0 -3px 0  rgba(140,195,235,0.36),
-    inset 3px 0 6px rgba(255,255,255,0.22),
-    0  6px  0   rgba(130,188,230,0.60),
-    0 12px  6px rgba(100,170,220,0.32),
-    0 20px 16px rgba(90,160,215,0.20),
-    0 32px 28px rgba(80,150,210,0.12),
-    0  4px 20px rgba(100,175,230,0.26);
+    inset 0  2px 0   rgba(255,255,255,0.96),
+    inset 0 -2px 0   rgba(155,205,238,0.44),
+    inset 3px 0 8px  rgba(255,255,255,0.22),
+    0  6px  0   rgba(136,192,228,0.66),
+    0 10px  4px rgba(112,175,218,0.36),
+    0 18px 14px rgba(100,165,215,0.24),
+    0 28px 24px rgba(80, 150,210,0.14),
+    0  2px 22px rgba(118,185,230,0.22);
 }
 
-/* ── Responsive ── */
+/* ── Responsive (keep same breakpoints as original) ── */
+@media (max-width: 1024px) {
+  .svc-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
 @media (max-width: 768px) {
-  .feat-grid  { grid-template-columns: 1fr; }
-  .feat-scene { height: 76px; }
+  .svc-grid { grid-template-columns: repeat(2, 1fr); }
 }
 
-  /* ── CTA buttons ── */
-  .hero-cta-p {
-    position: relative;
-    overflow: hidden;
-    border-radius: 999px;
-    padding: 12px 24px;
-    background: linear-gradient(100deg,#1d6fce,#0ea5e9);
-    color: white;
-    font-weight: 800;
-    font-size: 14px;
-    box-shadow: 0 10px 28px rgba(29,111,206,0.26);
-    border: none;
-    cursor: pointer;
-    transition: transform 0.2s, box-shadow 0.2s;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .hero-cta-p::after {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 55%;
-    height: 100%;
-    background: linear-gradient(90deg,transparent,rgba(255,255,255,0.22),transparent);
-    transition: left 0.5s;
-  }
-
-  .hero-cta-p:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 16px 36px rgba(29,111,206,0.32);
-  }
-
-  .hero-cta-p:hover::after {
-    left: 160%;
-  }
-
-  .hero-cta-s {
-    border-radius: 999px;
-    padding: 12px 22px;
-    background:
-      linear-gradient(180deg, rgba(255,255,255,0.18), rgba(255,255,255,0.07));
-    border: 1px solid rgba(255,255,255,0.34);
-    color: #1e293b;
-    font-weight: 700;
-    font-size: 14px;
-    cursor: pointer;
-    backdrop-filter: blur(12px) saturate(145%);
-    -webkit-backdrop-filter: blur(12px) saturate(145%);
-    box-shadow:
-      inset 0 1px 0 rgba(255,255,255,0.44),
-      0 6px 16px rgba(15,23,42,0.06);
-    transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .hero-cta-s:hover {
-    transform: translateY(-1px);
-    background: white;
-    box-shadow: 0 8px 24px rgba(15,23,42,0.09);
-  }
-
-  /* ── Services ── */
-  .svc-grid {
-    display: grid;
-    grid-template-columns: repeat(4,1fr);
-    gap: 9px;
-  }
-
-  .svc-chip {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 11px 12px;
-    border-radius: 16px;
-    position: relative;
-    overflow: hidden;
-    background: transparent;
-    border: 1px solid rgba(255,255,255,0.28);
-    box-shadow:
-      inset 0 1px 0 rgba(255,255,255,0.34),
-      inset 0 -1px 0 rgba(255,255,255,0.03),
-      0 10px 24px rgba(15,23,42,0.05),
-      0 2px 8px rgba(15,23,42,0.025);
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
-    transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
-    cursor: default;
-  }
-
-  .svc-chip::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    padding: 1px;
-    background: linear-gradient(
-      135deg,
-      rgba(255,255,255,0.58),
-      rgba(255,255,255,0.12) 38%,
-      rgba(255,255,255,0.05) 65%,
-      rgba(255,255,255,0.42) 100%
-    );
-    -webkit-mask:
-      linear-gradient(#000 0 0) content-box,
-      linear-gradient(#000 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-    pointer-events: none;
-  }
-
-  .svc-chip::after {
-    content: "";
-    position: absolute;
-    left: 12px;
-    right: 12px;
-    top: 6px;
-    height: 34%;
-    border-radius: 999px;
-    background: linear-gradient(
-      180deg,
-      rgba(255,255,255,0.55),
-      rgba(255,255,255,0.02)
-    );
-    opacity: 0.88;
-    pointer-events: none;
-  }
-
-  .svc-chip:hover {
-    transform: translateY(-2px);
-    border-color: rgba(255,255,255,0.38);
-    box-shadow:
-      inset 0 1px 0 rgba(255,255,255,0.42),
-      inset 0 -1px 0 rgba(255,255,255,0.04),
-      0 14px 30px rgba(15,23,42,0.06),
-      0 4px 12px rgba(15,23,42,0.03);
-  }
-
+@media (max-width: 640px) {
+  .svc-grid { grid-template-columns: 1fr 1fr; }
+}
   /* ── Stats ── */
   .stats-grid {
     display: grid;
@@ -970,11 +1021,10 @@ export const HeroCard: React.FC<HeroCardProps> = ({
   @media (max-width:640px) {
     .svc-grid { grid-template-columns: 1fr 1fr; }
     .hero-cta-p,
-    .hero-cta-s { width: 100%; justify-content: center; }
+    .hero-cta-s { width: 100%; justify-content: center; min-width: 0; }
     .stats-grid { grid-template-columns: 1fr; }
   }
 `}</style>
-
       <div className="hero-root hero-wrap">
         <div className="hero-bg-img" aria-hidden="true" />
         <div className="hero-bg-overlay" aria-hidden="true" />
