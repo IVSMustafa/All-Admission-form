@@ -1,6 +1,5 @@
-import React, { useEffect, useRef, useState } from "react";
-import { ArrowRight, CheckCircle2, Sparkles } from "lucide-react";
-import type { LucideIcon } from "lucide-react";
+import React, { useRef } from "react";
+import { ArrowRight, CheckCircle2 } from "lucide-react";
 import { LeadType } from "../../types";
 
 type Accent = "blue" | "violet" | "emerald" | "amber";
@@ -12,36 +11,13 @@ interface ProgramCardProps {
   badge: string;
   ctaLabel: string;
   accent: Accent;
-  icon: LucideIcon;
+  imageSrc: string;
   features: string[];
   onSelect: (id: LeadType) => void;
   index?: number;
 }
 
-function useReveal() {
-  const ref = useRef<HTMLDivElement>(null);
-  const [visible, setVisible] = useState(false);
 
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-
-    const obs = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setVisible(true);
-          obs.disconnect();
-        }
-      },
-      { threshold: 0.14 }
-    );
-
-    obs.observe(el);
-    return () => obs.disconnect();
-  }, []);
-
-  return { ref, visible };
-}
 
 const accentMap: Record<
   Accent,
@@ -50,81 +26,85 @@ const accentMap: Record<
     soft: string;
     border: string;
     glow: string;
-    pillBg: string;
     pillText: string;
-    button: string;
     buttonGlow: string;
+    buttonTop: string;
+    buttonBottom: string;
   }
 > = {
   blue: {
     color: "#1d6fce",
-    soft: "rgba(29,111,206,0.10)",
-    border: "rgba(29,111,206,0.16)",
-    glow: "rgba(29,111,206,0.18)",
-    pillBg: "rgba(29,111,206,0.10)",
+    soft: "rgba(29,111,206,0.14)",
+    border: "rgba(29,111,206,0.18)",
+    glow: "rgba(29,111,206,0.20)",
     pillText: "#1d6fce",
-    button: "linear-gradient(135deg,#1d6fce,#2da8f3)",
-    buttonGlow: "rgba(29,111,206,0.24)",
+    buttonGlow: "rgba(29,111,206,0.30)",
+    buttonTop: "#51a8fb",
+    buttonBottom: "#1b63bc",
   },
   violet: {
     color: "#7c3aed",
-    soft: "rgba(124,58,237,0.10)",
-    border: "rgba(124,58,237,0.16)",
-    glow: "rgba(124,58,237,0.18)",
-    pillBg: "rgba(124,58,237,0.10)",
+    soft: "rgba(124,58,237,0.14)",
+    border: "rgba(124,58,237,0.18)",
+    glow: "rgba(124,58,237,0.20)",
     pillText: "#7c3aed",
-    button: "linear-gradient(135deg,#7c3aed,#9f67ff)",
-    buttonGlow: "rgba(124,58,237,0.24)",
+    buttonGlow: "rgba(124,58,237,0.30)",
+    buttonTop: "#ab76ff",
+    buttonBottom: "#7330dd",
   },
   emerald: {
     color: "#059669",
-    soft: "rgba(5,150,105,0.10)",
-    border: "rgba(5,150,105,0.16)",
-    glow: "rgba(5,150,105,0.18)",
-    pillBg: "rgba(5,150,105,0.10)",
+    soft: "rgba(5,150,105,0.14)",
+    border: "rgba(5,150,105,0.18)",
+    glow: "rgba(5,150,105,0.20)",
     pillText: "#059669",
-    button: "linear-gradient(135deg,#059669,#15b981)",
-    buttonGlow: "rgba(5,150,105,0.24)",
+    buttonGlow: "rgba(5,150,105,0.30)",
+    buttonTop: "#27d29b",
+    buttonBottom: "#059669",
   },
   amber: {
     color: "#d97706",
-    soft: "rgba(217,119,6,0.10)",
-    border: "rgba(217,119,6,0.16)",
-    glow: "rgba(217,119,6,0.18)",
-    pillBg: "rgba(217,119,6,0.10)",
+    soft: "rgba(217,119,6,0.14)",
+    border: "rgba(217,119,6,0.18)",
+    glow: "rgba(217,119,6,0.20)",
     pillText: "#d97706",
-    button: "linear-gradient(135deg,#d97706,#f59e0b)",
-    buttonGlow: "rgba(217,119,6,0.24)",
+    buttonGlow: "rgba(217,119,6,0.30)",
+    buttonTop: "#ffbd4c",
+    buttonBottom: "#dc7a07",
   },
 };
 
-const PremiumIcon = ({
-  Icon,
+const PremiumImageBadge = ({
+  imageSrc,
+  title,
   accent,
 }: {
-  Icon: LucideIcon;
+  imageSrc: string;
+  title: string;
   accent: Accent;
 }) => {
   const a = accentMap[accent];
 
   return (
     <div
-      className="pc-premium-icon"
+      className="pc-premium-media"
       style={
         {
           ["--pc-color" as any]: a.color,
           ["--pc-border" as any]: a.border,
           ["--pc-glow" as any]: a.glow,
+          ["--pc-soft" as any]: a.soft,
         } as React.CSSProperties
       }
     >
-      <div className="pc-premium-icon-bg" />
-      <div className="pc-premium-icon-shine" />
-      <div className="pc-premium-icon-ring" />
-      <div className="pc-premium-icon-inner">
-        <Icon className="w-6 h-6" />
-      </div>
-      <div className="pc-premium-icon-dot" />
+      <div className="pc-premium-media-back-glow" />
+      <div className="pc-premium-media-glass" />
+      <div className="pc-premium-media-outline" />
+      <div className="pc-premium-media-highlight-top" />
+      <div className="pc-premium-media-highlight-side" />
+      <div className="pc-premium-media-inner-reflection" />
+      <div className="pc-premium-media-shadow" />
+      <img src={imageSrc} alt={title} className="pc-premium-media-img" />
     </div>
   );
 };
@@ -136,15 +116,14 @@ export const ProgramCard: React.FC<ProgramCardProps> = ({
   badge,
   ctaLabel,
   accent,
-  icon: Icon,
+  imageSrc,
   features,
   onSelect,
   index = 0,
 }) => {
-  const { ref, visible } = useReveal();
+  const ref = useRef<HTMLDivElement>(null);
+const visible = true;
   const a = accentMap[accent];
-  const isQuranCard = id === LeadType.QURAN;
-  const [showQuranArt, setShowQuranArt] = useState(true);
 
   const handleSelect = () => onSelect(id);
 
@@ -166,30 +145,32 @@ export const ProgramCard: React.FC<ProgramCardProps> = ({
 
         .pc-card {
           position: relative;
-          border-radius: 30px;
+          border-radius: 34px;
           overflow: hidden;
-          min-height: 430px;
-          padding: 34px;
-          background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(247,250,255,0.98));
-          border: 1px solid rgba(15,23,42,0.06);
+          min-height: 485px;
+          padding: 38px 32px 32px;
+          background:
+            linear-gradient(180deg, rgba(255,255,255,0.88), rgba(246,249,255,0.84));
+          border: 1px solid rgba(255,255,255,0.82);
           box-shadow:
-            0 10px 24px rgba(15,23,42,0.045),
-            0 24px 60px rgba(15,23,42,0.07);
+            inset 0 1px 0 rgba(255,255,255,0.96),
+            0 14px 30px rgba(15,23,42,0.045),
+            0 28px 65px rgba(15,23,42,0.08);
           transition:
             transform 0.35s cubic-bezier(0.22,1,0.36,1),
             box-shadow 0.35s cubic-bezier(0.22,1,0.36,1),
-            border-color 0.25s ease,
-            background 0.25s ease;
+            border-color 0.25s ease;
           isolation: isolate;
           cursor: pointer;
           outline: none;
         }
 
         .pc-card:hover {
-          transform: translateY(-8px);
+          transform: translateY(-10px);
           box-shadow:
-            0 18px 42px rgba(15,23,42,0.07),
-            0 30px 85px rgba(15,23,42,0.10);
+            inset 0 1px 0 rgba(255,255,255,0.98),
+            0 22px 52px rgba(15,23,42,0.075),
+            0 34px 94px rgba(15,23,42,0.11);
           border-color: var(--pc-feature-border);
         }
 
@@ -197,7 +178,7 @@ export const ProgramCard: React.FC<ProgramCardProps> = ({
           box-shadow:
             0 0 0 3px rgba(255,255,255,0.95),
             0 0 0 6px rgba(29,111,206,0.18),
-            0 18px 42px rgba(15,23,42,0.07);
+            0 22px 52px rgba(15,23,42,0.075);
         }
 
         .pc-card::before {
@@ -205,8 +186,8 @@ export const ProgramCard: React.FC<ProgramCardProps> = ({
           position: absolute;
           inset: 0;
           background:
-            radial-gradient(420px 180px at 0% 0%, rgba(255,255,255,0.76), transparent 60%),
-            radial-gradient(300px 180px at 100% 100%, var(--pc-glow-soft), transparent 75%);
+            radial-gradient(460px 220px at 0% 0%, rgba(255,255,255,0.96), transparent 62%),
+            radial-gradient(320px 220px at 100% 100%, var(--pc-glow-soft), transparent 76%);
           pointer-events: none;
           z-index: 0;
         }
@@ -215,37 +196,42 @@ export const ProgramCard: React.FC<ProgramCardProps> = ({
           content: "";
           position: absolute;
           inset: 0;
-          background: linear-gradient(120deg, transparent 0%, rgba(255,255,255,0.18) 35%, transparent 70%);
-          transform: translateX(-120%);
-          transition: transform 0.85s ease;
+          background: linear-gradient(
+            120deg,
+            transparent 0%,
+            rgba(255,255,255,0.14) 30%,
+            transparent 58%
+          );
+          transform: translateX(-125%);
+          transition: transform 0.95s ease;
           pointer-events: none;
           z-index: 0;
         }
 
         .pc-card:hover::after {
-          transform: translateX(120%);
+          transform: translateX(125%);
         }
 
         .pc-glow {
           position: absolute;
-          right: -40px;
-          bottom: -40px;
-          width: 220px;
-          height: 220px;
+          right: -42px;
+          bottom: -42px;
+          width: 240px;
+          height: 240px;
           border-radius: 50%;
-          background: radial-gradient(circle, var(--pc-glow-soft) 0%, transparent 70%);
+          background: radial-gradient(circle, var(--pc-glow-soft) 0%, transparent 72%);
           pointer-events: none;
           z-index: 0;
-          opacity: 0.7;
-          filter: blur(6px);
+          opacity: 0.72;
+          filter: blur(10px);
         }
 
         .pc-top {
           display: flex;
           align-items: flex-start;
           justify-content: space-between;
-          gap: 14px;
-          margin-bottom: 20px;
+          gap: 18px;
+          margin-bottom: 26px;
           position: relative;
           z-index: 3;
         }
@@ -253,49 +239,92 @@ export const ProgramCard: React.FC<ProgramCardProps> = ({
         .pc-pill {
           display: inline-flex;
           align-items: center;
-          gap: 6px;
-          padding: 7px 14px;
+          justify-content: center;
+          min-height: 44px;
+          padding: 10px 20px;
           border-radius: 999px;
-          background: var(--pc-pill-bg);
+          position: relative;
+          overflow: hidden;
           color: var(--pc-pill-text);
-          border: 1px solid rgba(255,255,255,0.75);
           font-size: 11px;
           font-weight: 800;
           letter-spacing: 0.02em;
-          box-shadow: 0 6px 16px rgba(15,23,42,0.04);
           white-space: nowrap;
+          border: 1px solid rgba(255,255,255,0.38);
+          background: linear-gradient(
+            180deg,
+            rgba(255,255,255,0.08),
+            rgba(255,255,255,0.03)
+          );
+          backdrop-filter: blur(10px) saturate(145%);
+          -webkit-backdrop-filter: blur(10px) saturate(145%);
+          box-shadow:
+            inset 0 1px 0 rgba(255,255,255,0.40),
+            inset 0 -1px 0 rgba(255,255,255,0.05),
+            0 10px 20px rgba(15,23,42,0.08),
+            0 2px 8px rgba(15,23,42,0.04);
+        }
+
+        .pc-pill::before {
+          content: "";
+          position: absolute;
+          left: 10px;
+          right: 10px;
+          top: 4px;
+          height: 38%;
+          border-radius: 999px;
+          background: linear-gradient(
+            180deg,
+            rgba(255,255,255,0.85),
+            rgba(255,255,255,0.08)
+          );
+          opacity: 0.9;
+          pointer-events: none;
+        }
+
+        .pc-pill::after {
+          content: "";
+          position: absolute;
+          inset: 0;
+          border-radius: inherit;
+          box-shadow:
+            inset 0 0 0 1px rgba(255,255,255,0.06),
+            inset 0 8px 16px rgba(255,255,255,0.03);
+          pointer-events: none;
         }
 
         .pc-title {
           position: relative;
           z-index: 3;
           font-family: Georgia, "Times New Roman", serif;
-          font-size: clamp(22px, 2vw, 28px);
-          line-height: 1.1;
+          font-size: clamp(24px, 2vw, 30px);
+          line-height: 1.08;
           letter-spacing: -0.03em;
           color: #0f172a;
-          margin-bottom: 12px;
+          margin-bottom: 14px;
           font-weight: 700;
+          max-width: 78%;
         }
 
         .pc-desc {
           position: relative;
           z-index: 3;
-          max-width: 72%;
-          min-height: 78px;
+          max-width: 74%;
+          min-height: 84px;
           color: #64748b;
           font-size: 15px;
           line-height: 1.8;
+          margin-bottom: 2px;
         }
 
         .pc-feature-list {
           position: relative;
           z-index: 3;
           display: grid;
-          gap: 12px;
-          margin-top: 18px;
-          margin-bottom: 26px;
-          max-width: 70%;
+          gap: 13px;
+          margin-top: 20px;
+          margin-bottom: 30px;
+          max-width: 72%;
         }
 
         .pc-feature {
@@ -320,176 +349,249 @@ export const ProgramCard: React.FC<ProgramCardProps> = ({
           display: flex;
           align-items: center;
           justify-content: center;
-          background: var(--pc-feature-soft);
+          background: rgba(255,255,255,0.58);
           border: 1px solid var(--pc-feature-border);
           color: var(--pc-feature-color);
-          box-shadow: 0 4px 12px rgba(15,23,42,0.04);
+          box-shadow:
+            inset 0 1px 0 rgba(255,255,255,0.85),
+            0 4px 12px rgba(15,23,42,0.04);
         }
 
         .pc-button {
           position: relative;
           z-index: 3;
-          border: none;
+          min-width: 180px;
+          min-height: 58px;
+          padding: 14px 30px;
+          border: 1px solid rgba(255,255,255,0.24);
           border-radius: 999px;
-          padding: 14px 24px;
-          min-width: 168px;
-          background: var(--pc-button-bg);
-          color: #fff;
+          color: #ffffff;
           font-weight: 800;
           font-size: 15px;
           display: inline-flex;
           align-items: center;
           justify-content: center;
           gap: 9px;
-          box-shadow: 0 12px 28px var(--pc-button-glow);
-          transition:
-            transform 0.25s cubic-bezier(0.22,1,0.36,1),
-            box-shadow 0.25s cubic-bezier(0.22,1,0.36,1);
           overflow: hidden;
           pointer-events: none;
+          background: linear-gradient(
+            180deg,
+            var(--pc-button-top) 0%,
+            color-mix(in srgb, var(--pc-button-top) 82%, white 18%) 18%,
+            color-mix(in srgb, var(--pc-button-top) 42%, var(--pc-button-bottom) 58%) 46%,
+            var(--pc-button-bottom) 100%
+          );
+          box-shadow:
+            inset 0 1px 0 rgba(255,255,255,0.28),
+            inset 0 -2px 0 rgba(0,0,0,0.12),
+            0 12px 26px var(--pc-button-glow),
+            0 8px 18px rgba(15,23,42,0.12);
+          transition:
+            transform 0.25s cubic-bezier(0.22,1,0.36,1),
+            box-shadow 0.25s cubic-bezier(0.22,1,0.36,1),
+            filter 0.25s ease;
         }
 
-        .pc-card:hover .pc-button {
-          transform: translateY(-2px);
-          box-shadow: 0 16px 34px var(--pc-button-glow);
+        .pc-button span,
+        .pc-button svg {
+          position: relative;
+          z-index: 3;
+        }
+
+        .pc-button::before {
+          content: "";
+          position: absolute;
+          left: 16px;
+          right: 16px;
+          top: 7px;
+          height: 15px;
+          border-radius: 999px;
+          background: linear-gradient(
+            180deg,
+            rgba(255,255,255,0.42),
+            rgba(255,255,255,0.10)
+          );
+          opacity: 0.72;
+          pointer-events: none;
+          z-index: 1;
         }
 
         .pc-button::after {
           content: "";
           position: absolute;
-          top: 0;
-          left: -120%;
-          width: 52%;
-          height: 100%;
-          background: linear-gradient(90deg, transparent, rgba(255,255,255,0.24), transparent);
-          transition: left 0.55s ease;
+          top: -18%;
+          left: -42%;
+          width: 34%;
+          height: 140%;
+          transform: rotate(20deg);
+          background: linear-gradient(
+            90deg,
+            rgba(255,255,255,0),
+            rgba(255,255,255,0.16),
+            rgba(255,255,255,0.56),
+            rgba(255,255,255,0.16),
+            rgba(255,255,255,0)
+          );
+          opacity: 0;
+          transition:
+            left 0.65s ease,
+            opacity 0.28s ease;
+          z-index: 2;
+          pointer-events: none;
+        }
+
+        .pc-card:hover .pc-button {
+          transform: translateY(-3px) scale(1.02);
+          box-shadow:
+            inset 0 1px 0 rgba(255,255,255,0.34),
+            inset 0 -2px 0 rgba(0,0,0,0.14),
+            0 16px 30px var(--pc-button-glow),
+            0 12px 22px rgba(15,23,42,0.16);
+          filter: saturate(1.05);
         }
 
         .pc-card:hover .pc-button::after {
-          left: 150%;
+          left: 118%;
+          opacity: 1;
         }
 
-        .pc-premium-icon {
+        .pc-premium-media {
           position: relative;
-          width: 56px;
-          height: 56px;
-          border-radius: 18px;
+          width: 110px;
+          height: 110px;
+          border-radius: 30px;
           isolation: isolate;
           flex-shrink: 0;
+          overflow: visible;
         }
 
-        .pc-premium-icon-bg {
+        .pc-premium-media-back-glow {
+          position: absolute;
+          inset: 8px;
+          border-radius: 24px;
+          background: radial-gradient(
+            circle at 30% 20%,
+            rgba(255,255,255,0.24),
+            var(--pc-soft) 42%,
+            transparent 78%
+          );
+          filter: blur(12px);
+          opacity: 0.9;
+          z-index: 0;
+        }
+
+        .pc-premium-media-glass {
           position: absolute;
           inset: 0;
           border-radius: inherit;
-          background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(241,247,255,0.94));
-          border: 1px solid var(--pc-border);
-          box-shadow: 0 8px 18px rgba(15,23,42,0.05);
-        }
-
-        .pc-premium-icon-shine {
-          position: absolute;
-          top: 5px;
-          left: 8px;
-          width: 58%;
-          height: 28%;
-          border-radius: 999px;
-          background: linear-gradient(180deg, rgba(255,255,255,0.88), rgba(255,255,255,0.06));
-          transform: rotate(-10deg);
+          background: linear-gradient(
+            180deg,
+            rgba(255,255,255,0.10),
+            rgba(255,255,255,0.03)
+          );
+          backdrop-filter: blur(12px) saturate(145%);
+          -webkit-backdrop-filter: blur(12px) saturate(145%);
+          box-shadow:
+            inset 0 1px 0 rgba(255,255,255,0.42),
+            inset 0 -1px 0 rgba(255,255,255,0.04);
           z-index: 1;
         }
 
-        .pc-premium-icon-ring {
-          position: absolute;
-          inset: -1px;
-          border-radius: inherit;
-          box-shadow: 0 0 24px var(--pc-glow);
-          opacity: 0.7;
-        }
-
-        .pc-premium-icon-inner {
+        .pc-premium-media-outline {
           position: absolute;
           inset: 0;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          color: var(--pc-color);
+          border-radius: inherit;
+          border: 1.5px solid rgba(255,255,255,0.42);
+          box-shadow:
+            0 16px 28px rgba(15,23,42,0.10),
+            0 4px 10px rgba(15,23,42,0.04);
           z-index: 2;
         }
 
-        .pc-premium-icon-dot {
+        .pc-premium-media-highlight-top {
           position: absolute;
-          right: 6px;
+          left: 14px;
+          right: 14px;
           top: 6px;
-          width: 7px;
-          height: 7px;
+          height: 18px;
           border-radius: 999px;
-          background: white;
-          box-shadow: 0 0 10px var(--pc-glow);
+          background: linear-gradient(
+            180deg,
+            rgba(255,255,255,0.88),
+            rgba(255,255,255,0.10)
+          );
+          opacity: 0.96;
           z-index: 3;
         }
 
-        .pc-quran-left-art {
+        .pc-premium-media-highlight-side {
           position: absolute;
-          left: -10px;
-          top: 0;
-          bottom: 0;
-          width: 54%;
-          background-image:
-            linear-gradient(90deg, rgba(9,55,119,0.14), rgba(9,55,119,0.02)),
-            url('/images/quran-cover-blue.png');
-          background-size: cover;
-          background-position: left center;
-          background-repeat: no-repeat;
-          opacity: 0.18;
-          pointer-events: none;
-          z-index: 1;
-          mask-image: linear-gradient(90deg, rgba(0,0,0,1), rgba(0,0,0,0));
-          -webkit-mask-image: linear-gradient(90deg, rgba(0,0,0,1), rgba(0,0,0,0));
-        }
-
-        .pc-quran-right-art {
-          position: absolute;
-          right: 12px;
-          bottom: 18px;
-          width: 34%;
-          max-width: 220px;
-          pointer-events: none;
-          z-index: 2;
-          opacity: 0.96;
-          filter:
-            drop-shadow(0 16px 32px rgba(29,111,206,0.16))
-            drop-shadow(0 8px 18px rgba(15,23,42,0.07));
-          transition: transform 0.45s cubic-bezier(0.22,1,0.36,1);
-        }
-
-        .pc-card:hover .pc-quran-right-art {
-          transform: translateY(-5px) scale(1.02);
-        }
-
-        .pc-quran-soft-orb {
-          position: absolute;
-          right: 92px;
-          top: 52px;
-          width: 130px;
-          height: 130px;
+          top: 10px;
+          right: 9px;
+          width: 12px;
+          height: 40px;
           border-radius: 999px;
-          background: radial-gradient(circle, rgba(125,211,252,0.16), rgba(125,211,252,0.03) 60%, transparent 70%);
-          filter: blur(8px);
-          pointer-events: none;
-          z-index: 1;
+          background: linear-gradient(
+            180deg,
+            rgba(255,255,255,0.30),
+            rgba(255,255,255,0.02)
+          );
+          filter: blur(0.6px);
+          opacity: 0.85;
+          z-index: 3;
+        }
+
+        .pc-premium-media-inner-reflection {
+          position: absolute;
+          top: 0;
+          right: 0;
+          width: 72%;
+          height: 72%;
+          border-top-right-radius: 30px;
+          border-bottom-left-radius: 90px;
+          background: radial-gradient(
+            circle at top right,
+            rgba(255,255,255,0.16),
+            rgba(255,255,255,0.05) 45%,
+            transparent 72%
+          );
+          z-index: 2;
+        }
+
+        .pc-premium-media-shadow {
+          position: absolute;
+          left: 16px;
+          right: 16px;
+          bottom: -12px;
+          height: 16px;
+          border-radius: 50%;
+          background: radial-gradient(
+            ellipse at center,
+            rgba(15,23,42,0.18),
+            rgba(15,23,42,0.05) 60%,
+            transparent 80%
+          );
+          filter: blur(7px);
+          z-index: 0;
+        }
+
+        .pc-premium-media-img {
+          position: absolute;
+          inset: 8px;
+          width: calc(100% - 16px);
+          height: calc(100% - 16px);
+          object-fit: contain;
+          z-index: 4;
+          filter:
+            drop-shadow(0 2px 4px rgba(15,23,42,0.05))
+            saturate(1.05);
         }
 
         @media (max-width: 1100px) {
+          .pc-title,
           .pc-desc,
           .pc-feature-list {
             max-width: 100%;
-          }
-
-          .pc-quran-left-art,
-          .pc-quran-right-art,
-          .pc-quran-soft-orb {
-            opacity: 0.12;
           }
         }
 
@@ -497,8 +599,14 @@ export const ProgramCard: React.FC<ProgramCardProps> = ({
           .pc-card {
             min-height: auto;
             padding: 26px 22px;
+            border-radius: 28px;
           }
 
+          .pc-top {
+            margin-bottom: 20px;
+          }
+
+          .pc-title,
           .pc-desc,
           .pc-feature-list {
             max-width: 100%;
@@ -512,17 +620,16 @@ export const ProgramCard: React.FC<ProgramCardProps> = ({
             width: 100%;
           }
 
-          .pc-quran-right-art {
-            width: 30%;
-            min-width: 110px;
-            right: 8px;
-            bottom: 10px;
-            opacity: 0.18;
+          .pc-premium-media {
+            width: 94px;
+            height: 94px;
+            border-radius: 26px;
           }
 
-          .pc-quran-left-art {
-            width: 62%;
-            opacity: 0.10;
+          .pc-premium-media-img {
+            inset: 8px;
+            width: calc(100% - 16px);
+            height: calc(100% - 16px);
           }
         }
       `}</style>
@@ -548,26 +655,27 @@ export const ProgramCard: React.FC<ProgramCardProps> = ({
               ["--pc-color" as any]: a.color,
               ["--pc-border" as any]: a.border,
               ["--pc-glow" as any]: a.glow,
-              ["--pc-button-bg" as any]: a.button,
-              ["--pc-button-glow" as any]: a.buttonGlow,
-              ["--pc-pill-bg" as any]: a.pillBg,
               ["--pc-pill-text" as any]: a.pillText,
               ["--pc-feature-color" as any]: a.color,
               ["--pc-feature-soft" as any]: a.soft,
               ["--pc-feature-border" as any]: a.border,
+              ["--pc-soft" as any]: a.soft,
+              ["--pc-button-glow" as any]: a.buttonGlow,
+              ["--pc-button-top" as any]: a.buttonTop,
+              ["--pc-button-bottom" as any]: a.buttonBottom,
               ["--pc-glow-soft" as any]: a.glow,
             } as React.CSSProperties
           }
         >
-
           <div className="pc-glow" />
 
           <div className="pc-top">
-            <PremiumIcon Icon={Icon} accent={accent} />
-            <div className="pc-pill">
-              <Sparkles className="w-3.5 h-3.5" />
-              {badge}
-            </div>
+            <PremiumImageBadge
+              imageSrc={imageSrc}
+              title={title}
+              accent={accent}
+            />
+            <div className="pc-pill">{badge}</div>
           </div>
 
           <h3 className="pc-title">{title}</h3>
@@ -585,7 +693,7 @@ export const ProgramCard: React.FC<ProgramCardProps> = ({
           </div>
 
           <div className="pc-button">
-            {ctaLabel}
+            <span>{ctaLabel}</span>
             <ArrowRight className="w-4 h-4" />
           </div>
         </div>

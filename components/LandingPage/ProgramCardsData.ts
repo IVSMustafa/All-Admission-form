@@ -1,4 +1,3 @@
-import { School, GraduationCap, BookOpen, BookHeart } from "lucide-react";
 import { LeadType } from "../../types";
 
 const PROGRAM_CARDS_DATA = [
@@ -10,7 +9,7 @@ const PROGRAM_CARDS_DATA = [
     badge: "Most Popular",
     ctaLabel: "Explore",
     accent: "blue" as const,
-    icon: School,
+    imageSrc: "/images/program-full-time.png",
     features: [
       "Live daily classes",
       "Structured timetable",
@@ -26,7 +25,7 @@ const PROGRAM_CARDS_DATA = [
     badge: "Flexible",
     ctaLabel: "Explore",
     accent: "violet" as const,
-    icon: BookOpen,
+    imageSrc: "/images/program-tuition.png",
     features: [
       "Private teacher support",
       "Exam preparation",
@@ -42,7 +41,7 @@ const PROGRAM_CARDS_DATA = [
     badge: "Personal Teacher",
     ctaLabel: "Explore",
     accent: "amber" as const,
-    icon: GraduationCap,
+    imageSrc: "/images/program-schooling.png",
     features: [
       "Dedicated class teacher",
       "Personal academic focus",
@@ -58,7 +57,7 @@ const PROGRAM_CARDS_DATA = [
     badge: "Certified Scholars",
     ctaLabel: "Explore",
     accent: "emerald" as const,
-    icon: BookHeart,
+    imageSrc: "/images/program-quran.png",
     features: [
       "Qaida, Nazira, Tajweed",
       "Hifz and revision support",

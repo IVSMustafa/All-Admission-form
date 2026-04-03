@@ -1,6 +1,6 @@
 import confetti from 'canvas-confetti';
 import React, { useEffect, useState } from 'react';
-import { ArrowLeft, ArrowRight, Check, Send } from 'lucide-react';
+import { Check, Send, ArrowLeft, ArrowRight } from 'lucide-react';
 import { FormData, INITIAL_DATA, LeadType } from './types';
 import { validatePhoneLength, formatPhoneForWhatsApp } from './constants';
 import SmartPanel from './components/SmartPanel';
@@ -120,6 +120,23 @@ useEffect(() => {
 }, [playConfetti]);
 const isQuranDetailsStep = step === 1 && formData.leadType === LeadType.QURAN;
 const isOneToOneDetailsStep = step === 1 && formData.leadType === LeadType.ONE_ON_ONE_SCHOOLING;
+const isFullTimeDetailsStep = step === 1 && formData.leadType === LeadType.FULL_TIME;
+const isTuitionDetailsStep = step === 1 && formData.leadType === LeadType.TUITION;
+const isSchoolStep1Details = isFullTimeDetailsStep || isOneToOneDetailsStep;
+const isFinalStep = step === 2;
+
+const fullTimeStepShift = 'xl:translate-x-[300px]';
+const oneToOneStepShift = 'xl:translate-x-[220px]';
+const tuitionStepShift = 'xl:translate-x-[200px]';
+
+const detailsStepShift =
+  isFullTimeDetailsStep
+    ? fullTimeStepShift
+    : isOneToOneDetailsStep
+    ? oneToOneStepShift
+    : isTuitionDetailsStep
+    ? tuitionStepShift
+    : '';
 const updateData = (fields: Partial<FormData>) => {
     setFormData(prev => ({ ...prev, ...fields }));
     const newErrors = { ...errors };
@@ -782,8 +799,21 @@ if (isSubmitted) {
 `}</style>
 
 
-      <div className="ivs-success-wrap relative z-10 w-full max-w-[1120px]">
-       <div className="ivs-success-main relative z-10 mr-auto w-full max-w-[980px] rounded-[28px] border border-[rgba(29,111,206,0.10)] bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(244,249,255,0.96))] px-5 py-6 sm:px-7 sm:py-8 md:px-8 md:py-9">
+      <div className="ivs-success-wrap relative z-10 w-full max-w-[980px] pl-[70px]">
+          <div
+    className="absolute left-[-400px] top-[55%] -translate-y-1/2 z-0 hidden xl:block pointer-events-none"
+    aria-hidden="true"
+  >
+    <img
+      src="/images/success-side-education.png"
+      alt=""
+      className="w-[500px] select-none"
+      style={{
+        opacity: 0.9,
+      }}
+    />
+  </div>
+       <div className="ivs-success-main relative z-10 mr-auto w-full max-w-[760px] rounded-[28px] border border-[rgba(29,111,206,0.10)] bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(244,249,255,0.96))] px-5 py-6 sm:px-7 sm:py-8 md:px-8 md:py-9">
           <div className="relative text-center">
             <div className="absolute left-[10%] top-1 text-sky-300 text-sm ivs-sparkle-1">✦</div>
             <div className="absolute right-[12%] top-6 text-blue-300 text-xs ivs-sparkle-2">✦</div>
@@ -1105,46 +1135,15 @@ if (isSubmitted) {
     );
   }
 
-  return (
-<div className="min-h-screen relative">
- 
-  {isQuranDetailsStep && (
-  <div
-    className="fixed inset-0 z-0 bg-[linear-gradient(rgba(255,255,255,0.38),rgba(255,255,255,0.38)),url('/images/quran-cover-bluee.png')] bg-no-repeat bg-cover bg-left-top pointer-events-none"
-    aria-hidden="true"
-  />
-)}
-{isOneToOneDetailsStep && (
-  <div
-    className="fixed inset-0 z-0 pointer-events-none"
-    aria-hidden="true"
-    style={{
-      backgroundImage: "url('/images/one-to-one-schooling-bg.png')",
-      backgroundRepeat: "no-repeat",
-      backgroundSize: "auto 80%",
-      backgroundPosition: "left bottom",
-      opacity: 0.22,
-    }}
-  />
-)}
-
-<div
-  className={
-    isQuranDetailsStep || isOneToOneDetailsStep
-      ? "relative z-10 w-full px-4 pt-4 md:px-8 md:pt-6 xl:px-12 xl:pr-[360px]"
-      : "relative z-10 w-full max-w-7xl mx-auto px-4 pt-4 md:px-8 md:pt-6 xl:pt-24 xl:pr-[360px]"
-  }
+return (
+  <div className="min-h-screen relative">
+    <header
+  className="
+    relative z-40 mb-4 flex justify-center
+    md:mb-6
+    xl:fixed xl:top-6 xl:left-10 xl:mb-0 xl:justify-start
+  "
 >
-<div
-  className={
-    isQuranDetailsStep
-      ? "w-full max-w-3xl xl:ml-[400px] xl:mr-[380px]"
-      : isOneToOneDetailsStep
-       ? "w-full max-w-3xl pt-6 md:pt-10 xl:ml-[770px] xl:mr-[380px]"
-      : "w-full max-w-3xl mx-auto"
-  }
->
-<header className="z-40 mb-4 flex justify-center md:mb-6 md:block xl:fixed xl:top-4 xl:left-14 xl:mb-0">
   <div className="inline-flex items-center gap-3 rounded-2xl border border-white/60 bg-white/55 backdrop-blur-md shadow-[0_10px_30px_rgba(15,45,87,0.08)] px-3 py-2 sm:px-4 sm:py-2.5 md:bg-transparent md:backdrop-blur-0 md:border-0 md:shadow-none md:p-0">
     <div className="shrink-0 rounded-xl bg-white/80 p-1.5 shadow-[0_6px_16px_rgba(15,45,87,0.08)] md:bg-transparent md:shadow-none md:p-0">
       <img
@@ -1154,7 +1153,7 @@ if (isSubmitted) {
       />
     </div>
 
-    <div className="leading-tight text-center">
+    <div className="leading-tight text-center xl:text-left">
       <h1 className="font-display font-bold text-[17px] sm:text-[20px] md:text-[24px] xl:text-[30px] tracking-[0.01em] text-brand-burgundy">
         Iqra Virtual School
       </h1>
@@ -1164,6 +1163,95 @@ if (isSubmitted) {
     </div>
   </div>
 </header>
+{isQuranDetailsStep && (
+  <div
+    className="fixed inset-0 z-0 pointer-events-none"
+    aria-hidden="true"
+    style={{
+      backgroundImage:
+        "linear-gradient(rgba(255,255,255,0.38),rgba(255,255,255,0.38)), url('/images/quran-cover-bluee.png')",
+      backgroundRepeat: "no-repeat",
+      backgroundSize: "cover",
+      backgroundPosition: "center center",
+    }}
+  />
+)}
+
+{isFullTimeDetailsStep && (
+  <div
+    className="fixed inset-0 z-0 pointer-events-none hidden xl:block"
+    aria-hidden="true"
+    style={{
+      backgroundImage:
+        "linear-gradient(rgba(255,255,255,0.76),rgba(255,255,255,0.76)), url('/images/full-time-school-side.png')",
+      backgroundRepeat: "no-repeat",
+      backgroundSize: "cover",
+      backgroundPosition: "center center",
+    }}
+  />
+)}
+
+{isOneToOneDetailsStep && (
+  <div
+    className="fixed inset-0 z-0 pointer-events-none hidden xl:block"
+    aria-hidden="true"
+    style={{
+      backgroundImage:
+        "linear-gradient(rgba(255,255,255,0.76),rgba(255,255,255,0.76)), url('/images/one-to-one-schooling-bg.png')",
+      backgroundRepeat: "no-repeat",
+      backgroundSize: "cover",
+      backgroundPosition: "center center",
+    }}
+  />
+)}
+
+{isTuitionDetailsStep && (
+  <div
+    className="fixed inset-0 z-0 pointer-events-none hidden xl:block"
+    aria-hidden="true"
+    style={{
+      backgroundImage:
+        "linear-gradient(rgba(255,255,255,0.76),rgba(255,255,255,0.76)), url('/images/tuition-side.png')",
+      backgroundRepeat: "no-repeat",
+      backgroundSize: "cover",
+      backgroundPosition: "center center",
+    }}
+  />
+)}
+
+{isFinalStep && (
+  <div
+    className="fixed inset-0 z-0 pointer-events-none hidden xl:block"
+    aria-hidden="true"
+    style={{
+      backgroundImage:
+        "linear-gradient(rgba(255,255,255,0.82),rgba(255,255,255,0.82)), url('/images/final-step-education.png')",
+      backgroundRepeat: "no-repeat",
+      backgroundSize: "cover",
+      backgroundPosition: "center center",
+    }}
+  />
+)}
+    <div
+      className={
+        isQuranDetailsStep
+          ? "relative z-10 w-full px-4 pt-4 md:px-8 md:pt-6 xl:px-12 xl:pr-[360px]"
+          : isFinalStep
+          ? "relative z-10 w-full max-w-7xl mx-auto px-4  pt-4 md:px-8 md:pt-6 xl:pt-24 xl:pr-[100px] xl:pl-[300px]"
+          : isSchoolStep1Details
+          ? "relative z-10 w-full max-w-7xl mx-auto px-4 pt-6 md:px-8 md:pt-8 xl:pt-24 xl:pr-[360px]"
+          : "w-full max-w-3xl mx-auto"
+      }
+    >
+<div
+  className={
+    isQuranDetailsStep
+      ? "w-full max-w-3xl xl:ml-[400px] xl:mr-[380px]"
+      : step === 1
+      ? `w-full max-w-3xl mx-auto pt-4 md:pt-6 xl:pt-0 ${detailsStepShift}`
+      : "w-full max-w-3xl mx-auto"
+  }
+>
 
         <div className={isQuranDetailsStep ? "mb-6" : "mb-10"}>
           {step === 1 && (
@@ -1185,12 +1273,10 @@ if (isSubmitted) {
             />
           )}
         </div>
-
-
-{isQuranDetailsStep ? (
-  <div className="relative left-1/2 right-1/2 w-screen -translate-x-1/2 px-6 md:px-8 xl:px-12 pt-0 pb-10 md:pb-14 animate-fade-in">
-    <div className="w-full max-w-[720px] xl:max-w-[640px] mx-auto xl:mr-[244px] border-t border-brand-burgundy/20 pt-6">
-      <div className="flex justify-between items-center">
+{step > 0 && !isQuranDetailsStep && (
+  <div className="pt-6 pb-10 md:pb-14">
+    <div className="border-t border-brand-burgundy/20 pt-6 animate-fade-in">
+      <div className="flex items-center justify-between gap-3">
         <Button onClick={prevStep} variant="secondary">
           <ArrowLeft className="w-4 h-4" /> Back
         </Button>
@@ -1210,30 +1296,6 @@ if (isSubmitted) {
         )}
       </div>
     </div>
-  </div>
-) : (
-  <div
-    className={`flex justify-between items-center pt-6 pb-10 md:pb-14 border-t border-brand-burgundy/20 animate-fade-in ${
-      isOneToOneDetailsStep ? "xl:ml-[5px]" : ""
-    }`}
-  >
-    <Button onClick={prevStep} variant="secondary">
-      <ArrowLeft className="w-4 h-4" /> Back
-    </Button>
-
-    {step < 2 ? (
-      <Button onClick={nextStep} variant="primary">
-        Next Step <ArrowRight className="w-4 h-4" />
-      </Button>
-    ) : (
-      <Button
-        onClick={handleSubmit}
-        variant="primary"
-        className="!bg-gradient-to-r !from-emerald-500 !to-green-600 !shadow-emerald-500/20"
-      >
-        Submit & Get Details <Send className="w-4 h-4" />
-      </Button>
-    )}
   </div>
 )}
       </div>

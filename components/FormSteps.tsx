@@ -5,11 +5,13 @@ import '@fontsource/great-vibes';
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { FormData, LeadType, ProgramType, Curriculum, Track, ClassMode, Student, QuranStudent } from '../types';
 import { GRADES, COUNTRIES, IGCSE_SUBJECTS, TIME_SLOTS, DAYS, QURAN_LEVELS, QURAN_CLASS_TIMES, getGradeValue as getGV } from '../constants';
-import { GlassCard, InputField, SelectField, Button, OptionCard, Toggle, PhoneInput } from './UI';
+import { GlassCard, InputField, SelectField, OptionCard, Toggle, PhoneInput, Button } from './UI';
 import { HeroCard, ProgramCard, TrustStrip, PROGRAM_CARDS_DATA, Navbar } from './LandingPage';
+
 import {
   School, BookOpen, GraduationCap, CheckCircle, Calendar, AlertTriangle,
   Phone, User, Sparkles, Loader2, UserRound, Clock, ShieldCheck, Globe2, Zap, Star, ChevronDown,
+  ArrowLeft, ArrowRight,
 } from 'lucide-react';
 
 const PREMIUM_CSS = `
@@ -388,57 +390,148 @@ function PField({ label, icon: Icon, children }: { label: string; icon?: any; ch
 
 export function Step0_Welcome({ data, updateData, nextStep }: StepProps) {
   usePremiumStyles();
+
   const [quickGrade, setQuickGrade] = useState(data.grade || '');
   const [quickCurriculum, setQuickCurriculum] = useState('');
   const [quickCountry, setQuickCountry] = useState(data.country || '');
+  const [cardsVisible, setCardsVisible] = useState(false);
+  const cardsRef = useRef<HTMLDivElement | null>(null);
+
+useEffect(() => {
+  const el = cardsRef.current;
+  if (!el) return;
+
+  const obs = new IntersectionObserver(
+    ([entry]) => {
+      setCardsVisible(entry.isIntersecting);
+    },
+    {
+      threshold: 0.18,
+      rootMargin: '0px 0px -8% 0px',
+    }
+  );
+
+  obs.observe(el);
+  return () => obs.disconnect();
+}, []);
 
   const goByLead = (lead: LeadType) => {
-    if (lead === LeadType.FULL_TIME) updateData({ leadType: LeadType.FULL_TIME, programType: ProgramType.FULL_TIME });
-    else if (lead === LeadType.TUITION) updateData({ leadType: LeadType.TUITION, programType: ProgramType.TUITION });
-    else if (lead === LeadType.ONE_ON_ONE_SCHOOLING) updateData({ leadType: LeadType.ONE_ON_ONE_SCHOOLING, programType: ProgramType.ONE_ON_ONE_SCHOOLING });
-    else if (lead === LeadType.QURAN) updateData({ leadType: LeadType.QURAN });
-    else updateData({ leadType: LeadType.FULL_TIME, programType: ProgramType.FULL_TIME });
+    if (lead === LeadType.FULL_TIME) {
+      updateData({ leadType: LeadType.FULL_TIME, programType: ProgramType.FULL_TIME });
+    } else if (lead === LeadType.TUITION) {
+      updateData({ leadType: LeadType.TUITION, programType: ProgramType.TUITION });
+    } else if (lead === LeadType.ONE_ON_ONE_SCHOOLING) {
+      updateData({ leadType: LeadType.ONE_ON_ONE_SCHOOLING, programType: ProgramType.ONE_ON_ONE_SCHOOLING });
+    } else if (lead === LeadType.QURAN) {
+      updateData({ leadType: LeadType.QURAN });
+    } else {
+      updateData({ leadType: LeadType.FULL_TIME, programType: ProgramType.FULL_TIME });
+    }
     nextStep();
   };
 
   return (
-    <div className="transition-all duration-300">
-      <Navbar onNavigate={(s) => {
-        if (s === 'school-trial') goByLead(LeadType.FULL_TIME);
-        if (s === 'tuition-trial') goByLead(LeadType.TUITION);
-        if (s === 'quran-trial') goByLead(LeadType.QURAN);
-      }} />
+    <div className="transition-all duration-300 overflow-x-clip">
+      <style>{`
+        .ivs-program-section {
+          position: relative;
+          overflow: visible;
+        }
+
+ .ivs-program-card-wrap {
+  opacity: 0;
+  transform: translateY(80px) scale(0.985);
+  transition:
+    opacity 0.82s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.82s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform;
+}
+
+.ivs-program-card-wrap.is-visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+        @media (prefers-reduced-motion: reduce) {
+          .ivs-program-card-wrap,
+          .ivs-program-card-wrap.is-visible {
+            opacity: 1 !important;
+            transform: none !important;
+            transition: none !important;
+          }
+        }
+      `}</style>
+
+      <Navbar
+        onNavigate={(s) => {
+          if (s === 'school-trial') goByLead(LeadType.FULL_TIME);
+          if (s === 'tuition-trial') goByLead(LeadType.TUITION);
+          if (s === 'quran-trial') goByLead(LeadType.QURAN);
+        }}
+      />
+
       <div className="px-6 md:px-12 py-8 space-y-10">
         <HeroCard
           grade={quickGrade}
           curriculum={quickCurriculum}
           country={quickCountry}
           onStartTrial={() => {
-            updateData({ leadType: LeadType.FULL_TIME, programType: ProgramType.FULL_TIME, grade: quickGrade, country: quickCountry });
+            updateData({
+              leadType: LeadType.FULL_TIME,
+              programType: ProgramType.FULL_TIME,
+              grade: quickGrade,
+              country: quickCountry,
+            });
             nextStep();
           }}
           onBookConsultation={() => {
-            updateData({ leadType: LeadType.TUITION, programType: ProgramType.TUITION });
+            updateData({
+              leadType: LeadType.TUITION,
+              programType: ProgramType.TUITION,
+            });
             nextStep();
           }}
           onQuickSelect={(field, value) => {
-            if (field === 'grade') { setQuickGrade(value); updateData({ grade: value }); }
-            if (field === 'curriculum') setQuickCurriculum(value);
-            if (field === 'country') { setQuickCountry(value); updateData({ country: value }); }
+            if (field === 'grade') {
+              setQuickGrade(value);
+              updateData({ grade: value });
+            }
+            if (field === 'curriculum') {
+              setQuickCurriculum(value);
+            }
+            if (field === 'country') {
+              setQuickCountry(value);
+              updateData({ country: value });
+            }
           }}
         />
-        <section className="program-grid">
-          {PROGRAM_CARDS_DATA.map((cd: any) => (
-            <ProgramCard key={String(cd.id)} {...cd} onSelect={(id: LeadType) => goByLead(id)} />
-          ))}
-        </section>
+
+        <div ref={cardsRef} className="ivs-program-section">
+          <section className="program-grid">
+            {PROGRAM_CARDS_DATA.map((cd: any, index: number) => (
+              <div
+                key={String(cd.id)}
+                className={`ivs-program-card-wrap ${cardsVisible ? 'is-visible' : ''}`}
+                style={{
+                  transitionDelay: cardsVisible ? `${index * 120}ms` : '0ms',
+                }}
+              >
+                <ProgramCard
+                  {...cd}
+                  onSelect={(id: LeadType) => goByLead(id)}
+                />
+              </div>
+            ))}
+          </section>
+        </div>
+
         <TrustStrip />
       </div>
     </div>
   );
 }
 
-export const Step1_Details = ({ data, updateData, errors }: StepProps) => {
+export const Step1_Details = ({ data, updateData, nextStep, prevStep, errors }: StepProps) => {
   usePremiumStyles();
 
   const currentName = data.studentName;
@@ -534,289 +627,309 @@ export const Step1_Details = ({ data, updateData, errors }: StepProps) => {
   const parentTilt = useTilt(4);
   const addTilt = useTilt(3);
 
-  if (data.leadType === LeadType.QURAN) return <QuranForm data={data} updateData={updateData} errors={errors} />;
-  if (data.leadType === LeadType.TUITION) return <TuitionForm data={data} updateData={updateData} errors={errors} />;
 
-  return (
-    <div className="space-y-5">
-<div className="text-center pf-e1">
-  {data.leadType !== LeadType.ONE_ON_ONE_SCHOOLING && (
-    <div className="pf-step-pill mx-auto w-fit mb-4">
-      <span className="pf-step-dot" />
-      Step 2 · Student Details
-    </div>
-  )}
 
-  <h2 className="pf-heading text-3xl sm:text-4xl font-display font-extrabold tracking-tight leading-tight mb-2">
-    {data.leadType === LeadType.ONE_ON_ONE_SCHOOLING ? 'One-to-One Schooling' : 'Student Information'}
-  </h2>
-        <p className="text-sm text-brand-mediumText max-w-xs mx-auto">
-          Add each student who will be enrolling.
-        </p>
-      </div>
+if (data.leadType === LeadType.QURAN) return <QuranForm data={data} updateData={updateData} errors={errors} nextStep={nextStep} prevStep={prevStep} />;
+if (data.leadType === LeadType.TUITION) return <TuitionForm data={data} updateData={updateData} errors={errors} />;
 
-      <div className="pf-e2">
-        <div
-          ref={parentTilt.ref}
-          onMouseMove={parentTilt.onMouseMove}
-          onMouseLeave={parentTilt.onMouseLeave}
-          className="pf-card p-5 sm:p-6"
-        >
-          <div className="flex items-center gap-3 mb-5">
-            <div className="pf-icon">
-              <span className="text-white text-xl">👤</span>
-            </div>
-            <div>
-              <h3 className="text-sm font-extrabold text-[#0f2d57] tracking-tight">Parent / Guardian Details</h3>
-              <p className="text-xs text-brand-mediumText mt-0.5">For timings & WhatsApp contact</p>
-            </div>
-          </div>
 
-          <div className="grid sm:grid-cols-2 gap-4">
-            <InputField
-              label="Parent Name"
-              value={data.parentName}
-              onChange={e => updateData({ parentName: e.target.value })}
-              placeholder="e.g. Mr. Khan"
-              required
-              error={errors.parentName}
-            />
-            <InputField
-              label="Email Address"
-              type="email"
-              value={data.email}
-              onChange={e => updateData({ email: e.target.value })}
-              placeholder="e.g. parent@email.com"
-              required
-              error={errors.email}
-            />
-            <div className="sm:col-span-2">
-              <PhoneInput
-                label="WhatsApp Number"
-                country={data.country || ''}
-                phone={data.whatsapp}
-                onPhoneChange={p => updateData({ whatsapp: p })}
-                onCountryChange={c => updateData({ country: c })}
-                required
-                error={errors.whatsapp}
-              />
-            </div>
-            {data.country === 'Other' && (
-              <div className="sm:col-span-2">
-                <InputField
-                  label="Country Name"
-                  value={data.otherCountryName}
-                  onChange={e => updateData({ otherCountryName: e.target.value })}
-                  placeholder="e.g. Denmark"
-                  required
-                  error={errors.otherCountryName}
-                />
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
+return (
+  <div className="relative">
 
-      {realStudents.length > 0 && (
-        <div className="pf-e3">
-          <div className="pf-card pf-card-green p-5 sm:p-6">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-3">
-                <div className="pf-icon pf-icon-green">
-                  <CheckCircle className="w-5 h-5 text-white" />
-                </div>
-                <div>
-                  <h3 className="text-sm font-extrabold text-[#0f2d57]">Added Students</h3>
-                  <p className="text-xs text-brand-mediumText mt-0.5">
-                    {realStudents.length} student{realStudents.length > 1 ? 's' : ''} ready to enrol
-                  </p>
-                </div>
-              </div>
-              <div className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-black text-white"
-                style={{ background: 'linear-gradient(135deg,#10b981,#059669)', boxShadow: '0 4px 12px rgba(16,185,129,0.3)' }}>
-                {realStudents.length}
-              </div>
-            </div>
-
-            <div className="space-y-2.5">
-              {realStudents.map((student, idx) => (
-                <div key={student.id} className="pf-student-row flex items-center gap-3 p-3 sm:p-4">
-                  <div className="pf-badge">{idx + 1}</div>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-extrabold text-[#0f2d57] text-sm truncate">{student.name}</p>
-                    <p className="text-xs text-brand-mediumText mt-0.5 truncate">
-                      Age {student.age} · {student.grade}
-                      {student.curriculum ? ` · ${student.curriculum}` : ''}
-                    </p>
-                  </div>
-                  <div className="flex gap-2 shrink-0">
-                    <button onClick={() => editStudent(student)}
-                      className="px-3 py-1.5 rounded-full text-xs font-bold text-[#1d6fce] transition-all"
-                      style={{ background: 'rgba(29,111,206,0.08)', border: '1.5px solid rgba(29,111,206,0.18)' }}>
-                      Edit
-                    </button>
-                    <button onClick={() => removeStudent(student.id)}
-                      className="px-3 py-1.5 rounded-full text-xs font-bold text-red-600 transition-all"
-                      style={{ background: 'rgba(239,68,68,0.07)', border: '1.5px solid rgba(239,68,68,0.18)' }}>
-                      Remove
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
-
-      <div className="pf-e4">
-        <div
-          ref={addTilt.ref}
-          onMouseMove={addTilt.onMouseMove}
-          onMouseLeave={addTilt.onMouseLeave}
-          className="pf-card p-5 sm:p-6"
-          style={{ borderColor: 'rgba(245,158,11,0.14)' }}
-        >
-          <div className="flex items-center gap-3 mb-5">
-            <div className="pf-icon pf-icon-gold">
-              <span className="text-white text-xl">✏️</span>
-            </div>
-            <div>
-              <h3 className="text-sm font-extrabold text-[#0f2d57] tracking-tight">
-                {realStudents.length > 0 ? 'Add Another Student' : 'Add Student'}
-              </h3>
-              <p className="text-xs text-brand-mediumText mt-0.5">
-                {realStudents.length > 0 ? 'Fill in details to enrol another student.' : 'Age auto-fills the grade for you '}
-              </p>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <PField label="Student Name" icon={User}>
-              <div className="pf-input-wrap">
-                <input
-                  type="text"
-                  value={currentName}
-                  onChange={e => setCurrentName(e.target.value)}
-                  placeholder="e.g. Ahmed Khan"
-                />
-              </div>
-            </PField>
-
-            <PField label="Age" icon={Zap}>
-              <div className="pf-input-wrap">
-                <input
-                  type="number"
-                  value={currentAge}
-                  onChange={e => setCurrentAge(e.target.value)}
-                  placeholder="e.g. 10"
-                  min={1}
-                  max={25}
-                />
-              </div>
-              {ageNum > 0 && !showAgeGuidance && recommendedGrade && (
-                <div className="pf-chip">
-                  <Zap className="w-3 h-3" />
-                  Auto-set: {recommendedGrade}
-                </div>
-              )}
-            </PField>
-
-            <PField label="Grade" icon={GraduationCap}>
-              <div className="pf-input-wrap relative">
-                <select value={currentGrade} onChange={e => setCurrentGrade(e.target.value)}>
-                  <option value="">Select Grade</option>
-                  {GRADES.map(g => <option key={g} value={g}>{g}</option>)}
-                </select>
-               
-              </div>
-            </PField>
-          </div>
-
-              {showAgeGuidance && (
-            <div className="mt-4 flex items-center gap-3 p-3.5 rounded-2xl bg-amber-50 border border-amber-200">
-              <AlertTriangle className="w-5 h-5 text-amber-500 shrink-0" />
-              <p className="text-sm text-amber-800 font-medium">
-                <strong>Don't worry!</strong> Our advisor will guide you through the best options for your child's age.
-              </p>
+    <div className="relative z-10 space-y-8 sm:space-y-10">
+        <div className="text-center pf-e1 pt-2 xl:pt-4">
+          {data.leadType !== LeadType.ONE_ON_ONE_SCHOOLING && (
+            <div className="pf-step-pill mx-auto w-fit mb-5">
+              <span className="pf-step-dot" />
+              Step 2 · Student Details
             </div>
           )}
 
-          {showCurriculum && (
-            <div className="mt-5 pt-5 border-t border-black/8">
-              <div className="pf-section-label">
-                <BookOpen className="w-3 h-3" />
-                Select Curriculum <span className="text-red-500 normal-case">*</span>
+          <h2 className="pf-heading text-3xl sm:text-4xl font-display font-extrabold tracking-tight leading-tight mb-3">
+            {data.leadType === LeadType.ONE_ON_ONE_SCHOOLING ? 'One-to-One Schooling' : 'Student Information'}
+          </h2>
+
+          <p className="text-sm text-brand-mediumText max-w-sm mx-auto">
+            Add each student who will be enrolling.
+          </p>
+        </div>
+
+        <div className="pf-e2">
+          <div
+            ref={parentTilt.ref}
+            onMouseMove={parentTilt.onMouseMove}
+            onMouseLeave={parentTilt.onMouseLeave}
+            className="pf-card p-5 sm:p-6"
+          >
+            <div className="flex items-center gap-3 mb-5">
+              <div className="pf-icon">
+                <span className="text-white text-xl">👤</span>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-3">
-                {([
-                  { value: Curriculum.FEDERAL, label: 'Federal Board', desc: 'Matric / FSc', emoji: '🏛️' },
-                  { value: Curriculum.IGCSE_O_LEVEL, label: 'IGCSE / O-Level', desc: 'Cambridge', emoji: '🌍' },
-                  { value: Curriculum.A_LEVEL, label: 'A-Level', desc: 'Advanced', emoji: '🎓' },
-                ] as const).map(({ value, label, desc, emoji }) => (
-                  <button
-                    key={value}
-                    type="button"
-                    onClick={() => setCurrentCurriculum(value as Curriculum)}
-                    className={`pf-curriculum-btn ${currentCurriculum === value ? 'active' : ''}`}
-                  >
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="text-lg">{emoji}</span>
-                      <p className="font-extrabold text-sm text-[#0f2d57]">{label}</p>
-                      {currentCurriculum === value && (
-                        <div className="ml-auto w-5 h-5 rounded-full bg-[#1d6fce] flex items-center justify-center">
-                          <CheckCircle className="w-3 h-3 text-white" />
-                        </div>
-                      )}
+              <div>
+                <h3 className="text-sm font-extrabold text-[#0f2d57] tracking-tight">Parent / Guardian Details</h3>
+                <p className="text-xs text-brand-mediumText mt-0.5">For timings & WhatsApp contact</p>
+              </div>
+            </div>
+
+            <div className="grid sm:grid-cols-2 gap-4">
+              <InputField
+                label="Parent Name"
+                value={data.parentName}
+                onChange={e => updateData({ parentName: e.target.value })}
+                placeholder="e.g. Mr. Khan"
+                required
+                error={errors.parentName}
+              />
+              <InputField
+                label="Email Address"
+                type="email"
+                value={data.email}
+                onChange={e => updateData({ email: e.target.value })}
+                placeholder="e.g. parent@email.com"
+                required
+                error={errors.email}
+              />
+              <div className="sm:col-span-2">
+                <PhoneInput
+                  label="WhatsApp Number"
+                  country={data.country || ''}
+                  phone={data.whatsapp}
+                  onPhoneChange={p => updateData({ whatsapp: p })}
+                  onCountryChange={c => updateData({ country: c })}
+                  required
+                  error={errors.whatsapp}
+                />
+              </div>
+              {data.country === 'Other' && (
+                <div className="sm:col-span-2">
+                  <InputField
+                    label="Country Name"
+                    value={data.otherCountryName}
+                    onChange={e => updateData({ otherCountryName: e.target.value })}
+                    placeholder="e.g. Denmark"
+                    required
+                    error={errors.otherCountryName}
+                  />
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {realStudents.length > 0 && (
+          <div className="pf-e3">
+            <div className="pf-card pf-card-green p-5 sm:p-6">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  <div className="pf-icon pf-icon-green">
+                    <CheckCircle className="w-5 h-5 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-extrabold text-[#0f2d57]">Added Students</h3>
+                    <p className="text-xs text-brand-mediumText mt-0.5">
+                      {realStudents.length} student{realStudents.length > 1 ? 's' : ''} ready to enrol
+                    </p>
+                  </div>
+                </div>
+                <div
+                  className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-black text-white"
+                  style={{ background: 'linear-gradient(135deg,#10b981,#059669)', boxShadow: '0 4px 12px rgba(16,185,129,0.3)' }}
+                >
+                  {realStudents.length}
+                </div>
+              </div>
+
+              <div className="space-y-2.5">
+                {realStudents.map((student, idx) => (
+                  <div key={student.id} className="pf-student-row flex items-center gap-3 p-3 sm:p-4">
+                    <div className="pf-badge">{idx + 1}</div>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-extrabold text-[#0f2d57] text-sm truncate">{student.name}</p>
+                      <p className="text-xs text-brand-mediumText mt-0.5 truncate">
+                        Age {student.age} · {student.grade}
+                        {student.curriculum ? ` · ${student.curriculum}` : ''}
+                      </p>
                     </div>
-                    <p className="text-xs text-brand-mediumText pl-7">{desc}</p>
-                  </button>
+                    <div className="flex gap-2 shrink-0">
+                      <button
+                        onClick={() => editStudent(student)}
+                        className="px-3 py-1.5 rounded-full text-xs font-bold text-[#1d6fce] transition-all"
+                        style={{ background: 'rgba(29,111,206,0.08)', border: '1.5px solid rgba(29,111,206,0.18)' }}
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => removeStudent(student.id)}
+                        className="px-3 py-1.5 rounded-full text-xs font-bold text-red-600 transition-all"
+                        style={{ background: 'rgba(239,68,68,0.07)', border: '1.5px solid rgba(239,68,68,0.18)' }}
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  </div>
                 ))}
               </div>
             </div>
-          )}
+          </div>
+        )}
 
-          {pendingIsValid && (
-            <div className="pf-ready mt-4 px-4 py-3 flex items-center gap-3">
-              <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0"
-                style={{ background: 'linear-gradient(135deg,#10b981,#059669)', boxShadow: '0 4px 12px rgba(16,185,129,0.3)' }}>
-                <CheckCircle className="w-4 h-4 text-white" />
+        <div className="pf-e4">
+          <div
+            ref={addTilt.ref}
+            onMouseMove={addTilt.onMouseMove}
+            onMouseLeave={addTilt.onMouseLeave}
+            className="pf-card p-5 sm:p-6"
+            style={{ borderColor: 'rgba(245,158,11,0.14)' }}
+          >
+            <div className="flex items-center gap-3 mb-5">
+              <div className="pf-icon pf-icon-gold">
+                <span className="text-white text-xl">✏️</span>
               </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-extrabold text-emerald-700 truncate">
-                  <span className="text-emerald-800">{currentName}</span> is ready to enrol!
-                </p>
-                <p className="text-xs text-emerald-600 mt-0.5 truncate">
-                  Age {currentAge} · {currentGrade}
-                  {showCurriculum && currentCurriculum ? ` · ${currentCurriculum}` : ''} — you can go to Next Step ✓
+              <div>
+                <h3 className="text-sm font-extrabold text-[#0f2d57] tracking-tight">
+                  {realStudents.length > 0 ? 'Add Another Student' : 'Add Student'}
+                </h3>
+                <p className="text-xs text-brand-mediumText mt-0.5">
+                  {realStudents.length > 0 ? 'Fill in details to enrol another student.' : 'Age auto-fills the grade for you '}
                 </p>
               </div>
-              <Star className="w-4 h-4 text-amber-400 shrink-0" />
             </div>
-          )}
 
-          <div className="mt-4 space-y-3">
-            <button
-              type="button"
-              onClick={addStudent}
-              disabled={!pendingIsValid}
-              className="pf-btn-outline w-full py-3.5 text-sm tracking-wide"
-            >
-              + Add Another Student
-            </button>
-            {errors.students && (
-              <div className="flex items-center gap-2 p-3 rounded-xl bg-red-50 border border-red-200">
-                <AlertTriangle className="w-4 h-4 text-red-500 shrink-0" />
-                <p className="text-sm text-red-600 font-semibold">{errors.students}</p>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <PField label="Student Name" icon={User}>
+                <div className="pf-input-wrap">
+                  <input
+                    type="text"
+                    value={currentName}
+                    onChange={e => setCurrentName(e.target.value)}
+                    placeholder="e.g. Ahmed Khan"
+                  />
+                </div>
+              </PField>
+
+              <PField label="Age" icon={Zap}>
+                <div className="pf-input-wrap">
+                  <input
+                    type="number"
+                    value={currentAge}
+                    onChange={e => setCurrentAge(e.target.value)}
+                    placeholder="e.g. 10"
+                    min={1}
+                    max={25}
+                  />
+                </div>
+                {ageNum > 0 && !showAgeGuidance && recommendedGrade && (
+                  <div className="pf-chip">
+                    <Zap className="w-3 h-3" />
+                    Auto-set: {recommendedGrade}
+                  </div>
+                )}
+              </PField>
+
+              <PField label="Grade" icon={GraduationCap}>
+                <div className="pf-input-wrap relative">
+                  <select value={currentGrade} onChange={e => setCurrentGrade(e.target.value)}>
+                    <option value="">Select Grade</option>
+                    {GRADES.map(g => <option key={g} value={g}>{g}</option>)}
+                  </select>
+                </div>
+              </PField>
+            </div>
+
+            {showAgeGuidance && (
+              <div className="mt-4 flex items-center gap-3 p-3.5 rounded-2xl bg-amber-50 border border-amber-200">
+                <AlertTriangle className="w-5 h-5 text-amber-500 shrink-0" />
+                <p className="text-sm text-amber-800 font-medium">
+                  <strong>Don't worry!</strong> Our advisor will guide you through the best options for your child's age.
+                </p>
               </div>
             )}
+
+            {showCurriculum && (
+              <div className="mt-5 pt-5 border-t border-black/8">
+                <div className="pf-section-label">
+                  <BookOpen className="w-3 h-3" />
+                  Select Curriculum <span className="text-red-500 normal-case">*</span>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-3">
+                  {([
+                    { value: Curriculum.FEDERAL, label: 'Federal Board', desc: 'Matric / FSc', emoji: '🏛️' },
+                    { value: Curriculum.IGCSE_O_LEVEL, label: 'IGCSE / O-Level', desc: 'Cambridge', emoji: '🌍' },
+                    { value: Curriculum.A_LEVEL, label: 'A-Level', desc: 'Advanced', emoji: '🎓' },
+                  ] as const).map(({ value, label, desc, emoji }) => (
+                    <button
+                      key={value}
+                      type="button"
+                      onClick={() => setCurrentCurriculum(value as Curriculum)}
+                      className={`pf-curriculum-btn ${currentCurriculum === value ? 'active' : ''}`}
+                    >
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="text-lg">{emoji}</span>
+                        <p className="font-extrabold text-sm text-[#0f2d57]">{label}</p>
+                        {currentCurriculum === value && (
+                          <div className="ml-auto w-5 h-5 rounded-full bg-[#1d6fce] flex items-center justify-center">
+                            <CheckCircle className="w-3 h-3 text-white" />
+                          </div>
+                        )}
+                      </div>
+                      <p className="text-xs text-brand-mediumText pl-7">{desc}</p>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {pendingIsValid && (
+              <div className="pf-ready mt-4 px-4 py-3 flex items-center gap-3">
+                <div
+                  className="w-8 h-8 rounded-full flex items-center justify-center shrink-0"
+                  style={{ background: 'linear-gradient(135deg,#10b981,#059669)', boxShadow: '0 4px 12px rgba(16,185,129,0.3)' }}
+                >
+                  <CheckCircle className="w-4 h-4 text-white" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-extrabold text-emerald-700 truncate">
+                    <span className="text-emerald-800">{currentName}</span> is ready to enrol!
+                  </p>
+                  <p className="text-xs text-emerald-600 mt-0.5 truncate">
+                    Age {currentAge} · {currentGrade}
+                    {showCurriculum && currentCurriculum ? ` · ${currentCurriculum}` : ''} — you can go to Next Step ✓
+                  </p>
+                </div>
+                <Star className="w-4 h-4 text-amber-400 shrink-0" />
+              </div>
+            )}
+
+            <div className="mt-4 space-y-3">
+              <button
+                type="button"
+                onClick={addStudent}
+                disabled={!pendingIsValid}
+                className="pf-btn-outline w-full py-3.5 text-sm tracking-wide"
+              >
+                + Add Another Student
+              </button>
+              {errors.students && (
+                <div className="flex items-center gap-2 p-3 rounded-xl bg-red-50 border border-red-200">
+                  <AlertTriangle className="w-4 h-4 text-red-500 shrink-0" />
+                  <p className="text-sm text-red-600 font-semibold">{errors.students}</p>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
     </div>
-  );
+);
 };
 
-const QuranForm = ({ data, updateData, errors }: Pick<StepProps, "data" | "updateData" | "errors">) => {
+const QuranForm = ({
+  data,
+  updateData,
+  errors,
+  nextStep,
+  prevStep,
+}: Pick<StepProps, "data" | "updateData" | "errors" | "nextStep" | "prevStep">) => {
   usePremiumStyles();
   const [isSubjectDropdownOpen, setIsSubjectDropdownOpen] = useState(false);
   const toggleDay = (day: string) => {
@@ -898,9 +1011,6 @@ const QuranForm = ({ data, updateData, errors }: Pick<StepProps, "data" | "updat
   margin-left: calc(50% - 50vw);
   margin-right: calc(50% - 50vw);
   overflow: hidden;
-
-  background: url('/images/quran-cover-blueee.png') no-repeat left center;
-  background-size: cover;
 }
 
 .qf-shell {
@@ -1502,6 +1612,18 @@ const QuranForm = ({ data, updateData, errors }: Pick<StepProps, "data" | "updat
               </p>
             )}
           </div>
+
+          <div className="mt-8 border-t border-brand-burgundy/20 pt-6">
+            <div className="flex items-center justify-between gap-3">
+              <Button onClick={prevStep} variant="secondary">
+                <ArrowLeft className="w-4 h-4" /> Back
+              </Button>
+
+              <Button onClick={nextStep} variant="primary">
+                Next Step <ArrowRight className="w-4 h-4" />
+              </Button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -1511,7 +1633,7 @@ const QuranForm = ({ data, updateData, errors }: Pick<StepProps, "data" | "updat
 const TuitionForm = ({ data, updateData, errors }: Pick<StepProps,'data'|'updateData'|'errors'>) => {
   usePremiumStyles();
   return (
-    <div className="space-y-5 transition-all duration-300">
+    <div className="space-y-5 pt-8 xl:pt-12 transition-all duration-300">
       <div className="text-center pf-e1">
         <h2 className="pf-heading text-3xl font-display font-extrabold">One-to-One Tuition</h2>
         <p className="text-brand-mediumText text-sm mt-1">Our advisor will contact you shortly</p>
@@ -2126,7 +2248,7 @@ const hasLowerGrades = summaryStudents.some((s) => getGV(s.grade) < 10);
 
 const schoolTrialTime = hasLowerGrades
   ? "3:30 PM KSA | 4:30 PM UAE | 5:30 PM PAK"
-  : "9:30 AM KSA | 10:30 AM UAE | 11:30 AM PAK";
+  : "9:30 PM KSA | 10:30 PM UAE | 11:30 PM PAK";
 
 const schoolTrialLabel = hasLowerGrades
   ? "KG1 to Grade 7"
@@ -2861,5 +2983,6 @@ return (
         />
       </div>
     </div>
-  );
+  
+);
 };
