@@ -10,8 +10,6 @@ import {
   Users,
   Laptop2,
   BadgeCheck,
-  Sparkles,
-  ArrowRight,
 } from "lucide-react";
 import IVSAvatarShowcase from "./IVSAvatarShowcase";
 
@@ -21,6 +19,7 @@ function useCounter(target: number, duration = 1600, start = false) {
 
   useEffect(() => {
     if (!start) return;
+
     let frame: number;
     const s = performance.now();
 
@@ -114,6 +113,7 @@ export const HeroCard: React.FC<HeroCardProps> = ({
   useEffect(() => {
     const el = statsRef.current;
     if (!el) return;
+
     const obs = new IntersectionObserver(
       ([e]) => {
         if (e.isIntersecting) {
@@ -123,13 +123,29 @@ export const HeroCard: React.FC<HeroCardProps> = ({
       },
       { threshold: 0.35 }
     );
+
     obs.observe(el);
     return () => obs.disconnect();
   }, []);
 
   const c15 = useCounter(15, 1400, statsVisible);
-  const c26 = useCounter(26, 1600, statsVisible);
+  const c4 = useCounter(4, 1600, statsVisible);
   const c98 = useCounter(98, 1800, statsVisible);
+
+  const handleStartTrialClick = () => {
+    onStartTrial();
+
+    const target =
+      document.getElementById("program-cards") ||
+      document.querySelector("[data-program-cards]");
+
+    if (target) {
+      target.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }
+  };
 
   const features: PremiumIconSpec[] = [
     {
@@ -215,7 +231,7 @@ export const HeroCard: React.FC<HeroCardProps> = ({
 
   return (
     <section className="relative w-full">
-<style>{`
+      <style>{`
   @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@400;500;600;700;800&display=swap');
 
   .hero-root {
@@ -356,7 +372,6 @@ export const HeroCard: React.FC<HeroCardProps> = ({
     font-style: italic;
   }
 
-  /* ───────────────── Premium icon boxes ───────────────── */
   .premium-ico {
     --pi-color: #2563eb;
     --pi-soft: rgba(37,99,235,0.12);
@@ -530,7 +545,6 @@ export const HeroCard: React.FC<HeroCardProps> = ({
     pointer-events: none;
   }
 
-  /* ── TOP flipping cards: back to old style, only refined ── */
   .feat-grid {
     display: grid;
     grid-template-columns: repeat(2,1fr);
@@ -611,7 +625,6 @@ export const HeroCard: React.FC<HeroCardProps> = ({
       0 4px 10px rgba(15,23,42,0.04);
   }
 
-  /* ── CTA buttons: glossy blue like your reference ── */
   .hero-cta-p {
     position: relative;
     overflow: hidden;
@@ -754,139 +767,104 @@ export const HeroCard: React.FC<HeroCardProps> = ({
       0 12px 28px rgba(15,23,42,0.08);
   }
 
-/* ═══════════════════════════════════════════════════════
-   REPLACE ONLY these rules in your HeroCard <style> block:
-   .svc-grid  and  .svc-chip + its ::before ::after :hover
-   Everything else stays EXACTLY as-is.
-   ═══════════════════════════════════════════════════════ */
+  .svc-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+  }
 
-.svc-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 14px;
-}
+  .svc-chip {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0 18px;
+    height: 72px;
+    border-radius: 999px;
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+    cursor: default;
+    background:
+      radial-gradient(ellipse at 20% 30%, rgba(255,255,255,0.36) 0%, transparent 55%),
+      radial-gradient(ellipse at 80% 72%, rgba(190,228,255,0.18) 0%, transparent 50%),
+      linear-gradient(
+        160deg,
+        rgba(255,255,255,0.22) 0%,
+        rgba(215,238,255,0.12) 50%,
+        rgba(200,232,255,0.08) 100%
+      );
+    backdrop-filter: blur(16px) saturate(150%);
+    -webkit-backdrop-filter: blur(16px) saturate(150%);
+    border: 1.5px solid rgba(255,255,255,0.62);
+    border-bottom-color: rgba(175,213,240,0.42);
+    border-right-color: rgba(210,235,255,0.32);
+    box-shadow:
+      inset 0 2px 0 rgba(255,255,255,0.92),
+      inset 0 -2px 0 rgba(155,205,238,0.38),
+      inset 3px 0 8px rgba(255,255,255,0.18),
+      0 5px 0 rgba(148,200,235,0.62),
+      0 9px 3px rgba(118,178,220,0.32),
+      0 16px 12px rgba(100,165,215,0.20),
+      0 24px 22px rgba(80,150,210,0.12),
+      0 2px 20px rgba(118,185,230,0.18);
+    transition: transform 0.22s, box-shadow 0.22s, border-color 0.22s;
+  }
 
-.svc-chip {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 0 18px;
-  height: 72px;                          /* fixed height = pill thickness */
-  border-radius: 999px;                  /* full pill shape */
-  position: relative;
-  overflow: hidden;
-  isolation: isolate;
-  cursor: default;
-
-  /* ── Transparent glass — bg bleeds through ── */
-  background:
-    radial-gradient(ellipse at 20% 30%, rgba(255,255,255,0.36) 0%, transparent 55%),
-    radial-gradient(ellipse at 80% 72%, rgba(190,228,255,0.18) 0%, transparent 50%),
-    linear-gradient(
-      160deg,
-      rgba(255,255,255,0.22) 0%,
-      rgba(215,238,255,0.12) 50%,
-      rgba(200,232,255,0.08) 100%
+  .svc-chip::after {
+    content: "";
+    position: absolute;
+    left: 18px;
+    right: 18px;
+    top: 8px;
+    height: 17px;
+    border-radius: 999px;
+    background: linear-gradient(
+      180deg,
+      rgba(255,255,255,0.88) 0%,
+      rgba(255,255,255,0.05) 100%
     );
-  backdrop-filter: blur(16px) saturate(150%);
-  -webkit-backdrop-filter: blur(16px) saturate(150%);
+    pointer-events: none;
+    z-index: 1;
+  }
 
-  /* ── Crystal border ── */
-  border: 1.5px solid rgba(255,255,255,0.62);
-  border-bottom-color: rgba(175,213,240,0.42);
-  border-right-color:  rgba(210,235,255,0.32);
+  .svc-chip::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1.5px;
+    background: linear-gradient(
+      135deg,
+      rgba(255,255,255,0.95) 0%,
+      rgba(210,238,255,0.65) 20%,
+      rgba(160,215,248,0.25) 42%,
+      rgba(255,255,255,0.06) 55%,
+      rgba(155,210,248,0.28) 72%,
+      rgba(210,240,255,0.68) 88%,
+      rgba(255,255,255,0.95) 100%
+    );
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+  }
 
-  /* ── 3-D extruded slab shadows ── */
-  box-shadow:
-    /* top inner specular */
-    inset 0  2px 0   rgba(255,255,255,0.92),
-    /* bottom inner depth */
-    inset 0 -2px 0   rgba(155,205,238,0.38),
-    /* left inner glint */
-    inset 3px 0 8px  rgba(255,255,255,0.18),
+  .svc-chip:hover {
+    transform: translateY(-2px);
+    border-color: rgba(255,255,255,0.72);
+    box-shadow:
+      inset 0 2px 0 rgba(255,255,255,0.96),
+      inset 0 -2px 0 rgba(155,205,238,0.44),
+      inset 3px 0 8px rgba(255,255,255,0.22),
+      0 6px 0 rgba(136,192,228,0.66),
+      0 10px 4px rgba(112,175,218,0.36),
+      0 18px 14px rgba(100,165,215,0.24),
+      0 28px 24px rgba(80,150,210,0.14),
+      0 2px 22px rgba(118,185,230,0.22);
+  }
 
-    /* hard bottom edge — the "physical thickness" */
-    0  5px  0   rgba(148,200,235,0.62),
-    /* blur layers */
-    0  9px  3px rgba(118,178,220,0.32),
-    0 16px 12px rgba(100,165,215,0.20),
-    0 24px 22px rgba(80, 150,210,0.12),
-    /* ambient card glow */
-    0  2px 20px rgba(118,185,230,0.18);
-
-  transition: transform 0.22s, box-shadow 0.22s, border-color 0.22s;
-}
-
-/* ── Top gloss streak ── */
-.svc-chip::after {
-  content: "";
-  position: absolute;
-  left: 18px;
-  right: 18px;
-  top: 8px;
-  height: 17px;
-  border-radius: 999px;
-  background: linear-gradient(
-    180deg,
-    rgba(255,255,255,0.88) 0%,
-    rgba(255,255,255,0.05) 100%
-  );
-  pointer-events: none;
-  z-index: 1;
-}
-
-/* ── Gradient rim border ── */
-.svc-chip::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  padding: 1.5px;
-  background: linear-gradient(
-    135deg,
-    rgba(255,255,255,0.95) 0%,
-    rgba(210,238,255,0.65) 20%,
-    rgba(160,215,248,0.25) 42%,
-    rgba(255,255,255,0.06) 55%,
-    rgba(155,210,248,0.28) 72%,
-    rgba(210,240,255,0.68) 88%,
-    rgba(255,255,255,0.95) 100%
-  );
-  -webkit-mask:
-    linear-gradient(#000 0 0) content-box,
-    linear-gradient(#000 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-  pointer-events: none;
-}
-
-.svc-chip:hover {
-  transform: translateY(-2px);
-  border-color: rgba(255,255,255,0.72);
-  box-shadow:
-    inset 0  2px 0   rgba(255,255,255,0.96),
-    inset 0 -2px 0   rgba(155,205,238,0.44),
-    inset 3px 0 8px  rgba(255,255,255,0.22),
-    0  6px  0   rgba(136,192,228,0.66),
-    0 10px  4px rgba(112,175,218,0.36),
-    0 18px 14px rgba(100,165,215,0.24),
-    0 28px 24px rgba(80, 150,210,0.14),
-    0  2px 22px rgba(118,185,230,0.22);
-}
-
-/* ── Responsive (keep same breakpoints as original) ── */
-@media (max-width: 1024px) {
-  .svc-grid { grid-template-columns: repeat(2, 1fr); }
-}
-
-@media (max-width: 768px) {
-  .svc-grid { grid-template-columns: repeat(2, 1fr); }
-}
-
-@media (max-width: 640px) {
-  .svc-grid { grid-template-columns: 1fr 1fr; }
-}
-  /* ── Stats ── */
   .stats-grid {
     display: grid;
     grid-template-columns: repeat(3,1fr);
@@ -1006,8 +984,8 @@ export const HeroCard: React.FC<HeroCardProps> = ({
     width: 100%;
   }
 
-  @media (max-width:1024px) {
-    .svc-grid { grid-template-columns: repeat(2,1fr); }
+  @media (max-width: 1024px) {
+    .svc-grid { grid-template-columns: repeat(2, 1fr); }
     .stats-grid { grid-template-columns: 1fr; }
   }
 
@@ -1025,6 +1003,7 @@ export const HeroCard: React.FC<HeroCardProps> = ({
     .stats-grid { grid-template-columns: 1fr; }
   }
 `}</style>
+
       <div className="hero-root hero-wrap">
         <div className="hero-bg-img" aria-hidden="true" />
         <div className="hero-bg-overlay" aria-hidden="true" />
@@ -1033,30 +1012,29 @@ export const HeroCard: React.FC<HeroCardProps> = ({
         <div className="relative z-10 px-6 py-8 sm:px-8 sm:py-10 lg:px-12 lg:py-12">
           <div className="grid lg:grid-cols-12 gap-10 items-start">
             <div className="lg:col-span-7 space-y-7">
-              <div className={`h-enter h-d1 ${mounted ? "in" : ""} flex flex-wrap gap-2.5 items-center`}>
+              <div
+                className={`h-enter h-d1 ${
+                  mounted ? "in" : ""
+                } flex flex-wrap gap-2.5 items-center`}
+              >
                 <span className="hero-pill">
                   <span className="live-dot" />
                   Admissions Open 2026
-                </span>
-                <span className="hero-pill">
-                  <span style={{ fontSize: 14 }}>🖥️</span>
-                  Live on Zoom
-                </span>
-                <span className="hero-pill">
-                  <span style={{ fontSize: 14 }}>📅</span>
-                  Sun – Thu
                 </span>
               </div>
 
               <div className={`h-enter h-d2 ${mounted ? "in" : ""}`}>
                 <h1 className="hero-h1">
-                  Start 3-Day Free Trial{" "}
+                  Start 3-Day <span className="accent-word">Free Trial</span>{" "}
                   <span className="accent-word">Classes</span>{" "}
                   <span className="muted-word">(Live on Zoom)</span>
                 </h1>
+
                 <p className="mt-4 text-[14.5px] leading-[1.8] text-slate-500 max-w-xl">
                   Full-time online schooling{" "}
-                  <strong className="text-slate-700 font-semibold">(KG1 – Grade 12)</strong>{" "}
+                  <strong className="text-slate-700 font-semibold">
+                    (KG1 – Grade 12)
+                  </strong>{" "}
                   with British Curriculum, Federal Board &amp; IGCSE/O/A Level.
                   Managed in Pakistan with qualified teachers globally.
                 </p>
@@ -1086,19 +1064,28 @@ export const HeroCard: React.FC<HeroCardProps> = ({
 
                       <div className="feat-face back">
                         <div className="text-[22px]">{f.emoji}</div>
-                        <div className="text-[12px] font-bold text-sky-700">{f.title}</div>
-                        <div className="text-[10.5px] text-slate-500 font-medium">{f.sub}</div>
+                        <div className="text-[12px] font-bold text-sky-700">
+                          {f.title}
+                        </div>
+                        <div className="text-[10.5px] text-slate-500 font-medium">
+                          {f.sub}
+                        </div>
                       </div>
                     </div>
                   </div>
                 ))}
               </div>
 
-              <div className={`h-enter h-d4 ${mounted ? "in" : ""} flex flex-wrap gap-3 items-center`}>
-                <button onClick={onStartTrial} className="hero-cta-p">
+              <div
+                className={`h-enter h-d4 ${
+                  mounted ? "in" : ""
+                } flex flex-wrap gap-3 items-center`}
+              >
+                <button onClick={handleStartTrialClick} className="hero-cta-p">
                   <Play className="w-4 h-4" />
                   Start Free Trial
                 </button>
+
                 <button onClick={onBookConsultation} className="hero-cta-s">
                   <Calendar className="w-4 h-4" />
                   Book Consultation
@@ -1111,6 +1098,7 @@ export const HeroCard: React.FC<HeroCardProps> = ({
                 <p className="text-[10.5px] font-black uppercase tracking-widest text-slate-400 mb-3">
                   Our Services
                 </p>
+
                 <div className="svc-grid">
                   {services.map((s) => (
                     <div key={s.name} className="svc-chip">
@@ -1137,7 +1125,10 @@ export const HeroCard: React.FC<HeroCardProps> = ({
 
               <div className="hero-div" />
 
-              <div ref={statsRef} className={`h-enter h-d6 ${mounted ? "in" : ""} stats-grid`}>
+              <div
+                ref={statsRef}
+                className={`h-enter h-d6 ${mounted ? "in" : ""} stats-grid`}
+              >
                 {[
                   {
                     ico: <BadgeCheck className="w-5 h-5" />,
@@ -1155,8 +1146,8 @@ export const HeroCard: React.FC<HeroCardProps> = ({
                     bd: "rgba(5,150,105,0.16)",
                     line: "linear-gradient(90deg,#059669,#34d399)",
                     c: "#059669",
-                    val: c26,
-                    sfx: "K",
+                    val: c4,
+                    sfx: "000+",
                     lbl: "Students reached",
                   },
                   {
@@ -1194,7 +1185,11 @@ export const HeroCard: React.FC<HeroCardProps> = ({
               </div>
             </div>
 
-            <div className={`hidden lg:flex lg:col-span-5 hero-av-col h-enter h-d7 ${mounted ? "in" : ""}`}>
+            <div
+              className={`hidden lg:flex lg:col-span-5 hero-av-col h-enter h-d7 ${
+                mounted ? "in" : ""
+              }`}
+            >
               <div className="hero-av-sink">
                 <IVSAvatarShowcase />
               </div>

@@ -46,6 +46,7 @@ export interface QuranStudent {
   subjects: string[];
   classDays: string[];
   classTime: string;
+  country?: string;
 }
 
 export interface TuitionUpsellStudent {
@@ -120,6 +121,8 @@ export interface FormData {
   pendingQuranAge: string;
   pendingQuranTime: string;
   pendingQuranSubjects: string[];
+  pendingQuranCountry: string;
+  pendingQuranDays: string[];
 
   notes: string;
   couponCode: string;
@@ -198,6 +201,8 @@ export const INITIAL_DATA: FormData = {
   pendingQuranAge: '',
   pendingQuranTime: '',
   pendingQuranSubjects: [],
+  pendingQuranCountry: '',
+  pendingQuranDays: [],
 
   notes: '',
   couponCode: '',

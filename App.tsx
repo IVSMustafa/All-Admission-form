@@ -220,11 +220,12 @@ const updateData = (fields: Partial<FormData>) => {
           newErrors.whatsapp = 'Enter valid phone number';
         }
 
-        const hasPendingStudent =
-          formData.studentName.trim() &&
-          formData.age &&
-          (formData.quranClassDays || []).length > 0 &&
-          formData.quranClassTime;
+const hasPendingStudent =
+  formData.studentName.trim() &&
+  formData.age &&
+  (formData.quranSubjects || []).length > 0 &&
+  (formData.quranClassDays || []).length > 0 &&
+  formData.quranClassTime;
 
         const existingStudents = formData.quranStudents?.length || 0;
         const totalStudents = existingStudents + (hasPendingStudent ? 1 : 0);

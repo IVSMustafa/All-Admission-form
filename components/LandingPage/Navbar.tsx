@@ -5,7 +5,9 @@ interface NavbarProps {
   onSchoolTrial?: () => void;
   onTuitionTrial?: () => void;
   onQuranTrial?: () => void;
-  onNavigate?: (section: "school-trial" | "tuition-trial" | "quran-trial") => void;
+  onNavigate?: (
+    section: "school-trial" | "tuition-trial" | "quran-trial"
+  ) => void;
 }
 
 const NAV_ITEMS = [
@@ -43,6 +45,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   useEffect(() => {
     const updatePill = () => {
       const key = hoverKey ?? activeKey;
+
       if (!key) {
         setPillStyle({ left: 0, width: 0 });
         return;
@@ -50,6 +53,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
       const btn = itemRefs.current[key];
       const nav = navRef.current;
+
       if (!btn || !nav) return;
 
       const bRect = btn.getBoundingClientRect();
@@ -63,6 +67,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
     updatePill();
     window.addEventListener("resize", updatePill);
+
     return () => window.removeEventListener("resize", updatePill);
   }, [hoverKey, activeKey]);
 
@@ -85,7 +90,6 @@ export const Navbar: React.FC<NavbarProps> = ({
     if (key === "quran") {
       if (onNavigate) onNavigate("quran-trial");
       else onQuranTrial?.();
-      return;
     }
   };
 
@@ -105,38 +109,18 @@ export const Navbar: React.FC<NavbarProps> = ({
           }
         }
 
-        @keyframes ivsNavGlow {
-          0%, 100% {
-            box-shadow:
-              0 18px 48px rgba(15,23,42,0.06),
-              0 6px 20px rgba(15,23,42,0.04),
-              inset 0 1px 0 rgba(255,255,255,0.92);
-          }
-          50% {
-            box-shadow:
-              0 24px 62px rgba(15,23,42,0.08),
-              0 10px 24px rgba(15,23,42,0.05),
-              inset 0 1px 0 rgba(255,255,255,0.94);
-          }
-        }
-
         @keyframes ivsShineSweep {
           0% {
-            transform: translateX(-140%) skewX(-20deg);
+            transform: translateX(-140%) skewX(-18deg);
             opacity: 0;
           }
-          18% {
-            opacity: 0.18;
+          20% {
+            opacity: 0.15;
           }
           100% {
-            transform: translateX(220%) skewX(-20deg);
+            transform: translateX(220%) skewX(-18deg);
             opacity: 0;
           }
-        }
-
-        @keyframes ivsFloatIcon {
-          0%, 100% { transform: translateY(0); }
-          50% { transform: translateY(-2px); }
         }
 
         .ivs-nav-outer {
@@ -158,45 +142,59 @@ export const Navbar: React.FC<NavbarProps> = ({
           margin: 0 auto;
         }
 
-        .ivs-nav-bar {
-          position: relative;
-          overflow: hidden;
-          display: flex;
-          align-items: center;
-          gap: 18px;
-          padding: 16px 18px;
-          border-radius: 30px;
-          border: 1px solid rgba(15, 23, 42, 0.08);
-          background:
-            linear-gradient(180deg, rgba(255,255,255,0.94), rgba(255,255,255,0.84));
-          backdrop-filter: blur(22px) saturate(1.35);
-          -webkit-backdrop-filter: blur(22px) saturate(1.35);
-          box-shadow:
-            0 18px 48px rgba(15,23,42,0.06),
-            0 6px 20px rgba(15,23,42,0.04),
-            inset 0 1px 0 rgba(255,255,255,0.92);
-          transition: transform 0.25s ease, background 0.25s ease;
-          animation: ivsNavGlow 6s ease-in-out infinite;
-        }
+.ivs-nav-bar {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 20px 24px;
+  border-radius: 34px;
 
-        .ivs-nav-bar.scrolled {
-          background:
-            linear-gradient(180deg, rgba(255,255,255,0.97), rgba(255,255,255,0.90));
-        }
+  /* GLASS BORDER ONLY */
+  border: 1px solid rgba(255,255,255,0.45);
+
+  /* REMOVE WHITE BACKGROUND */
+  background: transparent;
+
+  /* KEEP PREMIUM DEPTH */
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.45),
+    inset 0 -1px 0 rgba(255,255,255,0.06),
+    0 18px 38px rgba(15,23,42,0.04),
+    0 4px 14px rgba(15,23,42,0.03);
+
+  transition: all 0.25s ease;
+}
+
+.ivs-nav-bar.scrolled {
+  background: transparent;
+  border-color: rgba(255,255,255,0.55);
+
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.5),
+    inset 0 -1px 0 rgba(255,255,255,0.08),
+    0 20px 40px rgba(15,23,42,0.05),
+    0 4px 14px rgba(15,23,42,0.03);
+}
 
         .ivs-nav-bar::before {
           content: "";
           position: absolute;
-          inset: 0 0 auto 0;
-          height: 1.5px;
-          background: linear-gradient(
-            90deg,
-            transparent 0%,
-            rgba(29,111,206,0.18) 18%,
-            rgba(14,165,233,0.30) 52%,
-            rgba(29,111,206,0.18) 82%,
-            transparent 100%
-          );
+          inset: 0;
+          border-radius: inherit;
+          pointer-events: none;
+          background:
+            linear-gradient(
+              115deg,
+              rgba(150, 205, 255, 0.20) 0%,
+              rgba(255,255,255,0.12) 25%,
+              rgba(186, 230, 253, 0.20) 50%,
+              rgba(253, 186, 233, 0.18) 75%,
+              rgba(196, 181, 253, 0.20) 100%
+            );
+          opacity: 0.9;
+          mix-blend-mode: screen;
         }
 
         .ivs-nav-bar::after {
@@ -206,67 +204,67 @@ export const Navbar: React.FC<NavbarProps> = ({
           background: linear-gradient(
             115deg,
             transparent 0%,
-            rgba(255,255,255,0.00) 35%,
+            rgba(255,255,255,0.00) 36%,
             rgba(255,255,255,0.16) 50%,
-            rgba(255,255,255,0.00) 65%,
+            rgba(255,255,255,0.00) 64%,
             transparent 100%
           );
           animation: ivsShineSweep 6.5s ease-in-out infinite;
           pointer-events: none;
         }
 
-        .ivs-nav-orb {
-          position: absolute;
-          width: 240px;
-          height: 240px;
-          border-radius: 999px;
-          background: radial-gradient(circle, rgba(14,165,233,0.08), transparent 68%);
-          pointer-events: none;
-        }
-
-        .ivs-nav-orb.left {
-          top: -110px;
-          left: -70px;
-        }
-
-        .ivs-nav-orb.right {
-          top: -90px;
-          right: -40px;
-        }
-
         .ivs-logo {
           display: flex;
           align-items: center;
-          gap: 14px;
+          gap: 16px;
           min-width: 0;
           flex-shrink: 0;
-          padding: 4px 6px;
-          border-radius: 18px;
           position: relative;
           z-index: 2;
         }
 
         .ivs-logo-ring {
-          width: 78px;
-          height: 78px;
-          border-radius: 20px;
-          background: linear-gradient(180deg, rgba(255,255,255,0.99), rgba(247,250,255,0.90));
-          border: 1px solid rgba(15,23,42,0.08);
+          position: relative;
+          width: 88px;
+          height: 88px;
+          border-radius: 24px;
+          background:
+            linear-gradient(180deg, rgba(255,255,255,0.88), rgba(245,249,255,0.68));
+          border: 1px solid rgba(255,255,255,0.82);
           display: flex;
           align-items: center;
           justify-content: center;
-          box-shadow:
-            0 12px 28px rgba(15,23,42,0.08),
-            inset 0 1px 0 rgba(255,255,255,0.96);
           overflow: hidden;
           flex-shrink: 0;
-          animation: ivsFloatIcon 4s ease-in-out infinite;
+          box-shadow:
+            inset 0 1px 0 rgba(255,255,255,0.92),
+            inset 0 -1px 0 rgba(255,255,255,0.12),
+            0 12px 24px rgba(15,23,42,0.06),
+            0 4px 10px rgba(15,23,42,0.04);
+        }
+
+        .ivs-logo-ring::before {
+          content: "";
+          position: absolute;
+          left: 12px;
+          right: 12px;
+          top: 8px;
+          height: 15px;
+          border-radius: 999px;
+          background: linear-gradient(
+            180deg,
+            rgba(255,255,255,0.94),
+            rgba(255,255,255,0.16)
+          );
+          pointer-events: none;
         }
 
         .ivs-logo-ring img {
-          width: 56px;
-          height: 56px;
+          width: 58px;
+          height: 58px;
           object-fit: contain;
+          position: relative;
+          z-index: 1;
         }
 
         .ivs-logo-copy {
@@ -278,10 +276,10 @@ export const Navbar: React.FC<NavbarProps> = ({
         }
 
         .ivs-logo-text {
-          font-size: 24px;
+          font-size: 26px;
           font-weight: 800;
           letter-spacing: -0.04em;
-          background: linear-gradient(110deg, #7b1736 0%, #b91c4d 58%, #9b1d40 100%);
+          background: linear-gradient(110deg, #8d183d 0%, #b21f51 58%, #9b1d40 100%);
           -webkit-background-clip: text;
           background-clip: text;
           color: transparent;
@@ -289,10 +287,10 @@ export const Navbar: React.FC<NavbarProps> = ({
         }
 
         .ivs-logo-sub {
-          margin-top: 4px;
-          font-size: 12px;
+          margin-top: 6px;
+          font-size: 13px;
           font-weight: 700;
-          letter-spacing: 0.02em;
+          letter-spacing: 0.01em;
           color: #7a879a;
           white-space: nowrap;
         }
@@ -305,24 +303,32 @@ export const Navbar: React.FC<NavbarProps> = ({
           position: relative;
           display: flex;
           align-items: center;
-          gap: 6px;
-          padding: 6px;
-          border-radius: 22px;
-          background: rgba(248,250,252,0.88);
-          border: 1px solid rgba(15,23,42,0.05);
-          box-shadow: inset 0 1px 0 rgba(255,255,255,0.82);
+          gap: 8px;
+          padding: 8px;
+          border-radius: 26px;
+          background:
+            linear-gradient(180deg, rgba(255,255,255,0.60), rgba(244,248,255,0.46));
+          border: 1px solid rgba(255,255,255,0.78);
+          box-shadow:
+            inset 0 1px 0 rgba(255,255,255,0.88),
+            inset 0 -1px 0 rgba(255,255,255,0.10),
+            0 8px 18px rgba(15,23,42,0.04);
           z-index: 2;
+          overflow: hidden;
         }
 
         .ivs-slide-pill {
           position: absolute;
-          top: 6px;
-          bottom: 6px;
-          border-radius: 16px;
-          background: linear-gradient(135deg, rgba(29,111,206,0.14), rgba(14,165,233,0.10));
+          top: 8px;
+          bottom: 8px;
+          border-radius: 18px;
+          background:
+            linear-gradient(180deg, rgba(255,255,255,0.64), rgba(232,242,255,0.42));
+          border: 1px solid rgba(255,255,255,0.84);
           box-shadow:
-            0 10px 22px rgba(29,111,206,0.10),
-            inset 0 1px 0 rgba(255,255,255,0.78);
+            inset 0 1px 0 rgba(255,255,255,0.90),
+            inset 0 -1px 0 rgba(255,255,255,0.10),
+            0 10px 18px rgba(29,111,206,0.08);
           transition:
             left 0.30s cubic-bezier(0.22,1,0.36,1),
             width 0.30s cubic-bezier(0.22,1,0.36,1),
@@ -330,6 +336,23 @@ export const Navbar: React.FC<NavbarProps> = ({
           pointer-events: none;
           opacity: 0;
           z-index: 0;
+        }
+
+        .ivs-slide-pill::before {
+          content: "";
+          position: absolute;
+          left: 12px;
+          right: 12px;
+          top: 6px;
+          height: 14px;
+          border-radius: 999px;
+          background: linear-gradient(
+            180deg,
+            rgba(255,255,255,0.88),
+            rgba(255,255,255,0.12)
+          );
+          opacity: 0.9;
+          pointer-events: none;
         }
 
         .ivs-slide-pill.show {
@@ -341,61 +364,97 @@ export const Navbar: React.FC<NavbarProps> = ({
           z-index: 1;
           display: inline-flex;
           align-items: center;
-          gap: 10px;
-          height: 54px;
-          padding: 0 18px;
+          gap: 12px;
+          height: 62px;
+          padding: 0 22px;
           border: none;
-          border-radius: 16px;
+          border-radius: 18px;
           background: transparent;
-          color: #334155;
+          color: #3b4a62;
           font-family: inherit;
-          font-size: 14px;
+          font-size: 15px;
           font-weight: 800;
           white-space: nowrap;
           cursor: pointer;
-          transition: color 0.22s ease, transform 0.22s ease;
+          transition:
+            color 0.22s ease,
+            transform 0.22s ease;
         }
 
         .ivs-nav-btn:hover {
-          color: #0f5fbd;
+          color: #245da8;
           transform: translateY(-1px);
         }
 
         .ivs-nav-btn.active {
-          color: #0f5fbd;
+          color: #245da8;
         }
 
         .ivs-nav-icon-wrap {
-          width: 30px;
-          height: 30px;
+          position: relative;
+          width: 40px;
+          height: 40px;
           border-radius: 999px;
           display: inline-flex;
           align-items: center;
           justify-content: center;
-          background: rgba(29,111,206,0.08);
           color: #1d6fce;
-          transition: transform 0.22s cubic-bezier(0.22,1,0.36,1), background 0.2s ease;
+          background:
+            linear-gradient(180deg, rgba(255,255,255,0.60), rgba(237,245,255,0.32));
+          border: 1px solid rgba(255,255,255,0.82);
+          box-shadow:
+            inset 0 1px 0 rgba(255,255,255,0.88),
+            inset 0 -1px 0 rgba(255,255,255,0.10),
+            0 6px 12px rgba(29,111,206,0.05);
+          transition:
+            transform 0.22s cubic-bezier(0.22,1,0.36,1),
+            box-shadow 0.22s ease,
+            background 0.22s ease;
           flex-shrink: 0;
+        }
+
+        .ivs-nav-icon-wrap::before {
+          content: "";
+          position: absolute;
+          left: 8px;
+          right: 8px;
+          top: 5px;
+          height: 10px;
+          border-radius: 999px;
+          background: linear-gradient(
+            180deg,
+            rgba(255,255,255,0.90),
+            rgba(255,255,255,0.12)
+          );
+          pointer-events: none;
         }
 
         .ivs-nav-btn:hover .ivs-nav-icon-wrap,
         .ivs-nav-btn.active .ivs-nav-icon-wrap {
-          transform: scale(1.08);
-          background: rgba(29,111,206,0.14);
+          transform: scale(1.06);
+          background:
+            linear-gradient(180deg, rgba(255,255,255,0.68), rgba(231,242,255,0.38));
+          box-shadow:
+            inset 0 1px 0 rgba(255,255,255,0.92),
+            inset 0 -1px 0 rgba(255,255,255,0.10),
+            0 8px 15px rgba(29,111,206,0.08);
         }
 
         .ivs-mobile-toggle {
           display: none;
-          width: 48px;
-          height: 48px;
-          border-radius: 16px;
-          border: 1px solid rgba(15,23,42,0.08);
-          background: linear-gradient(180deg, rgba(255,255,255,0.99), rgba(248,250,252,0.90));
+          width: 50px;
+          height: 50px;
+          border-radius: 18px;
+          border: 1px solid rgba(255,255,255,0.82);
+          background:
+            linear-gradient(180deg, rgba(255,255,255,0.76), rgba(245,249,255,0.56));
           align-items: center;
           justify-content: center;
           color: #334155;
           cursor: pointer;
-          box-shadow: 0 10px 22px rgba(15,23,42,0.06);
+          box-shadow:
+            inset 0 1px 0 rgba(255,255,255,0.90),
+            0 10px 20px rgba(15,23,42,0.05);
           flex-shrink: 0;
           z-index: 2;
         }
@@ -410,27 +469,27 @@ export const Navbar: React.FC<NavbarProps> = ({
           }
 
           .ivs-nav-btn {
-            padding: 0 14px;
-            font-size: 13px;
+            padding: 0 16px;
+            font-size: 14px;
           }
         }
 
         @media (max-width: 960px) {
           .ivs-nav-bar {
-            padding: 14px;
-            border-radius: 24px;
+            padding: 18px;
+            border-radius: 26px;
             gap: 12px;
           }
 
           .ivs-logo-ring {
-            width: 68px;
-            height: 68px;
-            border-radius: 18px;
+            width: 72px;
+            height: 72px;
+            border-radius: 20px;
           }
 
           .ivs-logo-ring img {
-            width: 46px;
-            height: 46px;
+            width: 48px;
+            height: 48px;
           }
 
           .ivs-logo-text {
@@ -454,13 +513,12 @@ export const Navbar: React.FC<NavbarProps> = ({
             display: block;
             margin-top: 12px;
             border-radius: 22px;
-            border: 1px solid rgba(15,23,42,0.08);
+            border: 1px solid rgba(255,255,255,0.82);
             background:
-              linear-gradient(180deg, rgba(255,255,255,0.97), rgba(255,255,255,0.90));
-            backdrop-filter: blur(18px);
-            -webkit-backdrop-filter: blur(18px);
+              linear-gradient(180deg, rgba(255,255,255,0.80), rgba(245,249,255,0.62));
             box-shadow:
-              0 18px 38px rgba(15,23,42,0.08),
+              inset 0 1px 0 rgba(255,255,255,0.90),
+              0 16px 30px rgba(15,23,42,0.06),
               0 4px 12px rgba(15,23,42,0.04);
             overflow: hidden;
             max-height: 0;
@@ -493,38 +551,54 @@ export const Navbar: React.FC<NavbarProps> = ({
             gap: 12px;
             width: 100%;
             padding: 14px 14px;
-            border-radius: 16px;
-            border: 1px solid rgba(15,23,42,0.06);
-            background: rgba(255,255,255,0.78);
+            border-radius: 18px;
+            border: 1px solid rgba(255,255,255,0.78);
+            background:
+              linear-gradient(180deg, rgba(255,255,255,0.60), rgba(245,249,255,0.40));
             color: #334155;
             font-family: inherit;
             font-size: 14px;
             font-weight: 800;
             text-align: left;
             cursor: pointer;
-            transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+            transition:
+              background 0.2s ease,
+              color 0.2s ease,
+              transform 0.2s ease,
+              box-shadow 0.2s ease;
+            box-shadow:
+              inset 0 1px 0 rgba(255,255,255,0.84),
+              0 6px 12px rgba(15,23,42,0.03);
           }
 
           .ivs-mobile-btn:hover {
-            background: rgba(29,111,206,0.08);
             color: #1d6fce;
             transform: translateY(-1px);
+            box-shadow:
+              inset 0 1px 0 rgba(255,255,255,0.88),
+              0 8px 14px rgba(29,111,206,0.05);
           }
 
           .ivs-mobile-btn.active {
-            background: linear-gradient(135deg, rgba(29,111,206,0.10), rgba(14,165,233,0.08));
             color: #1d6fce;
+            background:
+              linear-gradient(180deg, rgba(255,255,255,0.70), rgba(233,242,255,0.46));
           }
 
           .ivs-mobile-icon-wrap {
-            width: 34px;
-            height: 34px;
-            border-radius: 12px;
+            width: 36px;
+            height: 36px;
+            border-radius: 999px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            background: rgba(29,111,206,0.08);
             color: #1d6fce;
+            background:
+              linear-gradient(180deg, rgba(255,255,255,0.58), rgba(240,247,255,0.30));
+            border: 1px solid rgba(255,255,255,0.80);
+            box-shadow:
+              inset 0 1px 0 rgba(255,255,255,0.86),
+              0 6px 12px rgba(29,111,206,0.04);
             flex-shrink: 0;
           }
         }
@@ -535,19 +609,18 @@ export const Navbar: React.FC<NavbarProps> = ({
           }
 
           .ivs-nav-bar {
-            border-radius: 20px;
-            padding: 12px;
+            border-radius: 22px;
+            padding: 14px;
           }
 
           .ivs-logo {
             gap: 10px;
-            padding: 2px;
           }
 
           .ivs-logo-ring {
             width: 58px;
             height: 58px;
-            border-radius: 14px;
+            border-radius: 16px;
           }
 
           .ivs-logo-ring img {
@@ -591,10 +664,10 @@ export const Navbar: React.FC<NavbarProps> = ({
 
       <div className={`ivs-nav-outer ${mounted ? "in" : ""}`}>
         <div className="ivs-nav-shell">
-          <nav className={`ivs-nav-bar ${scrolled ? "scrolled" : ""}`} aria-label="Main navigation">
-            <span className="ivs-nav-orb left" />
-            <span className="ivs-nav-orb right" />
-
+          <nav
+            className={`ivs-nav-bar ${scrolled ? "scrolled" : ""}`}
+            aria-label="Main navigation"
+          >
             <div className="ivs-logo">
               <div className="ivs-logo-ring">
                 <img src="/images/ivs-logo.png" alt="IVS Logo" />
@@ -616,6 +689,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
               {NAV_ITEMS.map((item) => {
                 const Icon = item.Icon;
+
                 return (
                   <button
                     key={item.key}
@@ -651,6 +725,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             <div className="ivs-mobile-inner">
               {NAV_ITEMS.map((item) => {
                 const Icon = item.Icon;
+
                 return (
                   <button
                     key={item.key}

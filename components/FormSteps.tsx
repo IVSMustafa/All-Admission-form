@@ -367,7 +367,7 @@ const QURAN_SUBJECT_OPTIONS = [
   'Islamic Studies',
   'Hadith',
 ];
-
+const cleanAgeInput = (value: string) => value.replace(/[^\d]/g, "");
 interface StepProps {
   data: FormData;
   updateData: (fields: Partial<FormData>) => void;
@@ -507,7 +507,7 @@ useEffect(() => {
         />
 
         <div ref={cardsRef} className="ivs-program-section">
-          <section className="program-grid">
+          <section id="program-cards" className="program-grid">
             {PROGRAM_CARDS_DATA.map((cd: any, index: number) => (
               <div
                 key={String(cd.id)}
@@ -564,16 +564,11 @@ export const Step1_Details = ({ data, updateData, nextStep, prevStep, errors }: 
 
    const ageNum = parseInt(currentAge, 10) || 0;
   const recommendedGrade = ageNum >= 3 && ageNum <= 17 ? AGE_TO_GRADE[ageNum] || '' : '';
-  const showAgeGuidance = ageNum > 0 && (ageNum < 3 || ageNum > 17);
+  
   const gradeVal = getGV(currentGrade);
   const showCurriculum = gradeVal >= 10;
-  useEffect(() => {
-    if (!currentAge) return;
 
-    if (ageNum >= 3 && ageNum <= 17 && recommendedGrade && currentGrade !== recommendedGrade) {
-      setCurrentGrade(recommendedGrade);
-    }
-  }, [ageNum, currentAge, recommendedGrade, currentGrade]);
+
   const pendingIsValid =
     currentName.trim().length > 0 &&
     currentAge.length > 0 &&
@@ -790,7 +785,7 @@ return (
                   {realStudents.length > 0 ? 'Add Another Student' : 'Add Student'}
                 </h3>
                 <p className="text-xs text-brand-mediumText mt-0.5">
-                  {realStudents.length > 0 ? 'Fill in details to enrol another student.' : 'Age auto-fills the grade for you '}
+                  {realStudents.length > 0 ? 'Fill in details to enrol another student.' : 'Age helps suggest a grade for you'}
                 </p>
               </div>
             </div>
@@ -807,24 +802,23 @@ return (
                 </div>
               </PField>
 
-              <PField label="Age" icon={Zap}>
-                <div className="pf-input-wrap">
-                  <input
-                    type="number"
-                    value={currentAge}
-                    onChange={e => setCurrentAge(e.target.value)}
-                    placeholder="e.g. 10"
-                    min={1}
-                    max={25}
-                  />
-                </div>
-                {ageNum > 0 && !showAgeGuidance && recommendedGrade && (
-                  <div className="pf-chip">
-                    <Zap className="w-3 h-3" />
-                    Auto-set: {recommendedGrade}
-                  </div>
-                )}
-              </PField>
+<PField label="Age" icon={Zap}>
+  <div className="pf-input-wrap">
+    <input
+      type="text"
+      inputMode="numeric"
+      value={currentAge}
+      onChange={e => setCurrentAge(cleanAgeInput(e.target.value))}
+      placeholder="e.g. 10"
+    />
+  </div>
+ {ageNum >= 3 && ageNum <= 17 && recommendedGrade && !currentGrade && (
+  <div className="pf-chip">
+    <Zap className="w-3 h-3" />
+    Suggested: {recommendedGrade}
+  </div>
+)}
+</PField>
 
               <PField label="Grade" icon={GraduationCap}>
                 <div className="pf-input-wrap relative">
@@ -836,14 +830,7 @@ return (
               </PField>
             </div>
 
-            {showAgeGuidance && (
-              <div className="mt-4 flex items-center gap-3 p-3.5 rounded-2xl bg-amber-50 border border-amber-200">
-                <AlertTriangle className="w-5 h-5 text-amber-500 shrink-0" />
-                <p className="text-sm text-amber-800 font-medium">
-                  <strong>Don't worry!</strong> Our advisor will guide you through the best options for your child's age.
-                </p>
-              </div>
-            )}
+
 
             {showCurriculum && (
               <div className="mt-5 pt-5 border-t border-black/8">
@@ -1483,14 +1470,14 @@ const QuranForm = ({
                   placeholder="e.g. Ahmed Khan"
                   required
                 />
-                <InputField
-                  label="Age"
-                  type="number"
-                  value={data.age}
-                  onChange={(e) => updateData({ age: e.target.value })}
-                  placeholder="e.g. 10"
-                  required
-                />
+               <InputField
+  label="Age"
+  type="text"
+  value={data.age}
+  onChange={(e) => updateData({ age: cleanAgeInput(e.target.value) })}
+  placeholder="e.g. 10"
+  required
+/>
               </div>
 
 <div className="mt-4 space-y-3">
@@ -1654,7 +1641,7 @@ const TuitionForm = ({ data, updateData, errors }: Pick<StepProps,'data'|'update
         <h3 className="pf-section-label"><User className="w-3 h-3"/>Student Details</h3>
         <div className="grid sm:grid-cols-2 gap-4 mt-3">
           <InputField label="Student Name" value={data.studentName} onChange={e => updateData({ studentName: e.target.value })} placeholder="e.g. Ahmed Khan" required error={errors.studentName} />
-          <InputField label="Age" type="number" value={data.age} onChange={e => updateData({ age: e.target.value })} placeholder="e.g. 12" required error={errors.age} />
+          <InputField label="Age" type="text" value={data.age} onChange={e => updateData({ age: cleanAgeInput(e.target.value) })} placeholder="e.g. 12" required error={errors.age} />
         </div>
       </div>
 
@@ -2224,44 +2211,91 @@ const CouponCodeSection = ({ data, updateData }: CouponProps) => {
 export const Step2_FinalSteps = ({ data, updateData }: StepProps) => {
   usePremiumStyles();
 
-  const realStudents = data.students.filter((s) => s.id !== DRAFT_ID);
+  type SummaryStudent = {
+    id: string;
+    name: string;
+    age: string;
+    grade: string;
+    curriculum: string | null;
+  };
 
-  const fallbackStudent =
-    realStudents[0] ||
-    (data.studentName || data.age || data.grade
-      ? {
-          id: "__preview__",
-          name: data.studentName || "-",
-          age: data.age || "-",
-          grade: data.grade || "-",
-          curriculum: data.curriculum || null,
-        }
-      : null);
+  const realSchoolStudents = (data.students || []).filter((s) => s.id !== DRAFT_ID);
+  const realQuranStudents = data.quranStudents || [];
 
-  const summaryStudents = realStudents.length > 0 ? realStudents : fallbackStudent ? [fallbackStudent] : [];
+  const summaryStudents: SummaryStudent[] =
+    data.leadType === LeadType.QURAN
+      ? realQuranStudents.map((student) => ({
+          id: student.id,
+          name: student.name || "-",
+          age: student.age || "-",
+          grade: "Quran Classes",
+          curriculum: student.subjects?.length ? student.subjects.join(", ") : "Quran Program",
+        }))
+      : data.leadType === LeadType.TUITION
+      ? data.studentName || data.age || data.tuitionRequirements
+        ? [
+            {
+              id: "__tuition__",
+              name: data.studentName || "-",
+              age: data.age || "-",
+              grade: "1-on-1 Tuition",
+              curriculum: data.tuitionRequirements || "—",
+            },
+          ]
+        : []
+      : realSchoolStudents.length > 0
+      ? realSchoolStudents.map((student) => ({
+          id: student.id,
+          name: student.name || "-",
+          age: student.age || "-",
+          grade: student.grade || "-",
+          curriculum: student.curriculum || null,
+        }))
+      : data.studentName || data.age || data.grade
+      ? [
+          {
+            id: "__preview__",
+            name: data.studentName || "-",
+            age: data.age || "-",
+            grade: data.grade || "-",
+            curriculum: data.curriculum || null,
+          },
+        ]
+      : [];
 
-  const primaryName = fallbackStudent?.name || "";
-  const primaryAge = fallbackStudent?.age || "";
-  const primaryGrade = fallbackStudent?.grade || "";
-  const primaryCurriculum = fallbackStudent?.curriculum || null;
-const hasLowerGrades = summaryStudents.some((s) => getGV(s.grade) < 10);
+  const primarySummaryStudent = summaryStudents[0] || null;
 
-const schoolTrialTime = hasLowerGrades
-  ? "3:30 PM KSA | 4:30 PM UAE | 5:30 PM PAK"
-  : "9:30 PM KSA | 10:30 PM UAE | 11:30 PM PAK";
+  const primaryName = primarySummaryStudent?.name || "";
+  const primaryAge = primarySummaryStudent?.age || "";
+  const primaryGrade =
+    data.leadType === LeadType.FULL_TIME || data.leadType === LeadType.ONE_ON_ONE_SCHOOLING
+      ? primarySummaryStudent?.grade || ""
+      : "";
+  const primaryCurriculum =
+    data.leadType === LeadType.FULL_TIME || data.leadType === LeadType.ONE_ON_ONE_SCHOOLING
+      ? (primarySummaryStudent?.curriculum as Curriculum | null) || null
+      : null;
 
-const schoolTrialLabel = hasLowerGrades
-  ? "KG1 to Grade 7"
-  : "Grade 8 to 12";
+  const hasLowerGrades =
+    data.leadType === LeadType.FULL_TIME || data.leadType === LeadType.ONE_ON_ONE_SCHOOLING
+      ? summaryStudents.some((s) => getGV(s.grade) < 10)
+      : false;
 
-const selectedQuranStudent = (data.quranStudents || [])[0];
-const selectedQuranTime =
-  selectedQuranStudent?.classTime || data.quranClassTime || "To be confirmed on WhatsApp";
+  const schoolTrialTime = hasLowerGrades
+    ? "3:30 PM KSA | 4:30 PM UAE | 5:30 PM PAK"
+    : "9:30 PM KSA | 10:30 PM UAE | 11:30 PM PAK";
 
-const selectedQuranDays =
-  selectedQuranStudent?.classDays?.length
-    ? selectedQuranStudent.classDays.join(", ")
-    : "Based on your selected days";
+  const schoolTrialLabel = hasLowerGrades ? "KG1 to Grade 7" : "Grade 8 to 12";
+
+  const selectedQuranStudent = (data.quranStudents || [])[0];
+  const selectedQuranTime =
+    selectedQuranStudent?.classTime || data.quranClassTime || "To be confirmed on WhatsApp";
+
+  const selectedQuranDays =
+    selectedQuranStudent?.classDays?.length
+      ? selectedQuranStudent.classDays.join(", ")
+      : "Based on your selected days";
+
   React.useEffect(() => {
     if (data.tuitionInterest) {
       const needsPrefill = !data.pendingTuitionName && !data.pendingTuitionAge;
@@ -2279,11 +2313,19 @@ const selectedQuranDays =
     if (data.quranInterest) {
       const needsPrefill = !data.pendingQuranName && !data.pendingQuranAge;
       if (needsPrefill && primaryName) {
+        const sourceQuranStudent = (data.quranStudents || [])[0];
+
         updateData({
           pendingQuranName: primaryName,
           pendingQuranAge: primaryAge,
-          pendingQuranTime: data.pendingQuranTime || data.quranTiming || "",
-          pendingQuranSubjects: data.pendingQuranSubjects || [],
+          pendingQuranTime: data.pendingQuranTime || sourceQuranStudent?.classTime || "",
+          pendingQuranSubjects: data.pendingQuranSubjects?.length
+            ? data.pendingQuranSubjects
+            : sourceQuranStudent?.subjects || [],
+          pendingQuranCountry: data.pendingQuranCountry || data.quranStudentCountry || "",
+          pendingQuranDays: data.pendingQuranDays?.length
+            ? data.pendingQuranDays
+            : sourceQuranStudent?.classDays || [],
         });
       }
     }
@@ -2307,17 +2349,66 @@ const selectedQuranDays =
     (data.tuitionInterest && data.fullTimeInterest) ||
     (data.quranInterest && data.fullTimeInterest);
 
+  const previewSchoolStudent =
+    data.fullTimeInterest && data.pendingSchoolName && data.pendingSchoolAge && data.pendingSchoolGrade
+      ? {
+          id: "__pending_school__",
+          name: data.pendingSchoolName,
+          age: data.pendingSchoolAge,
+          grade: data.pendingSchoolGrade,
+          curriculum: primaryCurriculum,
+        }
+      : null;
+
+  const previewTuitionStudent =
+    data.tuitionInterest && data.pendingTuitionName && data.pendingTuitionAge
+      ? {
+          id: "__pending_tuition__",
+          name: data.pendingTuitionName,
+          age: data.pendingTuitionAge,
+          requirements: data.pendingTuitionReq || "",
+        }
+      : null;
+
+  const previewQuranStudent =
+    data.quranInterest && data.pendingQuranName && data.pendingQuranAge
+      ? {
+          id: "__pending_quran__",
+          name: data.pendingQuranName,
+          age: data.pendingQuranAge,
+          subjects: data.pendingQuranSubjects || [],
+          classDays: data.pendingQuranDays || [],
+          classTime: data.pendingQuranTime || "Flexible",
+          country: data.pendingQuranCountry || "",
+        }
+      : null;
+
+  const visibleUpsellSchoolStudents = [
+    ...(data.upsellSchoolStudents || []),
+    ...(previewSchoolStudent ? [previewSchoolStudent] : []),
+  ];
+
+  const visibleUpsellTuitionStudents = [
+    ...(data.upsellTuitionStudents || []),
+    ...(previewTuitionStudent ? [previewTuitionStudent] : []),
+  ];
+
+  const visibleUpsellQuranStudents = [
+    ...(data.upsellQuranStudents || []),
+    ...(previewQuranStudent ? [previewQuranStudent] : []),
+  ];
+
   const hasAdditionalPrograms =
-    (data.upsellSchoolStudents || []).length > 0 ||
-    (data.upsellTuitionStudents || []).length > 0 ||
-    (data.upsellQuranStudents || []).length > 0;
+    visibleUpsellSchoolStudents.length > 0 ||
+    visibleUpsellTuitionStudents.length > 0 ||
+    visibleUpsellQuranStudents.length > 0;
 
   return (
     <div className="space-y-8 transition-all duration-300">
-   <div className="text-center pf-e1">
-  <h2 className="pf-heading text-3xl sm:text-4xl font-display font-extrabold">
-    Final Steps
-  </h2>
+      <div className="text-center pf-e1">
+        <h2 className="pf-heading text-3xl sm:text-4xl font-display font-extrabold">
+          Final Steps
+        </h2>
         <p className="text-brand-mediumText text-base sm:text-lg mt-2">
           Review your details and add extra programs if needed.
         </p>
@@ -2362,9 +2453,9 @@ const selectedQuranDays =
                 </p>
               </div>
 
-              {(data.upsellSchoolStudents || []).length > 0 && (
+              {visibleUpsellSchoolStudents.length > 0 && (
                 <div className="space-y-3">
-                  {data.upsellSchoolStudents.map((student, idx) => (
+                  {visibleUpsellSchoolStudents.map((student, idx) => (
                     <div key={student.id} className="flex items-center justify-between p-4 bg-blue-50/80 rounded-2xl border border-blue-200 shadow-[0_10px_30px_rgba(59,130,246,0.06)]">
                       <div className="flex items-center gap-3">
                         <span className="w-9 h-9 bg-gradient-to-br from-blue-500 to-sky-500 text-white rounded-full flex items-center justify-center text-sm font-extrabold shadow-[0_8px_20px_rgba(59,130,246,0.24)]">
@@ -2380,9 +2471,15 @@ const selectedQuranDays =
                       <button
                         type="button"
                         onClick={() =>
-                          updateData({
-                            upsellSchoolStudents: data.upsellSchoolStudents.filter((s) => s.id !== student.id),
-                          })
+                          student.id === "__pending_school__"
+                            ? updateData({
+                                pendingSchoolName: "",
+                                pendingSchoolAge: "",
+                                pendingSchoolGrade: "",
+                              })
+                            : updateData({
+                                upsellSchoolStudents: (data.upsellSchoolStudents || []).filter((s) => s.id !== student.id),
+                              })
                         }
                         className="text-xs font-semibold text-red-500 hover:text-red-600"
                       >
@@ -2402,9 +2499,9 @@ const selectedQuranDays =
                 />
                 <InputField
                   label="Age"
-                  type="number"
+                  type="text"
                   value={data.pendingSchoolAge}
-                  onChange={(e) => updateData({ pendingSchoolAge: e.target.value })}
+                  onChange={(e) => updateData({ pendingSchoolAge: cleanAgeInput(e.target.value) })}
                   placeholder="10"
                 />
                 <SelectField
@@ -2469,9 +2566,9 @@ const selectedQuranDays =
                 </p>
               </div>
 
-              {(data.upsellTuitionStudents || []).length > 0 && (
+              {visibleUpsellTuitionStudents.length > 0 && (
                 <div className="space-y-3">
-                  {data.upsellTuitionStudents.map((student, idx) => (
+                  {visibleUpsellTuitionStudents.map((student, idx) => (
                     <div key={student.id} className="flex items-center justify-between p-4 bg-purple-50/80 rounded-2xl border border-purple-200 shadow-[0_10px_30px_rgba(139,92,246,0.06)]">
                       <div className="flex items-center gap-3">
                         <span className="w-9 h-9 bg-gradient-to-br from-purple-500 to-fuchsia-500 text-white rounded-full flex items-center justify-center text-sm font-extrabold shadow-[0_8px_20px_rgba(139,92,246,0.24)]">
@@ -2488,9 +2585,15 @@ const selectedQuranDays =
                       <button
                         type="button"
                         onClick={() =>
-                          updateData({
-                            upsellTuitionStudents: data.upsellTuitionStudents.filter((s) => s.id !== student.id),
-                          })
+                          student.id === "__pending_tuition__"
+                            ? updateData({
+                                pendingTuitionName: "",
+                                pendingTuitionAge: "",
+                                pendingTuitionReq: "",
+                              })
+                            : updateData({
+                                upsellTuitionStudents: (data.upsellTuitionStudents || []).filter((s) => s.id !== student.id),
+                              })
                         }
                         className="text-xs font-semibold text-red-500 hover:text-red-600"
                       >
@@ -2510,9 +2613,9 @@ const selectedQuranDays =
                 />
                 <InputField
                   label="Age"
-                  type="number"
+                  type="text"
                   value={data.pendingTuitionAge || ""}
-                  onChange={(e) => updateData({ pendingTuitionAge: e.target.value })}
+                  onChange={(e) => updateData({ pendingTuitionAge: cleanAgeInput(e.target.value) })}
                   placeholder="10"
                 />
               </div>
@@ -2577,9 +2680,9 @@ const selectedQuranDays =
                 </p>
               </div>
 
-              {(data.upsellQuranStudents || []).length > 0 && (
+              {visibleUpsellQuranStudents.length > 0 && (
                 <div className="space-y-3">
-                  {data.upsellQuranStudents.map((student, idx) => (
+                  {visibleUpsellQuranStudents.map((student, idx) => (
                     <div key={student.id} className="flex items-center justify-between p-4 bg-emerald-50/80 rounded-2xl border border-emerald-200 shadow-[0_10px_30px_rgba(16,185,129,0.06)]">
                       <div className="flex items-center gap-3">
                         <span className="w-9 h-9 bg-gradient-to-br from-emerald-500 to-teal-500 text-white rounded-full flex items-center justify-center text-sm font-extrabold shadow-[0_8px_20px_rgba(16,185,129,0.24)]">
@@ -2589,16 +2692,29 @@ const selectedQuranDays =
                           <p className="text-sm font-bold text-emerald-800">{student.name}</p>
                           <p className="text-xs text-emerald-600">
                             Age {student.age}
+                            {student.subjects?.length ? ` • ${student.subjects.join(", ")}` : ""}
+                            {student.classDays?.length ? ` • ${student.classDays.join(", ")}` : ""}
                             {student.classTime ? ` • ${student.classTime}` : ""}
+                            {student.country ? ` • ${student.country}` : ""}
                           </p>
                         </div>
                       </div>
+
                       <button
                         type="button"
                         onClick={() =>
-                          updateData({
-                            upsellQuranStudents: data.upsellQuranStudents.filter((s) => s.id !== student.id),
-                          })
+                          student.id === "__pending_quran__"
+                            ? updateData({
+                                pendingQuranName: "",
+                                pendingQuranAge: "",
+                                pendingQuranTime: "",
+                                pendingQuranSubjects: [],
+                                pendingQuranCountry: "",
+                                pendingQuranDays: [],
+                              })
+                            : updateData({
+                                upsellQuranStudents: (data.upsellQuranStudents || []).filter((s) => s.id !== student.id),
+                              })
                         }
                         className="text-xs font-semibold text-red-500 hover:text-red-600"
                       >
@@ -2616,14 +2732,22 @@ const selectedQuranDays =
                   onChange={(e) => updateData({ pendingQuranName: e.target.value })}
                   placeholder="Ahmed"
                 />
+
                 <InputField
                   label="Age"
-                  type="number"
+                  type="text"
                   value={data.pendingQuranAge || ""}
-                  onChange={(e) => updateData({ pendingQuranAge: e.target.value })}
+                  onChange={(e) => updateData({ pendingQuranAge: cleanAgeInput(e.target.value) })}
                   placeholder="10"
                 />
               </div>
+
+              <SelectField
+                label="Country"
+                value={data.pendingQuranCountry || ""}
+                onChange={(e) => updateData({ pendingQuranCountry: e.target.value })}
+                options={COUNTRIES}
+              />
 
               <div>
                 <label className="text-sm font-semibold text-brand-darkText block mb-2">
@@ -2656,12 +2780,47 @@ const selectedQuranDays =
                 </div>
               </div>
 
-              <InputField
-                label="Timing"
-                value={data.pendingQuranTime || ""}
-                onChange={(e) => updateData({ pendingQuranTime: e.target.value })}
-                placeholder="e.g. 5 PM KSA"
-              />
+              <div>
+                <label className="text-sm font-semibold text-brand-darkText block mb-2">
+                  Class Days
+                </label>
+                <div className="grid grid-cols-4 sm:grid-cols-7 gap-2">
+                  {DAYS.map((day) => {
+                    const active = (data.pendingQuranDays || []).includes(day);
+                    return (
+                      <button
+                        key={day}
+                        type="button"
+                        onClick={() =>
+                          updateData({
+                            pendingQuranDays: active
+                              ? (data.pendingQuranDays || []).filter((x) => x !== day)
+                              : [...(data.pendingQuranDays || []), day],
+                          })
+                        }
+                        className={`qf-day-btn ${active ? "active" : ""}`}
+                      >
+                        {day.slice(0, 3)}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div className="qf-time-wrap">
+                <Clock className="w-4 h-4 qf-time-icon" />
+                <select
+                  value={data.pendingQuranTime || ""}
+                  onChange={(e) => updateData({ pendingQuranTime: e.target.value })}
+                >
+                  <option value="">Select time</option>
+                  {QURAN_CLASS_TIMES.map((t) => (
+                    <option key={t} value={t}>
+                      {t}
+                    </option>
+                  ))}
+                </select>
+              </div>
 
               <button
                 type="button"
@@ -2675,18 +2834,28 @@ const selectedQuranDays =
                           name: data.pendingQuranName,
                           age: data.pendingQuranAge,
                           subjects: data.pendingQuranSubjects || [],
-                          classDays: [],
+                          classDays: data.pendingQuranDays || [],
                           classTime: data.pendingQuranTime || "Flexible",
+                          country: data.pendingQuranCountry || "",
                         },
                       ],
                       pendingQuranName: "",
                       pendingQuranAge: "",
                       pendingQuranTime: "",
                       pendingQuranSubjects: [],
+                      pendingQuranCountry: "",
+                      pendingQuranDays: [],
                     });
                   }
                 }}
-                disabled={!data.pendingQuranName || !data.pendingQuranAge}
+                disabled={
+                  !data.pendingQuranName ||
+                  !data.pendingQuranAge ||
+                  !(data.pendingQuranSubjects || []).length ||
+                  !(data.pendingQuranDays || []).length ||
+                  !data.pendingQuranTime ||
+                  !data.pendingQuranCountry
+                }
                 className="w-full py-3.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-700 font-bold text-sm disabled:opacity-40 hover:bg-emerald-500/15 hover:shadow-[0_10px_30px_rgba(16,185,129,0.10)] transition-all"
               >
                 + Add to Quran
@@ -2703,13 +2872,13 @@ const selectedQuranDays =
             Additional Programs (Package Deal)
           </h4>
 
-          {(data.upsellTuitionStudents || []).length > 0 && (
+          {visibleUpsellTuitionStudents.length > 0 && (
             <div className="mb-6">
               <p className="text-lg font-extrabold text-purple-600 uppercase mb-4">
-                1-on-1 Tuition ({data.upsellTuitionStudents.length})
+                1-on-1 Tuition ({visibleUpsellTuitionStudents.length})
               </p>
               <div className="space-y-3">
-                {data.upsellTuitionStudents.map((student, idx) => (
+                {visibleUpsellTuitionStudents.map((student, idx) => (
                   <div
                     key={student.id}
                     className="flex items-center gap-4 rounded-3xl border border-purple-200 bg-white/75 px-5 py-4 shadow-[0_10px_28px_rgba(139,92,246,0.06)]"
@@ -2730,13 +2899,13 @@ const selectedQuranDays =
             </div>
           )}
 
-          {(data.upsellQuranStudents || []).length > 0 && (
+          {visibleUpsellQuranStudents.length > 0 && (
             <div className="mb-6">
               <p className="text-lg font-extrabold text-emerald-600 uppercase mb-4">
-                Quran Classes ({data.upsellQuranStudents.length})
+                Quran Classes ({visibleUpsellQuranStudents.length})
               </p>
               <div className="space-y-3">
-                {data.upsellQuranStudents.map((student, idx) => (
+                {visibleUpsellQuranStudents.map((student, idx) => (
                   <div
                     key={student.id}
                     className="flex items-center gap-4 rounded-3xl border border-emerald-200 bg-white/75 px-5 py-4 shadow-[0_10px_28px_rgba(16,185,129,0.06)]"
@@ -2748,7 +2917,10 @@ const selectedQuranDays =
                       <p className="text-lg font-bold text-emerald-700 truncate">{student.name}</p>
                       <p className="text-sm text-emerald-600 truncate">
                         Age {student.age}
+                        {student.subjects?.length ? ` • ${student.subjects.join(", ")}` : ""}
+                        {student.classDays?.length ? ` • ${student.classDays.join(", ")}` : ""}
                         {student.classTime ? ` • ${student.classTime}` : ""}
+                        {student.country ? ` • ${student.country}` : ""}
                       </p>
                     </div>
                   </div>
@@ -2757,13 +2929,13 @@ const selectedQuranDays =
             </div>
           )}
 
-          {(data.upsellSchoolStudents || []).length > 0 && (
+          {visibleUpsellSchoolStudents.length > 0 && (
             <div>
               <p className="text-lg font-extrabold text-blue-600 uppercase mb-4">
-                Full-Time School ({data.upsellSchoolStudents.length})
+                Full-Time School ({visibleUpsellSchoolStudents.length})
               </p>
               <div className="space-y-3">
-                {data.upsellSchoolStudents.map((student, idx) => (
+                {visibleUpsellSchoolStudents.map((student, idx) => (
                   <div
                     key={student.id}
                     className="flex items-center gap-4 rounded-3xl border border-blue-200 bg-white/75 px-5 py-4 shadow-[0_10px_28px_rgba(59,130,246,0.06)]"
@@ -2784,193 +2956,210 @@ const selectedQuranDays =
           )}
         </div>
       )}
-<CouponCodeSection data={data} updateData={updateData} />
-<div className="pf-card p-5 sm:p-6 border border-brand-lightGray bg-white/80 shadow-[0_12px_34px_rgba(15,45,87,0.05)]">
-  <div className="flex items-center justify-between gap-3 flex-wrap mb-5">
-    <div>
-      <h4 className="text-xs font-black uppercase tracking-widest text-gray-500">
-        Application Summary
-      </h4>
-      <p className="text-sm text-brand-mediumText mt-1">
-        Review the main student details before final submission.
-      </p>
-    </div>
 
-    <div className="px-4 py-2 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-sm font-bold shadow-sm">
-      Students ({summaryStudents.length})
-    </div>
-  </div>
+      <CouponCodeSection data={data} updateData={updateData} />
 
-  <div className="space-y-3">
-    {summaryStudents.length > 0 ? (
-      summaryStudents.map((s, i) => {
-        const gv = getGV(s.grade);
-        const displayCurriculum =
-          s.curriculum || (gv < 10 && s.grade !== "-" ? "British Curriculum" : "—");
-
-return (
-  <div
-    key={s.id || i}
-    className="rounded-[22px] border border-[rgba(29,111,206,0.10)] bg-[linear-gradient(135deg,#fbfdff_0%,#f4f9ff_100%)] px-4 py-4 sm:px-5 sm:py-5 shadow-[0_8px_22px_rgba(15,45,87,0.04)]"
-  >
-    <div className="grid gap-4 md:grid-cols-[64px_1fr] items-start">
-      <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-[linear-gradient(135deg,#1d6fce,#0ea5e9)] text-white flex items-center justify-center text-lg sm:text-xl font-extrabold shadow-[0_10px_22px_rgba(29,111,206,0.20)]">
-        {i + 1}
-      </div>
-
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-x-5 gap-y-4">
-        <div>
-          <p className="text-[11px] uppercase tracking-[0.10em] text-gray-500 font-semibold mb-1">
-            Name
-          </p>
-          <p className="text-[15px] sm:text-[16px] font-bold text-[#163761] leading-snug break-words">
-            {s.name}
-          </p>
-        </div>
-
-        <div>
-          <p className="text-[11px] uppercase tracking-[0.10em] text-gray-500 font-semibold mb-1">
-            Age
-          </p>
-          <p className="text-[15px] sm:text-[16px] font-bold text-[#163761] leading-snug">
-            {s.age} yrs
-          </p>
-        </div>
-
-        <div>
-          <p className="text-[11px] uppercase tracking-[0.10em] text-gray-500 font-semibold mb-1">
-            Grade
-          </p>
-          <p className="text-[15px] sm:text-[16px] font-bold text-[#163761] leading-snug break-words">
-            {s.grade}
-          </p>
-        </div>
-
-        <div>
-          <p className="text-[11px] uppercase tracking-[0.10em] text-gray-500 font-semibold mb-1">
-            Curriculum
-          </p>
-          <p className="text-[15px] sm:text-[16px] font-bold text-[#163761] leading-snug break-words">
-            {displayCurriculum}
-          </p>
-        </div>
-      </div>
-    </div>
-  </div>
-);
-      })
-    ) : (
-      <div className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-4 text-sm font-medium text-amber-800">
-        No student details yet. Please go back and complete student information.
-      </div>
-    )}
-  </div>
-
-  <div className="grid sm:grid-cols-2 gap-4 pt-5 border-t border-black/8 mt-5">
-    <div className="rounded-2xl bg-white/80 border border-black/6 p-5 shadow-[0_8px_24px_rgba(15,45,87,0.04)]">
-      <p className="text-gray-500 text-xs mb-1">Program</p>
-      <p className="font-bold text-brand-burgundy text-2xl sm:text-3xl leading-tight">
-        {data.leadType === LeadType.FULL_TIME
-          ? "Full-Time School"
-          : data.leadType === LeadType.TUITION
-          ? "One-to-One Tuition"
-          : data.leadType === LeadType.QURAN
-          ? "Quran Classes"
-          : "One-to-One Schooling"}
-      </p>
-    </div>
-
-    <div className="rounded-2xl bg-white/80 border border-black/6 p-5 shadow-[0_8px_24px_rgba(15,45,87,0.04)]">
-      <p className="text-gray-500 text-xs mb-3">
-        Trial Schedule ({data.leadType === LeadType.QURAN || data.leadType === LeadType.FULL_TIME ? "3 Days" : "1 Day"})
-      </p>
-
-      {data.leadType === LeadType.TUITION ? (
-        <div className="p-4 rounded-2xl bg-purple-50 border border-purple-200 shadow-[0_8px_20px_rgba(139,92,246,0.06)]">
-          <p className="text-sm text-purple-700 font-semibold">1 Day Free Trial</p>
-          <p className="text-lg text-purple-800 font-bold mt-1">
-            Timing based on teacher availability
-          </p>
-          <p className="text-sm text-purple-600 mt-2">
-            Our advisor will guide you on call
-          </p>
-        </div>
-      ) : data.leadType === LeadType.ONE_ON_ONE_SCHOOLING ? (
-        <div className="p-4 rounded-2xl bg-purple-50 border border-purple-200 shadow-[0_8px_20px_rgba(139,92,246,0.06)]">
-          <p className="text-sm text-purple-700 font-semibold">1 Day Free Trial</p>
-          <p className="text-lg text-purple-800 font-bold mt-1">
-            {schoolTrialTime}
-          </p>
-          <p className="text-sm text-purple-600 mt-2">
-            {schoolTrialLabel}
-          </p>
-        </div>
-      ) : data.leadType === LeadType.QURAN ? (
-        <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 shadow-[0_8px_20px_rgba(16,185,129,0.06)]">
-          <p className="text-sm text-emerald-700 font-semibold">3 Days Free Trial Classes</p>
-          <p className="text-lg text-emerald-800 font-bold mt-1">
-            {selectedQuranTime}
-          </p>
-          <p className="text-sm text-emerald-600 mt-2">
-            {selectedQuranDays}
-          </p>
-        </div>
-      ) : (
-  <div className="p-4 rounded-2xl bg-[linear-gradient(135deg,#f7fbff_0%,#f1f8ff_100%)] border border-blue-100 shadow-[0_8px_20px_rgba(59,130,246,0.05)]">
-    <div className="flex items-center gap-2">
-      <div className="w-7 h-7 rounded-full bg-white border border-blue-100 flex items-center justify-center shadow-sm">
-        <Clock className="w-3.5 h-3.5 text-blue-500" />
-      </div>
-      <p className="text-sm text-blue-700 font-semibold">3 Days Free Trial Classes</p>
-    </div>
-
-    <div className="grid grid-cols-3 gap-3 mt-4">
-      {[
-        {
-          tz: "KSA",
-          time: hasLowerGrades ? "3:30" : "9:30",
-          accent: "text-blue-600",
-          border: "border-blue-100",
-        },
-        {
-          tz: "UAE",
-          time: hasLowerGrades ? "4:30" : "10:30",
-          accent: "text-sky-600",
-          border: "border-blue-100",
-        },
-        {
-          tz: "PAK",
-          time: hasLowerGrades ? "5:30" : "11:30",
-          accent: "text-cyan-600",
-          border: "border-blue-100",
-        },
-      ].map((item) => (
-        <div
-          key={item.tz}
-          className={`rounded-2xl border ${item.border} bg-white px-3 py-3.5 text-center shadow-[0_4px_12px_rgba(15,45,87,0.03)]`}
-        >
-          <div className="flex items-center justify-center gap-1.5 mb-2">
-            <Clock className={`w-3 h-3 ${item.accent}`} />
-            <p className={`text-[11px] font-bold ${item.accent}`}>{item.tz}</p>
+      <div className="pf-card p-5 sm:p-6 border border-brand-lightGray bg-white/80 shadow-[0_12px_34px_rgba(15,45,87,0.05)]">
+        <div className="flex items-center justify-between gap-3 flex-wrap mb-5">
+          <div>
+            <h4 className="text-xs font-black uppercase tracking-widest text-gray-500">
+              Application Summary
+            </h4>
+            <p className="text-sm text-brand-mediumText mt-1">
+              Review the main student details before final submission.
+            </p>
           </div>
 
-          <p className="text-lg font-extrabold text-[#0f2d57] leading-none">
-            <span className="block">{item.time}</span>
-            <span className="block mt-2">AM</span>
-          </p>
+          <div className="px-4 py-2 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-sm font-bold shadow-sm">
+            Students ({summaryStudents.length})
+          </div>
         </div>
-      ))}
-    </div>
 
-    <p className="text-sm text-blue-600 mt-4 font-medium">
-      {schoolTrialLabel}
-    </p>
-  </div>
-)}
+        <div className="space-y-3">
+          {summaryStudents.length > 0 ? (
+            summaryStudents.map((s, i) => {
+              const isQuranSummary = data.leadType === LeadType.QURAN;
+              const isTuitionSummary = data.leadType === LeadType.TUITION;
 
-    </div>
-  </div>
-</div>
+              const gv = !isQuranSummary && !isTuitionSummary ? getGV(s.grade) : 0;
+
+              const displayCurriculum = isQuranSummary
+                ? s.curriculum || "Quran Program"
+                : isTuitionSummary
+                ? s.curriculum || "—"
+                : s.curriculum || (gv < 10 && s.grade !== "-" ? "British Curriculum" : "—");
+
+              return (
+                <div
+                  key={s.id || i}
+                  className="rounded-[22px] border border-[rgba(29,111,206,0.10)] bg-[linear-gradient(135deg,#fbfdff_0%,#f4f9ff_100%)] px-4 py-4 sm:px-5 sm:py-5 shadow-[0_8px_22px_rgba(15,45,87,0.04)]"
+                >
+                  <div className="grid gap-4 md:grid-cols-[64px_1fr] items-start">
+                    <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-[linear-gradient(135deg,#1d6fce,#0ea5e9)] text-white flex items-center justify-center text-lg sm:text-xl font-extrabold shadow-[0_10px_22px_rgba(29,111,206,0.20)]">
+                      {i + 1}
+                    </div>
+
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-x-5 gap-y-4">
+                      <div>
+                        <p className="text-[11px] uppercase tracking-[0.10em] text-gray-500 font-semibold mb-1">
+                          Name
+                        </p>
+                        <p className="text-[15px] sm:text-[16px] font-bold text-[#163761] leading-snug break-words">
+                          {s.name}
+                        </p>
+                      </div>
+
+                      <div>
+                        <p className="text-[11px] uppercase tracking-[0.10em] text-gray-500 font-semibold mb-1">
+                          Age
+                        </p>
+                        <p className="text-[15px] sm:text-[16px] font-bold text-[#163761] leading-snug">
+                          {s.age} yrs
+                        </p>
+                      </div>
+
+                      <div>
+                        <p className="text-[11px] uppercase tracking-[0.10em] text-gray-500 font-semibold mb-1">
+                          {data.leadType === LeadType.QURAN
+                            ? "Program"
+                            : data.leadType === LeadType.TUITION
+                            ? "Program"
+                            : "Grade"}
+                        </p>
+                        <p className="text-[15px] sm:text-[16px] font-bold text-[#163761] leading-snug break-words">
+                          {s.grade}
+                        </p>
+                      </div>
+
+                      <div>
+                        <p className="text-[11px] uppercase tracking-[0.10em] text-gray-500 font-semibold mb-1">
+                          {data.leadType === LeadType.QURAN
+                            ? "Subjects"
+                            : data.leadType === LeadType.TUITION
+                            ? "Requirements"
+                            : "Curriculum"}
+                        </p>
+                        <p className="text-[15px] sm:text-[16px] font-bold text-[#163761] leading-snug break-words">
+                          {displayCurriculum}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })
+          ) : (
+            <div className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-4 text-sm font-medium text-amber-800">
+              No student details yet. Please go back and complete student information.
+            </div>
+          )}
+        </div>
+
+        <div className="grid sm:grid-cols-2 gap-4 pt-5 border-t border-black/8 mt-5">
+          <div className="rounded-2xl bg-white/80 border border-black/6 p-5 shadow-[0_8px_24px_rgba(15,45,87,0.04)]">
+            <p className="text-gray-500 text-xs mb-1">Program</p>
+            <p className="font-bold text-brand-burgundy text-2xl sm:text-3xl leading-tight">
+              {data.leadType === LeadType.FULL_TIME
+                ? "Full-Time School"
+                : data.leadType === LeadType.TUITION
+                ? "One-to-One Tuition"
+                : data.leadType === LeadType.QURAN
+                ? "Quran Classes"
+                : "One-to-One Schooling"}
+            </p>
+          </div>
+
+          <div className="rounded-2xl bg-white/80 border border-black/6 p-5 shadow-[0_8px_24px_rgba(15,45,87,0.04)]">
+            <p className="text-gray-500 text-xs mb-3">
+              Trial Schedule ({data.leadType === LeadType.QURAN || data.leadType === LeadType.FULL_TIME ? "3 Days" : "1 Day"})
+            </p>
+
+            {data.leadType === LeadType.TUITION ? (
+              <div className="p-4 rounded-2xl bg-purple-50 border border-purple-200 shadow-[0_8px_20px_rgba(139,92,246,0.06)]">
+                <p className="text-sm text-purple-700 font-semibold">1 Day Free Trial</p>
+                <p className="text-lg text-purple-800 font-bold mt-1">
+                  Timing based on teacher availability
+                </p>
+                <p className="text-sm text-purple-600 mt-2">
+                  Our advisor will guide you on call
+                </p>
+              </div>
+            ) : data.leadType === LeadType.ONE_ON_ONE_SCHOOLING ? (
+              <div className="p-4 rounded-2xl bg-purple-50 border border-purple-200 shadow-[0_8px_20px_rgba(139,92,246,0.06)]">
+                <p className="text-sm text-purple-700 font-semibold">1 Day Free Trial</p>
+                <p className="text-lg text-purple-800 font-bold mt-1">
+                  {schoolTrialTime}
+                </p>
+                <p className="text-sm text-purple-600 mt-2">
+                  {schoolTrialLabel}
+                </p>
+              </div>
+            ) : data.leadType === LeadType.QURAN ? (
+              <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 shadow-[0_8px_20px_rgba(16,185,129,0.06)]">
+                <p className="text-sm text-emerald-700 font-semibold">3 Days Free Trial Classes</p>
+                <p className="text-lg text-emerald-800 font-bold mt-1">
+                  {selectedQuranTime}
+                </p>
+                <p className="text-sm text-emerald-600 mt-2">
+                  {selectedQuranDays}
+                </p>
+              </div>
+            ) : (
+              <div className="p-4 rounded-2xl bg-[linear-gradient(135deg,#f7fbff_0%,#f1f8ff_100%)] border border-blue-100 shadow-[0_8px_20px_rgba(59,130,246,0.05)]">
+                <div className="flex items-center gap-2">
+                  <div className="w-7 h-7 rounded-full bg-white border border-blue-100 flex items-center justify-center shadow-sm">
+                    <Clock className="w-3.5 h-3.5 text-blue-500" />
+                  </div>
+                  <p className="text-sm text-blue-700 font-semibold">3 Days Free Trial Classes</p>
+                </div>
+
+                <div className="grid grid-cols-3 gap-3 mt-4">
+                  {[
+                    {
+                      tz: "KSA",
+                      time: hasLowerGrades ? "3:30" : "9:30",
+                      accent: "text-blue-600",
+                      border: "border-blue-100",
+                    },
+                    {
+                      tz: "UAE",
+                      time: hasLowerGrades ? "4:30" : "10:30",
+                      accent: "text-sky-600",
+                      border: "border-blue-100",
+                    },
+                    {
+                      tz: "PAK",
+                      time: hasLowerGrades ? "5:30" : "11:30",
+                      accent: "text-cyan-600",
+                      border: "border-blue-100",
+                    },
+                  ].map((item) => (
+                    <div
+                      key={item.tz}
+                      className={`rounded-2xl border ${item.border} bg-white px-3 py-3.5 text-center shadow-[0_4px_12px_rgba(15,45,87,0.03)]`}
+                    >
+                      <div className="flex items-center justify-center gap-1.5 mb-2">
+                        <Clock className={`w-3 h-3 ${item.accent}`} />
+                        <p className={`text-[11px] font-bold ${item.accent}`}>{item.tz}</p>
+                      </div>
+
+                      <p className="text-lg font-extrabold text-[#0f2d57] leading-none">
+                        <span className="block">{item.time}</span>
+                        <span className="block mt-2">AM</span>
+                      </p>
+                    </div>
+                  ))}
+                </div>
+
+                <p className="text-sm text-blue-600 mt-4 font-medium">
+                  {schoolTrialLabel}
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
       <div className="pt-2">
         <label className="text-sm font-medium text-brand-darkText mb-2 block">
           Final notes?
@@ -2983,6 +3172,5 @@ return (
         />
       </div>
     </div>
-  
-);
+  );
 };

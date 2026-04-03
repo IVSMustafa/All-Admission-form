@@ -332,31 +332,66 @@ const SmartPanel: React.FC<SmartPanelProps> = ({ data, step, onApplySuggestion }
     <>
       <style>{`
         /* ── Premium Theme with Glows ── */
-        .sp-panel {
-          --primary:  #1d6fce;
-          --secondary:#0ea5e9;
-          --accent:   #38bdf8;
-          --success:  #22c55e;
-          --warning:  #f59e0b;
-          --info:     #0284c7;
-          --purple:   #a855f7;
-          --gold:     #f59e0b;
-          --bg:       #f8fafc;
-          --text:     #0f2d57;
-          --muted:    #64748b;
+     .sp-panel {
+  --primary:  #1d6fce;
+  --secondary:#0ea5e9;
+  --accent:   #38bdf8;
+  --success:  #22c55e;
+  --warning:  #f59e0b;
+  --info:     #0284c7;
+  --purple:   #a855f7;
+  --gold:     #f59e0b;
+  --bg:       rgba(255,255,255,0.08);
+  --text:     #10315f;
+  --muted:    #64748b;
 
-          border-radius: 28px;
-          overflow: hidden;
-          background: linear-gradient(160deg, #ffffff 0%, #f0f7ff 100%);
-          border: 1px solid rgba(29,111,206,0.18);
-          box-shadow: 
-            0 0 40px rgba(29,111,206,0.15),
-            0 10px 40px rgba(0,0,0,0.08),
-            inset 0 1px 0 rgba(255,255,255,0.9);
-          backdrop-filter: blur(10px);
-          font-family: 'Inter', -apple-system, sans-serif;
-          position: relative;
-        }
+  border-radius: 28px;
+  overflow: hidden;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.16), rgba(255,255,255,0.06)),
+    radial-gradient(circle at top left, rgba(125,211,252,0.20), transparent 34%),
+    radial-gradient(circle at bottom right, rgba(186,230,253,0.16), transparent 30%),
+    rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.34);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.46),
+    inset 0 -1px 0 rgba(255,255,255,0.06),
+    0 18px 40px rgba(15,23,42,0.08),
+    0 4px 16px rgba(15,23,42,0.05);
+  backdrop-filter: blur(18px) saturate(140%);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+  font-family: 'Inter', -apple-system, sans-serif;
+  position: relative;
+  animation: panel-enter 0.6s cubic-bezier(0.4,0,0.2,1);
+}
+
+.sp-panel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(
+      120deg,
+      transparent 0%,
+      rgba(255,255,255,0.07) 22%,
+      rgba(255,255,255,0.14) 32%,
+      rgba(255,255,255,0.04) 44%,
+      transparent 58%
+    );
+  opacity: 0.9;
+}
+
+.sp-panel::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,0.08),
+    inset 0 18px 30px rgba(255,255,255,0.04);
+}
 
         /* Premium animations */
         @keyframes sparkle {
@@ -380,40 +415,52 @@ const SmartPanel: React.FC<SmartPanelProps> = ({ data, step, onApplySuggestion }
         }
 
         /* ── Premium Header with Glow ── */
-        .sp-header {
-          padding: 24px 24px;
-          background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-          color: white;
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          position: relative;
-          overflow: hidden;
-        }
+.sp-header {
+  padding: 24px 24px;
+  background:
+    linear-gradient(135deg, rgba(29,111,206,0.74) 0%, rgba(14,165,233,0.68) 100%),
+    linear-gradient(180deg, rgba(255,255,255,0.16), rgba(255,255,255,0.04));
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(16px) saturate(135%);
+  -webkit-backdrop-filter: blur(16px) saturate(135%);
+  border-bottom: 1px solid rgba(255,255,255,0.18);
+}
 
-        .sp-headerGlow {
-          position: absolute;
-          top: -50%;
-          left: -50%;
-          width: 200%;
-          height: 200%;
-          background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%);
-          animation: glow-pulse 4s ease-in-out infinite;
-          pointer-events: none;
-        }
+.sp-headerGlow {
+  position: absolute;
+  top: -40%;
+  left: -30%;
+  width: 160%;
+  height: 180%;
+  background:
+    radial-gradient(circle at 20% 30%, rgba(255,255,255,0.16) 0%, transparent 30%),
+    radial-gradient(circle at 80% 20%, rgba(255,255,255,0.10) 0%, transparent 24%),
+    radial-gradient(circle at 50% 100%, rgba(186,230,253,0.18) 0%, transparent 34%);
+  animation: glow-pulse 5s ease-in-out infinite;
+  pointer-events: none;
+}
 
         .sp-brand { display: flex; align-items: center; gap: 14px; z-index: 1; }
-        .sp-brandIcon {
-          background: rgba(255,255,255,0.25);
-          border-radius: 50%;
-          padding: 10px;
-          color: white;
-          box-shadow: 
-            0 0 20px rgba(255,255,255,0.4),
-            0 4px 12px rgba(0,0,0,0.2),
-            inset 0 1px 2px rgba(255,255,255,0.5);
-          animation: float 3s ease-in-out infinite;
-        }
+.sp-brandIcon {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.28), rgba(255,255,255,0.10));
+  border: 1px solid rgba(255,255,255,0.26);
+  border-radius: 50%;
+  padding: 10px;
+  color: white;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.42),
+    inset 0 -1px 0 rgba(255,255,255,0.08),
+    0 8px 18px rgba(15,23,42,0.18);
+  animation: float 3s ease-in-out infinite;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
         .sp-brandTitle  { 
           font-size: 15px; 
           font-weight: 900; 
@@ -438,13 +485,13 @@ const SmartPanel: React.FC<SmartPanelProps> = ({ data, step, onApplySuggestion }
           z-index: 1;
         }
 
-        .sp-circleGlow {
-          position: absolute;
-          inset: -10px;
-          background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%);
-          animation: glow-pulse 3s ease-in-out infinite;
-          border-radius: 50%;
-        }
+.sp-circleGlow {
+  position: absolute;
+  inset: -10px;
+  background: radial-gradient(circle, rgba(255,255,255,0.18) 0%, transparent 70%);
+  animation: glow-pulse 3s ease-in-out infinite;
+  border-radius: 50%;
+}
 
         .sp-circleLabel {
           position: absolute;
@@ -557,14 +604,19 @@ const SmartPanel: React.FC<SmartPanelProps> = ({ data, step, onApplySuggestion }
           align-items: center;
           gap: 6px;
         }
-        .sp-progressTrack {
-          height: 8px;
-          background: rgba(29,111,206,0.1);
-          border-radius: 4px;
-          overflow: hidden;
-          position: relative;
-          box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
-        }
+.sp-progressTrack {
+  height: 8px;
+  background: rgba(255,255,255,0.16);
+  border: 1px solid rgba(255,255,255,0.16);
+  border-radius: 999px;
+  overflow: hidden;
+  position: relative;
+  box-shadow:
+    inset 0 1px 2px rgba(255,255,255,0.14),
+    inset 0 -1px 2px rgba(0,0,0,0.04);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
         .sp-progressFill  {
           position: absolute;
           top: 0;
@@ -589,41 +641,47 @@ const SmartPanel: React.FC<SmartPanelProps> = ({ data, step, onApplySuggestion }
         /* ── Advisor Content ── */
         .sp-advisorContent { padding: 0 24px 24px; display: flex; flex-direction: column; gap: 14px; }
 
-        .sp-tipCard {
-          display: flex; align-items: flex-start; gap: 14px;
-          padding: 16px 18px;
-          border-radius: 18px;
-          background: linear-gradient(135deg, #dbeafe, #eff6ff);
-          border: 1px solid rgba(29,111,206,0.2);
-          box-shadow: 
-            0 4px 16px rgba(29,111,206,0.1),
-            inset 0 1px 0 rgba(255,255,255,0.8);
-          position: relative;
-          overflow: hidden;
-        }
+.sp-tipCard {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 16px 18px;
+  border-radius: 18px;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.18), rgba(255,255,255,0.08));
+  border: 1px solid rgba(255,255,255,0.28);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.38),
+    inset 0 -1px 0 rgba(255,255,255,0.05),
+    0 8px 24px rgba(29,111,206,0.08);
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(14px) saturate(130%);
+  -webkit-backdrop-filter: blur(14px) saturate(130%);
+}
 
-        .sp-tipGlow {
-          position: absolute;
-          top: -50%;
-          left: -50%;
-          width: 200%;
-          height: 200%;
-          background: radial-gradient(circle, rgba(29,111,206,0.1) 0%, transparent 70%);
-          animation: glow-pulse 5s ease-in-out infinite;
-        }
+.sp-tipGlow {
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(125,211,252,0.12) 0%, transparent 70%);
+  animation: glow-pulse 5s ease-in-out infinite;
+}
 
-        .sp-tipIcon {
-          background: linear-gradient(135deg, var(--primary), var(--secondary));
-          color: white;
-          padding: 9px;
-          border-radius: 50%;
-          box-shadow: 
-            0 0 16px rgba(29,111,206,0.4),
-            0 4px 12px rgba(29,111,206,0.2);
-          flex-shrink: 0;
-          z-index: 1;
-          animation: float 3.5s ease-in-out infinite;
-        }
+.sp-tipIcon {
+  background: linear-gradient(135deg, rgba(29,111,206,0.88), rgba(14,165,233,0.82));
+  color: white;
+  padding: 9px;
+  border-radius: 50%;
+  box-shadow:
+    0 0 16px rgba(29,111,206,0.22),
+    0 4px 12px rgba(29,111,206,0.16);
+  flex-shrink: 0;
+  z-index: 1;
+  animation: float 3.5s ease-in-out infinite;
+}
         .sp-tipHeader      { 
           font-weight: 800; 
           font-size: 12px; 
@@ -647,34 +705,45 @@ const SmartPanel: React.FC<SmartPanelProps> = ({ data, step, onApplySuggestion }
         }
         .sp-in { opacity: 1; transform: translateY(0); }
         
-        .sp-insight {
-          padding: 16px 18px;
-          border-radius: 18px;
-          background: white;
-          border: 1px solid rgba(29,111,206,0.12);
-          box-shadow: 
-            0 4px 20px rgba(29,111,206,0.08),
-            inset 0 1px 0 rgba(255,255,255,1);
-          transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
-          position: relative;
-          overflow: hidden;
-        }
+.sp-insight {
+  padding: 16px 18px;
+  border-radius: 18px;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.16), rgba(255,255,255,0.06));
+  border: 1px solid rgba(255,255,255,0.26);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.34),
+    inset 0 -1px 0 rgba(255,255,255,0.04),
+    0 8px 24px rgba(29,111,206,0.06);
+  transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(14px) saturate(130%);
+  -webkit-backdrop-filter: blur(14px) saturate(130%);
+}s
 
-        .sp-insight::before {
-          content: '';
-          position: absolute;
-          inset: 0;
-          background: linear-gradient(135deg, transparent, rgba(29,111,206,0.03));
-          opacity: 0;
-          transition: opacity 0.3s;
-        }
-
-        .sp-insight:hover {
-          transform: translateY(-4px);
-          box-shadow: 
-            0 8px 30px rgba(29,111,206,0.15),
-            inset 0 1px 0 rgba(255,255,255,1);
-        }
+.sp-insight::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(
+      120deg,
+      transparent 0%,
+      rgba(255,255,255,0.05) 30%,
+      rgba(255,255,255,0.10) 42%,
+      transparent 60%
+    );
+  opacity: 0.8;
+  transition: opacity 0.3s;
+}
+ .sp-insight:hover {
+  transform: translateY(-4px);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.38),
+    inset 0 -1px 0 rgba(255,255,255,0.05),
+    0 12px 30px rgba(29,111,206,0.10);
+}
 
         .sp-insight:hover::before { opacity: 1; }
 
@@ -690,11 +759,23 @@ const SmartPanel: React.FC<SmartPanelProps> = ({ data, step, onApplySuggestion }
           transition: all 0.3s;
         }
 
-        .sp-insight:hover .sp-insightIco {
-          transform: scale(1.1) rotate(5deg);
-          box-shadow: 0 4px 12px rgba(29,111,206,0.25);
-        }
-
+.sp-insightIco {
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(180deg, rgba(255,255,255,0.20), rgba(255,255,255,0.08));
+  color: var(--primary);
+  flex-shrink: 0;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.30),
+    0 2px 8px rgba(29,111,206,0.08);
+  transition: all 0.3s;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
         .sp-insightTitle  { font-weight: 800; font-size: 13px; color: var(--text); letter-spacing: 0.2px; }
         .sp-insightBody   { color: var(--muted); font-size: 12px; line-height: 1.7; font-weight: 500; z-index: 1; position: relative; }
 
@@ -758,15 +839,24 @@ const SmartPanel: React.FC<SmartPanelProps> = ({ data, step, onApplySuggestion }
         }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         
-        .sp-drawer {
-          position: fixed; bottom: 0; left: 0; right: 0;
-          background: white;
-          border-top-left-radius: 28px; border-top-right-radius: 28px;
-          box-shadow: 0 -8px 50px rgba(29,111,206,0.2);
-          max-height: 90vh; overflow-y: auto;
-          animation: slideUp 0.4s cubic-bezier(0.32,0.72,0,1);
-          z-index: 50;
-        }
+.sp-drawer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.74), rgba(244,248,255,0.58));
+  border-top-left-radius: 28px;
+  border-top-right-radius: 28px;
+  box-shadow: 0 -8px 50px rgba(29,111,206,0.16);
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: slideUp 0.4s cubic-bezier(0.32,0.72,0,1);
+  z-index: 50;
+  backdrop-filter: blur(18px) saturate(135%);
+  -webkit-backdrop-filter: blur(18px) saturate(135%);
+  border-top: 1px solid rgba(255,255,255,0.26);
+}
         @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
         
         .sp-drag { 
