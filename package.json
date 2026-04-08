@@ -11,6 +11,7 @@
   "dependencies": {
     "@fontsource/great-vibes": "^5.2.8",
     "@google/genai": "^1.48.0",
+    "@supabase/supabase-js": "^2.102.1",
     "@tailwindcss/vite": "^4.2.2",
     "canvas-confetti": "^1.9.4",
     "flag-icons": "^7.5.0",
