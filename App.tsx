@@ -7,13 +7,87 @@ import SmartPanel from './components/SmartPanel';
 import AIAssistantMascot from './components/LandingPage/AIAssistantMascot';
 import { Button } from './components/UI';
 import { Step0_Welcome, Step1_Details, Step2_FinalSteps } from './components/FormSteps';
+const GLASS_ACTION_BUTTONS = `
+.glass-action-btn {
+  background: linear-gradient(
+    180deg,
+    rgba(255,255,255,0.08),
+    rgba(255,255,255,0.02)
+  ) !important;
+  border: 1px solid rgba(255,255,255,0.90) !important;
+  color: #163761 !important;
+  border-radius: 18px !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.97),
+    inset 0 -10px 22px rgba(255,255,255,0.06),
+    0 16px 30px rgba(15,45,87,0.12),
+    0 5px 12px rgba(15,45,87,0.06) !important;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    border-color 0.2s ease,
+    background 0.2s ease !important;
+}
 
+.glass-action-btn:hover {
+  transform: translateY(-1px);
+  border-color: rgba(255,255,255,0.98) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.98),
+    inset 0 -10px 24px rgba(255,255,255,0.08),
+    0 18px 34px rgba(15,45,87,0.14),
+    0 6px 14px rgba(15,45,87,0.08) !important;
+}
+
+.glass-action-btn svg {
+  color: inherit !important;
+}
+
+.glass-action-btn-primary {
+  color: #1d6fce !important;
+  border-color: rgba(191,219,254,0.95) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.98),
+    inset 0 -10px 24px rgba(255,255,255,0.07),
+    0 18px 34px rgba(29,111,206,0.10),
+    0 6px 14px rgba(15,45,87,0.06) !important;
+}
+
+.glass-action-btn-primary:hover {
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.99),
+    inset 0 -10px 24px rgba(255,255,255,0.08),
+    0 20px 36px rgba(29,111,206,0.14),
+    0 8px 16px rgba(15,45,87,0.07) !important;
+}
+
+.glass-action-btn-success {
+  color: #059669 !important;
+  border-color: rgba(167,243,208,0.95) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.98),
+    inset 0 -10px 24px rgba(255,255,255,0.07),
+    0 18px 34px rgba(16,185,129,0.10),
+    0 6px 14px rgba(15,45,87,0.06) !important;
+}
+
+.glass-action-btn-success:hover {
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.99),
+    inset 0 -10px 24px rgba(255,255,255,0.08),
+    0 20px 36px rgba(16,185,129,0.14),
+    0 8px 16px rgba(15,45,87,0.07) !important;
+}
+`;
 const App = () => {
   const [step, setStep] = useState(0);
-  const [formData, setFormData] = useState<FormData>(INITIAL_DATA);
-  const [errors, setErrors] = useState<Record<string, string>>({});
- const [isSubmitted, setIsSubmitted] = useState(false);
+const [formData, setFormData] = useState<FormData>(INITIAL_DATA);
+const [errors, setErrors] = useState<Record<string, string>>({});
+const [isSubmitted, setIsSubmitted] = useState(false);
 const [playConfetti, setPlayConfetti] = useState(false);
+const [submittedSnapshot, setSubmittedSnapshot] = useState<FormData | null>(null);
   useEffect(() => {
     const currentState = window.history.state;
 
@@ -125,24 +199,18 @@ const isTuitionDetailsStep = step === 1 && formData.leadType === LeadType.TUITIO
 const isSchoolStep1Details = isFullTimeDetailsStep || isOneToOneDetailsStep;
 const isFinalStep = step === 2;
 
-const fullTimeStepShift = 'xl:translate-x-[300px]';
-const oneToOneStepShift = 'xl:translate-x-[220px]';
-const tuitionStepShift = 'xl:translate-x-[200px]';
-
-const detailsStepShift =
-  isFullTimeDetailsStep
-    ? fullTimeStepShift
-    : isOneToOneDetailsStep
-    ? oneToOneStepShift
-    : isTuitionDetailsStep
-    ? tuitionStepShift
-    : '';
+const detailsStepShift = '';
 const updateData = (fields: Partial<FormData>) => {
-    setFormData(prev => ({ ...prev, ...fields }));
-    const newErrors = { ...errors };
-    Object.keys(fields).forEach(key => delete newErrors[key]);
-    setErrors(newErrors);
-  };
+  if (submittedSnapshot) {
+    setSubmittedSnapshot(null);
+  }
+
+  setFormData(prev => ({ ...prev, ...fields }));
+
+  const newErrors = { ...errors };
+  Object.keys(fields).forEach(key => delete newErrors[key]);
+  setErrors(newErrors);
+};
 
   const validateStep = (currentStep: number): boolean => {
     const newErrors: Record<string, string> = {};
@@ -295,6 +363,7 @@ const prevStep = () => {
 };
 const handleStartNewApplication = () => {
   setFormData(INITIAL_DATA);
+  setSubmittedSnapshot(null);
   setErrors({});
   setIsSubmitted(false);
   setPlayConfetti(false);
@@ -303,65 +372,81 @@ const handleStartNewApplication = () => {
   window.history.replaceState({ step: 0 }, '');
   window.scrollTo({ top: 0, behavior: 'smooth' });
 };
-  const handleSubmit = async () => {
-    let updatedFormData = { ...formData };
+const handleSubmit = async () => {
+  let updatedFormData = { ...formData };
 
-    if (formData.fullTimeInterest && formData.pendingSchoolName && formData.pendingSchoolAge && formData.pendingSchoolGrade) {
-     updatedFormData.upsellSchoolStudents = [
-  ...(formData.upsellSchoolStudents || []),
-        {
-          id: Date.now().toString(),
-          name: formData.pendingSchoolName,
-          age: formData.pendingSchoolAge,
-          grade: formData.pendingSchoolGrade,
-          curriculum: null,
-        },
-      ];
-      updatedFormData.pendingSchoolName = '';
-      updatedFormData.pendingSchoolAge = '';
-      updatedFormData.pendingSchoolGrade = '';
-    }
+  if (
+    formData.fullTimeInterest &&
+    formData.pendingSchoolName &&
+    formData.pendingSchoolAge &&
+    formData.pendingSchoolGrade
+  ) {
+    updatedFormData.upsellSchoolStudents = [
+      ...(formData.upsellSchoolStudents || []),
+      {
+        id: Date.now().toString(),
+        name: formData.pendingSchoolName,
+        age: formData.pendingSchoolAge,
+        grade: formData.pendingSchoolGrade,
+        curriculum: null,
+      },
+    ];
+    updatedFormData.pendingSchoolName = '';
+    updatedFormData.pendingSchoolAge = '';
+    updatedFormData.pendingSchoolGrade = '';
+  }
 
-    if (formData.tuitionInterest && formData.pendingTuitionName && formData.pendingTuitionAge) {
-     updatedFormData.upsellTuitionStudents = [
-  ...(formData.upsellTuitionStudents || []),
-        {
-          id: (Date.now() + 1).toString(),
-          name: formData.pendingTuitionName,
-          age: formData.pendingTuitionAge,
-          requirements: formData.pendingTuitionReq || '',
-        },
-      ];
-      updatedFormData.pendingTuitionName = '';
-      updatedFormData.pendingTuitionAge = '';
-      updatedFormData.pendingTuitionReq = '';
-    }
+  if (
+    formData.tuitionInterest &&
+    formData.pendingTuitionName &&
+    formData.pendingTuitionAge
+  ) {
+    updatedFormData.upsellTuitionStudents = [
+      ...(formData.upsellTuitionStudents || []),
+      {
+        id: (Date.now() + 1).toString(),
+        name: formData.pendingTuitionName,
+        age: formData.pendingTuitionAge,
+        requirements: formData.pendingTuitionReq || '',
+      },
+    ];
+    updatedFormData.pendingTuitionName = '';
+    updatedFormData.pendingTuitionAge = '';
+    updatedFormData.pendingTuitionReq = '';
+  }
 
-    if (formData.quranInterest && formData.pendingQuranName && formData.pendingQuranAge) {
-   updatedFormData.upsellQuranStudents = [
-  ...(formData.upsellQuranStudents || []),
-        {
-          id: (Date.now() + 2).toString(),
-          name: formData.pendingQuranName,
-          age: formData.pendingQuranAge,
-          subjects: formData.pendingQuranSubjects || [],
-          classDays: [],
-          classTime: formData.pendingQuranTime || 'Flexible',
-        },
-      ];
-      updatedFormData.pendingQuranName = '';
-      updatedFormData.pendingQuranAge = '';
-      updatedFormData.pendingQuranTime = '';
-      updatedFormData.pendingQuranSubjects = [];
-    }
+  if (
+    formData.quranInterest &&
+    formData.pendingQuranName &&
+    formData.pendingQuranAge
+  ) {
+    updatedFormData.upsellQuranStudents = [
+      ...(formData.upsellQuranStudents || []),
+      {
+        id: (Date.now() + 2).toString(),
+        name: formData.pendingQuranName,
+        age: formData.pendingQuranAge,
+        subjects: formData.pendingQuranSubjects || [],
+        classDays: formData.pendingQuranDays || [],
+        classTime: formData.pendingQuranTime || 'Flexible',
+        country: formData.pendingQuranCountry || '',
+      },
+    ];
+    updatedFormData.pendingQuranName = '';
+    updatedFormData.pendingQuranAge = '';
+    updatedFormData.pendingQuranTime = '';
+    updatedFormData.pendingQuranSubjects = [];
+    updatedFormData.pendingQuranDays = [];
+    updatedFormData.pendingQuranCountry = '';
+  }
 
-   setFormData(updatedFormData);
-console.log('Submitting Data:', updatedFormData);
-setIsSubmitted(true);
-setPlayConfetti(true);
-window.history.pushState({ step: 999, submitted: true }, '');
-window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
+  setSubmittedSnapshot(updatedFormData);
+  console.log('Submitting Data:', updatedFormData);
+  setIsSubmitted(true);
+  setPlayConfetti(true);
+  window.history.pushState({ step: 999, submitted: true }, '');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+};
 
   const getGradeValue = (grade: string): number => {
     if (!grade) return 0;
@@ -383,18 +468,26 @@ window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
 if (isSubmitted) {
+    const successData = submittedSnapshot || formData;
   const enrolledStudentsCount =
-    formData.leadType === LeadType.QURAN
-      ? (formData.quranStudents || []).length
-      : formData.leadType === LeadType.TUITION
+    successData.leadType === LeadType.QURAN
+      ? (successData.quranStudents || []).length
+      : successData.leadType === LeadType.TUITION
       ? 1
-      : formData.students.length;
+      : successData.students.length;
 
-  const hasLowerGrades = formData.students.some(s => getGradeValue(s.grade) < 10);
-  const hasUpperGrades = formData.students.some(s => getGradeValue(s.grade) >= 10);
+  const hasLowerGrades = successData.students.some(s => getGradeValue(s.grade) < 10);
+  const hasUpperGrades = successData.students.some(s => getGradeValue(s.grade) >= 10);
+const submittedUpsellSchoolStudents = successData.upsellSchoolStudents || [];
+const submittedUpsellTuitionStudents = successData.upsellTuitionStudents || [];
+const submittedUpsellQuranStudents = successData.upsellQuranStudents || [];
 
+const hasSubmittedAdditionalPrograms =
+  submittedUpsellSchoolStudents.length > 0 ||
+  submittedUpsellTuitionStudents.length > 0 ||
+  submittedUpsellQuranStudents.length > 0;
   return (
-    <div className="min-h-screen relative overflow-hidden flex items-center justify-center px-4 py-6 md:px-6 md:py-8 bg-[radial-gradient(circle_at_top,rgba(29,111,206,0.08),transparent_38%),linear-gradient(180deg,#edf6ff_0%,#f8fbff_100%)]">
+<div className="success-glass-scope min-h-screen relative overflow-hidden flex items-center justify-center px-4 py-6 md:px-6 md:py-8 bg-[radial-gradient(circle_at_top,rgba(29,111,206,0.08),transparent_38%),linear-gradient(180deg,#edf6ff_0%,#f8fbff_100%)]">
 <style>{`
   @keyframes ivsSuccessEnter {
     0% {
@@ -797,6 +890,20 @@ if (isSubmitted) {
   }
 }
 
+  .success-glass-scope .ivs-success-main,
+  .success-glass-scope .ivs-applied-voucher,
+  .success-glass-scope div[class*="rounded-[24px]"],
+  .success-glass-scope div[class*="rounded-[22px]"],
+  .success-glass-scope div[class*="rounded-2xl"] {
+    background: transparent !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    border-color: rgba(201, 225, 255, 0.82) !important;
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.60),
+      0 16px 34px rgba(15,45,87,0.07),
+      0 6px 14px rgba(15,45,87,0.04) !important;
+  }
 `}</style>
 
 
@@ -829,7 +936,7 @@ if (isSubmitted) {
             </h2>
 
             <p className="mt-3 text-lg sm:text-[22px] text-brand-darkText leading-relaxed">
-              Thanks, <strong>{formData.parentName}</strong>! Your request has been received successfully.
+              Thanks, <strong>{successData.parentName}</strong>! Your request has been received successfully.
             </p>
 
             <p className="mt-2 text-sm sm:text-base text-brand-mediumText max-w-2xl mx-auto">
@@ -837,7 +944,7 @@ if (isSubmitted) {
             </p>
           </div>
 
-          {formData.appliedCoupon && (
+          {successData.appliedCoupon && (
             <div className="mt-7 grid gap-4 md:grid-cols-[1.35fr_180px] items-stretch">
               <div className="rounded-[24px] border border-[rgba(29,111,206,0.14)] bg-[linear-gradient(135deg,#f3faff_0%,#eaf5ff_50%,#f7fbff_100%)] overflow-hidden shadow-[0_12px_28px_rgba(29,111,206,0.08)]">
                 <div className="flex flex-col sm:flex-row sm:items-center gap-4 p-5">
@@ -857,18 +964,18 @@ if (isSubmitted) {
                     </div>
 
                     <h4 className="text-[24px] sm:text-[28px] leading-none font-black tracking-[0.01em] text-[#0f2d57]">
-                      {formData.couponCode}
+                      {successData.couponCode}
                     </h4>
 
                     <p className="mt-2 text-[15px] font-semibold text-[#23527c]">
-                      {formData.appliedCoupon.discountValue}% off on{" "}
-                      {formData.appliedCoupon.discountType === "REGISTRATION_FEE"
+                      {successData.appliedCoupon.discountValue}% off on{" "}
+                      {successData.appliedCoupon.discountType === "REGISTRATION_FEE"
                         ? "registration fee"
                         : "first month fee"}
                     </p>
 
                     <p className="mt-2 text-sm text-[#5c7593] leading-relaxed">
-                      Referred by <strong>{formData.appliedCoupon.referrerName}</strong>. Your reward is attached to this application.
+                      Referred by <strong>{successData.appliedCoupon.referrerName}</strong>. Your reward is attached to this application.
                     </p>
                   </div>
                 </div>
@@ -879,7 +986,7 @@ if (isSubmitted) {
                   Savings
                 </p>
                 <p className="mt-1 text-[34px] sm:text-[40px] leading-none font-black bg-[linear-gradient(135deg,#1d6fce_0%,#0ea5e9_100%)] bg-clip-text text-transparent">
-                  {formData.appliedCoupon.discountValue}%
+                  {successData.appliedCoupon.discountValue}%
                 </p>
                 <p className="mt-1 text-xs font-semibold text-[#5c7593]">
                   Premium Reward
@@ -889,7 +996,7 @@ if (isSubmitted) {
           )}
 
           <div className="mt-7 grid gap-5">
-            {formData.leadType === LeadType.TUITION ? (
+            {successData.leadType === LeadType.TUITION ? (
               <>
                 <div className="rounded-[24px] border border-brand-lightGray bg-white/78 p-5 shadow-[0_8px_24px_rgba(15,45,87,0.04)]">
                   <h4 className="text-sm uppercase tracking-[0.16em] font-extrabold text-gray-500 border-b border-brand-lightGray pb-3">
@@ -904,11 +1011,11 @@ if (isSubmitted) {
                     <div className="flex-1 grid sm:grid-cols-2 gap-3">
                       <div>
                         <p className="text-xs uppercase tracking-wide text-gray-500">Name</p>
-                        <p className="text-brand-darkText font-bold text-lg">{formData.studentName}</p>
+                        <p className="text-brand-darkText font-bold text-lg">{successData.studentName}</p>
                       </div>
                       <div>
                         <p className="text-xs uppercase tracking-wide text-gray-500">Age</p>
-                        <p className="text-brand-darkText font-bold text-lg">{formData.age} yrs</p>
+                        <p className="text-brand-darkText font-bold text-lg">{successData.age} yrs</p>
                       </div>
                     </div>
                   </div>
@@ -920,7 +1027,7 @@ if (isSubmitted) {
                   </h4>
 
                   <p className="mt-4 text-[15px] text-brand-darkText rounded-2xl border border-[rgba(29,111,206,0.08)] bg-[linear-gradient(135deg,#ffffff,#f8fbff)] p-4 whitespace-pre-wrap leading-relaxed">
-                    {formData.tuitionRequirements}
+                    {successData.tuitionRequirements}
                   </p>
                 </div>
 
@@ -938,8 +1045,8 @@ if (isSubmitted) {
                   </h4>
 
                   <div className="mt-4 space-y-3">
-                    {formData.leadType === LeadType.QURAN
-                      ? (formData.quranStudents || []).map((student, idx) => (
+                    {successData.leadType === LeadType.QURAN
+                      ? (successData.quranStudents || []).map((student, idx) => (
                           <div
                             key={student.id}
                             className="grid gap-3 md:grid-cols-[56px_1fr] items-center rounded-2xl border border-emerald-200 bg-emerald-50/70 px-4 py-4"
@@ -968,7 +1075,7 @@ if (isSubmitted) {
                             </div>
                           </div>
                         ))
-                      : formData.students.map((student, idx) => {
+                      : successData.students.map((student, idx) => {
                           const studentGradeVal = getGradeValue(student.grade);
                           const displayCurriculum = student.curriculum
                             ? student.curriculum
@@ -1009,11 +1116,11 @@ if (isSubmitted) {
 
                 <div className="rounded-[24px] border border-brand-lightGray bg-white/78 p-5 shadow-[0_8px_24px_rgba(15,45,87,0.04)]">
                   <h4 className="text-sm uppercase tracking-[0.16em] font-extrabold text-gray-500 border-b border-brand-lightGray pb-3">
-                    Trial Schedule ({formData.leadType === LeadType.QURAN ? "3 Days" : "1 Day"})
+                    Trial Schedule ({successData.leadType === LeadType.QURAN ? "3 Days" : "1 Day"})
                   </h4>
 
                   <div className="mt-4 space-y-3">
-                    {formData.leadType === LeadType.QURAN ? (
+                    {successData.leadType === LeadType.QURAN ? (
                       <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-4 shadow-[0_8px_20px_rgba(16,185,129,0.05)]">
                         <p className="text-sm text-emerald-700 font-semibold">📖 3 Days Free Trial</p>
                         <p className="text-lg text-emerald-800 font-extrabold mt-2">
@@ -1023,7 +1130,7 @@ if (isSubmitted) {
                           Our coordinator will confirm the class schedule on WhatsApp
                         </p>
                       </div>
-                    ) : formData.leadType === LeadType.ONE_ON_ONE_SCHOOLING ? (
+                    ) : successData.leadType === LeadType.ONE_ON_ONE_SCHOOLING ? (
                       <div className="rounded-2xl border border-purple-200 bg-purple-50 p-4 shadow-[0_8px_20px_rgba(139,92,246,0.05)]">
                         <p className="text-sm text-purple-700 font-semibold">📚 1 Day Free Trial</p>
                         <p className="text-lg text-purple-800 font-extrabold mt-2">
@@ -1071,18 +1178,100 @@ if (isSubmitted) {
               </>
             )}
           </div>
+{hasSubmittedAdditionalPrograms && (
+  <div className="rounded-[24px] border border-amber-200 bg-[linear-gradient(135deg,#fffaf0,#fff7ed)] p-5 shadow-[0_8px_24px_rgba(245,158,11,0.08)]">
+    <h4 className="text-sm uppercase tracking-[0.16em] font-extrabold text-amber-700 border-b border-amber-200 pb-3">
+      Additional Programs From Final Step
+    </h4>
 
-          {formData.leadType !== LeadType.TUITION && (
+    <div className="mt-4 space-y-4">
+      {submittedUpsellSchoolStudents.length > 0 && (
+        <div>
+          <p className="text-sm font-bold text-blue-700 mb-2">
+            Full-Time School ({submittedUpsellSchoolStudents.length})
+          </p>
+          <div className="space-y-2">
+            {submittedUpsellSchoolStudents.map((student, idx) => (
+              <div
+                key={student.id}
+                className="rounded-2xl border border-blue-200 bg-blue-50/70 px-4 py-3"
+              >
+                <p className="font-bold text-blue-900">
+                  {idx + 1}. {student.name}
+                </p>
+                <p className="text-sm text-blue-700">
+                  Age {student.age} • {student.grade}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {submittedUpsellTuitionStudents.length > 0 && (
+        <div>
+          <p className="text-sm font-bold text-purple-700 mb-2">
+            1-on-1 Tuition ({submittedUpsellTuitionStudents.length})
+          </p>
+          <div className="space-y-2">
+            {submittedUpsellTuitionStudents.map((student, idx) => (
+              <div
+                key={student.id}
+                className="rounded-2xl border border-purple-200 bg-purple-50/70 px-4 py-3"
+              >
+                <p className="font-bold text-purple-900">
+                  {idx + 1}. {student.name}
+                </p>
+                <p className="text-sm text-purple-700">
+                  Age {student.age}
+                  {student.requirements ? ` • ${student.requirements}` : ""}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {submittedUpsellQuranStudents.length > 0 && (
+        <div>
+          <p className="text-sm font-bold text-emerald-700 mb-2">
+            Quran Classes ({submittedUpsellQuranStudents.length})
+          </p>
+          <div className="space-y-2">
+            {submittedUpsellQuranStudents.map((student, idx) => (
+              <div
+                key={student.id}
+                className="rounded-2xl border border-emerald-200 bg-emerald-50/70 px-4 py-3"
+              >
+                <p className="font-bold text-emerald-900">
+                  {idx + 1}. {student.name}
+                </p>
+                <p className="text-sm text-emerald-700">
+                  Age {student.age}
+                  {student.subjects?.length ? ` • ${student.subjects.join(", ")}` : ""}
+                  {student.classDays?.length ? ` • ${student.classDays.join(", ")}` : ""}
+                  {student.classTime ? ` • ${student.classTime}` : ""}
+                  {student.country ? ` • ${student.country}` : ""}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  </div>
+)}
+          {successData.leadType !== LeadType.TUITION && (
             <div className="mt-6 rounded-[22px] border border-brand-orange/20 bg-[linear-gradient(135deg,rgba(255,248,243,0.95),rgba(255,244,239,0.90))] p-4 text-center shadow-[0_8px_20px_rgba(180,83,9,0.05)]">
               <p className="text-sm sm:text-[15px] text-brand-burgundy">
                 📹 We will send the <strong>Zoom link</strong> to{" "}
-                <strong>{formatPhoneForWhatsApp(formData.country || "Other", formData.whatsapp)}</strong> shortly.
+                <strong>{formatPhoneForWhatsApp(successData.country || "Other", successData.whatsapp)}</strong> shortly.
               </p>
             </div>
           )}
 
           <p className="mt-6 text-sm text-brand-mediumText text-center">
-            {formData.leadType === LeadType.TUITION
+            {successData.leadType === LeadType.TUITION
               ? "Our advisor will reach out to you shortly on WhatsApp."
               : "If you need immediate help, just message us on WhatsApp."}
           </p>
@@ -1127,9 +1316,9 @@ if (isSubmitted) {
           />
         </div>
 
-        <div className="hidden xl:block fixed top-4 right-4 w-[320px] z-40">
-          <SmartPanel data={formData} step={step} />
-        </div>
+<div className="hidden 2xl:block fixed top-6 right-6 w-[320px] z-40">
+  <SmartPanel data={formData} step={step} />
+</div>
 
         <AIAssistantMascot />
       </div>
@@ -1138,11 +1327,12 @@ if (isSubmitted) {
 
 return (
   <div className="min-h-screen relative">
+    <style>{GLASS_ACTION_BUTTONS}</style>
     <header
   className="
     relative z-40 mb-4 flex justify-center
     md:mb-6
-    xl:fixed xl:top-6 xl:left-10 xl:mb-0 xl:justify-start
+    xl:fixed xl:top-5 xl:left-6 xl:mb-0 xl:justify-start
   "
 >
   <div className="inline-flex items-center gap-3 rounded-2xl border border-white/60 bg-white/55 backdrop-blur-md shadow-[0_10px_30px_rgba(15,45,87,0.08)] px-3 py-2 sm:px-4 sm:py-2.5 md:bg-transparent md:backdrop-blur-0 md:border-0 md:shadow-none md:p-0">
@@ -1233,21 +1423,21 @@ return (
     }}
   />
 )}
-    <div
-      className={
-        isQuranDetailsStep
-          ? "relative z-10 w-full px-4 pt-4 md:px-8 md:pt-6 xl:px-12 xl:pr-[360px]"
-          : isFinalStep
-          ? "relative z-10 w-full max-w-7xl mx-auto px-4  pt-4 md:px-8 md:pt-6 xl:pt-24 xl:pr-[100px] xl:pl-[300px]"
-          : isSchoolStep1Details
-          ? "relative z-10 w-full max-w-7xl mx-auto px-4 pt-6 md:px-8 md:pt-8 xl:pt-24 xl:pr-[360px]"
-          : "w-full max-w-3xl mx-auto"
-      }
-    >
 <div
   className={
     isQuranDetailsStep
-      ? "w-full max-w-3xl xl:ml-[400px] xl:mr-[380px]"
+      ? "relative z-10 w-full max-w-6xl mx-auto px-4 pt-4 pb-24 md:px-6 md:pt-6 lg:px-8 2xl:pr-[360px]"
+      : isFinalStep
+      ? "relative z-10 w-full max-w-6xl mx-auto px-4 pt-4 pb-24 md:px-6 md:pt-6 lg:px-8 xl:pt-20 2xl:pr-[360px]"
+      : isSchoolStep1Details
+      ? "relative z-10 w-full max-w-6xl mx-auto px-4 pt-6 pb-24 md:px-6 md:pt-8 lg:px-8 xl:pt-20 2xl:pr-[360px]"
+      : "relative z-10 w-full max-w-6xl mx-auto px-4 pt-4 pb-24 md:px-6 lg:px-8 2xl:pr-[360px]"
+  }
+>
+<div
+  className={
+    isQuranDetailsStep
+      ? "w-full max-w-3xl mx-auto"
       : step === 1
       ? `w-full max-w-3xl mx-auto pt-4 md:pt-6 xl:pt-0 ${detailsStepShift}`
       : "w-full max-w-3xl mx-auto"
@@ -1278,23 +1468,32 @@ return (
   <div className="pt-6 pb-10 md:pb-14">
     <div className="border-t border-brand-burgundy/20 pt-6 animate-fade-in">
       <div className="flex items-center justify-between gap-3">
-        <Button onClick={prevStep} variant="secondary">
-          <ArrowLeft className="w-4 h-4" /> Back
-        </Button>
 
-        {step < 2 ? (
-          <Button onClick={nextStep} variant="primary">
-            Next Step <ArrowRight className="w-4 h-4" />
-          </Button>
-        ) : (
-          <Button
-            onClick={handleSubmit}
-            variant="primary"
-            className="!bg-gradient-to-r !from-emerald-500 !to-green-600 !shadow-emerald-500/20"
-          >
-            Submit & Get Details <Send className="w-4 h-4" />
-          </Button>
-        )}
+        <Button
+  onClick={prevStep}
+  variant="secondary"
+  className="glass-action-btn"
+>
+  <ArrowLeft className="w-4 h-4" /> Back
+</Button>
+
+{step < 2 ? (
+  <Button
+    onClick={nextStep}
+    variant="primary"
+    className="glass-action-btn glass-action-btn-primary"
+  >
+    Next Step <ArrowRight className="w-4 h-4" />
+  </Button>
+) : (
+  <Button
+    onClick={handleSubmit}
+    variant="primary"
+    className="glass-action-btn glass-action-btn-success"
+  >
+    Submit & Get Details <Send className="w-4 h-4" />
+  </Button>
+)}
       </div>
     </div>
   </div>
@@ -1302,9 +1501,9 @@ return (
       </div>
     </div>
 
-    <div className="hidden xl:block fixed top-8 right-8 w-[320px] z-40">
-      <SmartPanel data={formData} step={step} />
-    </div>
+<div className="hidden 2xl:block fixed top-8 right-6 w-[320px] z-40">
+  <SmartPanel data={formData} step={step} />
+</div>
 
     <AIAssistantMascot />
   </div>

@@ -720,7 +720,7 @@ const SmartPanel: React.FC<SmartPanelProps> = ({ data, step, onApplySuggestion }
   overflow: hidden;
   backdrop-filter: blur(14px) saturate(130%);
   -webkit-backdrop-filter: blur(14px) saturate(130%);
-}s
+}
 
 .sp-insight::before {
   content: '';
@@ -901,25 +901,26 @@ const SmartPanel: React.FC<SmartPanelProps> = ({ data, step, onApplySuggestion }
         }
 
         /* ── Premium FAB with Glow ── */
-        .sp-fab {
-          background: linear-gradient(135deg, var(--primary), var(--secondary));
-          color: white;
-          padding: 15px 26px;
-          border-radius: 999px;
-          box-shadow: 
-            0 0 20px rgba(29,111,206,0.4),
-            0 6px 24px rgba(29,111,206,0.3);
-          display: flex; 
-          align-items: center; 
-          gap: 10px;
-          font-weight: 800; 
-          font-size: 14px;
-          border: none; 
-          cursor: pointer;
-          transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
-          position: relative;
-          overflow: hidden;
-        }
+ .sp-fab {
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  color: white;
+  padding: 12px 18px;
+  border-radius: 999px;
+  box-shadow: 
+    0 0 16px rgba(29,111,206,0.28),
+    0 6px 18px rgba(29,111,206,0.22);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 800;
+  font-size: 13px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+  position: relative;
+  overflow: hidden;
+  max-width: calc(100vw - 24px);
+}
 
         .sp-fab::before {
           content: '';
@@ -939,11 +940,31 @@ const SmartPanel: React.FC<SmartPanelProps> = ({ data, step, onApplySuggestion }
 
         .sp-fab:hover::before { opacity: 1; }
 
-        @media (max-width: 768px) {
-          .sp-timeline { padding: 18px 20px; }
-          .sp-advisorContent { padding: 0 20px 20px; }
-        }
+@media (max-width: 768px) {
+  .sp-timeline { padding: 18px 20px; }
+  .sp-advisorContent { padding: 0 20px 20px; }
 
+  .sp-fab {
+    padding: 11px 16px;
+    font-size: 12px;
+    gap: 7px;
+  }
+
+  .sp-fab svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .sp-drawer {
+    max-height: 82vh;
+    border-top-left-radius: 22px;
+    border-top-right-radius: 22px;
+  }
+
+  .sp-drawerHead {
+    padding: 12px 16px;
+  }
+}
         /* ===== PREMIUM HANGING EFFECT ===== */
         .sp-hangWrap {
           position: relative;
@@ -1062,7 +1083,7 @@ const SmartPanel: React.FC<SmartPanelProps> = ({ data, step, onApplySuggestion }
       `}</style>
 
       {/* Desktop Panel - Sticky (Frozen in Place While Scrolling) */}
-      <div className="hidden lg:block">
+      <div className="hidden 2xl:block">
         {/* Sticky positioning keeps panel frozen while content scrolls */}
         <div className="sp-hangWrap">
           {/* Rope extends upward from panel top */}
@@ -1080,8 +1101,9 @@ const SmartPanel: React.FC<SmartPanelProps> = ({ data, step, onApplySuggestion }
       </div>
 
       {/* Mobile FAB with Premium Glow */}
-      <div className="lg:hidden fixed bottom-8 right-6 z-50">
-        <button onClick={() => setMobileDrawerOpen(true)} className="sp-fab">
+      
+        <div className="2xl:hidden fixed bottom-4 right-4 sm:bottom-5 sm:right-5 z-40">
+  <button onClick={() => setMobileDrawerOpen(true)} className="sp-fab">
           <MessageCircle className="w-5 h-5" />
           <span>Guide</span>
         </button>

@@ -16,7 +16,7 @@ export enum Curriculum {
   FEDERAL = 'Federal Board (FBISE)',
   IGCSE_O_LEVEL = 'IGCSE / O-Level Prep',
   A_LEVEL = 'A-Level Prep',
-  OTHER = 'Other'
+  OTHER = 'Other',
 }
 
 export enum Track {
@@ -60,13 +60,13 @@ export interface FormData {
   leadType: LeadType | null;
 
   students: Student[];
-  otherCountryName: string;
 
   avatar: string;
   studentName: string;
   age: string;
   grade: string;
   country: string;
+  otherCountryName: string;
   city: string;
   parentName: string;
   whatsapp: string;
@@ -137,76 +137,60 @@ export interface FormData {
 }
 
 export const INITIAL_DATA: FormData = {
-  otherCountryName: "",
   leadType: null,
-
   students: [],
-
   avatar: '',
   studentName: '',
   age: '',
   grade: '',
   country: '',
+  otherCountryName: '',
   city: '',
   parentName: '',
   whatsapp: '',
   email: '',
-
   programType: null,
-
   curriculum: null,
   track: null,
   subjects: [],
   customSubject: '',
   tuitionBoard: '',
   preferredTimeSlots: [],
-
   britishIslamicStudies: false,
   britishUrdu: false,
   learningNotes: '',
-
   igcseClassMode: null,
   examSession: '',
-
   trialConfirmed: true,
   trialReason: '',
   trialPreferredDay: '',
-
   quranInterest: false,
   quranTiming: '',
   quranLevel: '',
-
   quranStudents: [],
   quranSubjects: [],
   quranClassDays: [],
   quranClassTime: '',
   quranStudentCountry: '',
-
   tuitionRequirements: '',
-
   upsellTuitionStudents: [],
   upsellSchoolStudents: [],
   upsellQuranStudents: [],
   fullTimeInterest: false,
-
   pendingSchoolName: '',
   pendingSchoolAge: '',
   pendingSchoolGrade: '',
-
   pendingTuitionName: '',
   pendingTuitionAge: '',
   pendingTuitionReq: '',
-
   pendingQuranName: '',
   pendingQuranAge: '',
   pendingQuranTime: '',
   pendingQuranSubjects: [],
   pendingQuranCountry: '',
   pendingQuranDays: [],
-
   notes: '',
   couponCode: '',
   appliedCoupon: null,
-
   tuitionInterest: false,
 };

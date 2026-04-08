@@ -1,7 +1,10 @@
 /**
  * FormSteps.tsx — Premium Redesign
  */
-import '@fontsource/great-vibes';
+/**
+ * FormSteps.tsx — Premium Redesign
+ */
+import '@fontsource/great-vibes/400.css';
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { FormData, LeadType, ProgramType, Curriculum, Track, ClassMode, Student, QuranStudent } from '../types';
 import { GRADES, COUNTRIES, IGCSE_SUBJECTS, TIME_SLOTS, DAYS, QURAN_LEVELS, QURAN_CLASS_TIMES, getGradeValue as getGV } from '../constants';
@@ -80,27 +83,21 @@ const PREMIUM_CSS = `
 .pf-card {
   position: relative;
   overflow: hidden;
-  background: rgba(255,255,255,0.96);
-  border: 1.5px solid rgba(29,111,206,0.10);
+  background: transparent !important;
+  border: 1.5px solid rgba(29,111,206,0.18);
   border-radius: 24px;
-  box-shadow: 0 2px 16px rgba(15,45,87,0.06), 0 1px 3px rgba(0,0,0,0.03);
+  box-shadow: 0 2px 16px rgba(15,45,87,0.04), 0 1px 3px rgba(0,0,0,0.02);
   transition:
     box-shadow 0.25s ease,
     transform 0.25s cubic-bezier(0.22,1,0.36,1);
 }
 
 .pf-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,1), transparent);
+  display: none;
 }
 
 .pf-card:hover {
-  box-shadow: 0 8px 32px rgba(29,111,206,0.10), 0 2px 8px rgba(0,0,0,0.04);
+  box-shadow: 0 8px 24px rgba(29,111,206,0.06), 0 2px 8px rgba(0,0,0,0.03);
   transform: translateY(-1px);
 }
 
@@ -268,22 +265,56 @@ const PREMIUM_CSS = `
 }
 
 .pf-curriculum-btn {
-  padding: 14px;
-  background: white;
-  border: 2px solid rgba(15,45,87,0.09);
-  border-radius: 16px;
+  padding: 16px;
+  background: linear-gradient(
+    180deg,
+    rgba(255,255,255,0.08),
+    rgba(255,255,255,0.02)
+  );
+  border: 1px solid rgba(255,255,255,0.88);
+  border-radius: 22px;
   cursor: pointer;
   text-align: left;
   transition: all 0.2s ease;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.96),
+    inset 0 -10px 22px rgba(255,255,255,0.06),
+    0 16px 30px rgba(15,45,87,0.10),
+    0 5px 12px rgba(15,45,87,0.05);
 }
 
 .pf-curriculum-btn:hover {
-  border-color: rgba(29,111,206,0.30);
+  border-color: rgba(29,111,206,0.34);
+  transform: translateY(-1px);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.98),
+    inset 0 -10px 22px rgba(255,255,255,0.07),
+    0 18px 34px rgba(29,111,206,0.10),
+    0 6px 14px rgba(15,45,87,0.06);
 }
 
 .pf-curriculum-btn.active {
-  background: rgba(240,247,255,0.95);
-  border-color: rgba(29,111,206,0.40);
+  background: linear-gradient(
+    180deg,
+    rgba(29,111,206,0.10),
+    rgba(14,165,233,0.04)
+  );
+  border-color: rgba(29,111,206,0.42);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.98),
+    inset 0 -10px 22px rgba(255,255,255,0.07),
+    0 18px 34px rgba(29,111,206,0.14),
+    0 6px 14px rgba(15,45,87,0.07);
+}
+
+.pf-curriculum-btn p {
+  color: #163761;
+}
+
+.pf-curriculum-btn .text-brand-mediumText {
+  color: #6f859f !important;
 }
 
 .pf-step-pill {
@@ -324,6 +355,143 @@ const PREMIUM_CSS = `
     height: 34px;
     font-size: 13px;
   }
+}
+
+/* ===== GLASS UI FOR ALL FORM SECTIONS ===== */
+
+/* main cards: fully transparent, no blur */
+.pf-card,
+.qf-card-soft {
+  background: transparent !important;
+  border: 1px solid rgba(201, 225, 255, 0.82) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.58),
+    0 16px 34px rgba(15,45,87,0.07),
+    0 6px 14px rgba(15,45,87,0.04) !important;
+}
+
+.pf-card::before {
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.75), transparent) !important;
+}
+
+/* normal inner fields */
+.pf-input-wrap,
+.pf-student-row,
+.qf-multi-trigger,
+.qf-multi-menu,
+.qf-multi-option,
+.qf-day-btn,
+.qf-time-wrap select {
+  background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02)) !important;
+  border: 1px solid rgba(255,255,255,0.82) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.94),
+    inset 0 -10px 22px rgba(255,255,255,0.08),
+    0 16px 30px rgba(15,45,87,0.12),
+    0 5px 12px rgba(15,45,87,0.06) !important;
+}
+
+/* all inputs, selects, textareas */
+.pf-card input,
+.pf-card textarea,
+.pf-card select,
+.qf-card-soft input,
+.qf-card-soft textarea,
+.qf-card-soft select {
+  background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02)) !important;
+  border: 1px solid rgba(255,255,255,0.84) !important;
+  border-radius: 22px !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.96),
+    inset 0 -10px 24px rgba(255,255,255,0.08),
+    0 16px 30px rgba(15,45,87,0.12),
+    0 5px 12px rgba(15,45,87,0.06) !important;
+  color: #243b53 !important;
+}
+
+.pf-card input::placeholder,
+.pf-card textarea::placeholder,
+.qf-card-soft input::placeholder,
+.qf-card-soft textarea::placeholder {
+  color: #7b8faa !important;
+}
+
+.pf-card input:focus,
+.pf-card textarea:focus,
+.pf-card select:focus,
+.qf-card-soft input:focus,
+.qf-card-soft textarea:focus,
+.qf-card-soft select:focus {
+  background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03)) !important;
+  border-color: rgba(255,255,255,0.96) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.98),
+    inset 0 -10px 24px rgba(255,255,255,0.09),
+    0 18px 34px rgba(59,130,246,0.13),
+    0 6px 14px rgba(15,45,87,0.08) !important;
+  outline: none !important;
+}
+
+/* ===== WhatsApp field fix ===== */
+/* outer phone field should stay transparent and 3D */
+.pf-card [class*="phone"],
+.pf-card [class*="Phone"],
+.qf-card-soft [class*="phone"],
+.qf-card-soft [class*="Phone"] {
+  background: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* every wrapper inside phone field should lose white fill */
+.pf-card [class*="phone"] > div,
+.pf-card [class*="Phone"] > div,
+.pf-card [class*="phone"] div,
+.pf-card [class*="Phone"] div,
+.qf-card-soft [class*="phone"] > div,
+.qf-card-soft [class*="Phone"] > div,
+.qf-card-soft [class*="phone"] div,
+.qf-card-soft [class*="Phone"] div {
+  background-color: transparent !important;
+}
+
+/* phone field inner select and number input */
+.pf-card [class*="phone"] input,
+.pf-card [class*="Phone"] input,
+.pf-card [class*="phone"] select,
+.pf-card [class*="Phone"] select,
+.qf-card-soft [class*="phone"] input,
+.qf-card-soft [class*="Phone"] input,
+.qf-card-soft [class*="phone"] select,
+.qf-card-soft [class*="Phone"] select {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  color: #243b53 !important;
+}
+
+/* placeholder inside phone number box */
+.pf-card [class*="phone"] input::placeholder,
+.pf-card [class*="Phone"] input::placeholder,
+.qf-card-soft [class*="phone"] input::placeholder,
+.qf-card-soft [class*="Phone"] input::placeholder {
+  color: #7b8faa !important;
+}
+
+/* keep quran/final active buttons nice */
+.qf-day-btn.active,
+.qf-multi-option.active {
+  border-color: transparent !important;
+  box-shadow:
+    0 14px 28px rgba(16,185,129,0.18),
+    inset 0 1px 0 rgba(255,255,255,0.24) !important;
 }
 `;
 
@@ -1602,13 +1770,21 @@ const QuranForm = ({
 
           <div className="mt-8 border-t border-brand-burgundy/20 pt-6">
             <div className="flex items-center justify-between gap-3">
-              <Button onClick={prevStep} variant="secondary">
-                <ArrowLeft className="w-4 h-4" /> Back
-              </Button>
+<Button
+  onClick={prevStep}
+  variant="secondary"
+  className="glass-action-btn"
+>
+  <ArrowLeft className="w-4 h-4" /> Back
+</Button>
 
-              <Button onClick={nextStep} variant="primary">
-                Next Step <ArrowRight className="w-4 h-4" />
-              </Button>
+<Button
+  onClick={nextStep}
+  variant="primary"
+  className="glass-action-btn glass-action-btn-primary"
+>
+  Next Step <ArrowRight className="w-4 h-4" />
+</Button>
             </div>
           </div>
         </div>
@@ -1617,10 +1793,62 @@ const QuranForm = ({
   );
 };
 
+
 const TuitionForm = ({ data, updateData, errors }: Pick<StepProps,'data'|'updateData'|'errors'>) => {
   usePremiumStyles();
   return (
-    <div className="space-y-5 pt-8 xl:pt-12 transition-all duration-300">
+    <div className="tuition-glass-ui space-y-5 pt-8 xl:pt-12 transition-all duration-300">
+      <style>{`
+.tuition-glass-ui input,
+.tuition-glass-ui textarea,
+.tuition-glass-ui select {
+  background: rgba(255,255,255,0.08) !important;
+  border: 1px solid rgba(255,255,255,0.82) !important;
+  border-radius: 22px !important;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow:
+    inset 0 2px 1px rgba(255,255,255,0.96),
+    inset 0 -14px 28px rgba(255,255,255,0.18),
+    inset 10px 0 18px rgba(255,255,255,0.06),
+    0 18px 34px rgba(15,45,87,0.10),
+    0 8px 18px rgba(15,45,87,0.07),
+    0 1px 0 rgba(255,255,255,0.95) !important;
+  color: #243b53 !important;
+}
+
+        .tuition-glass-ui input::placeholder,
+        .tuition-glass-ui textarea::placeholder {
+          color: rgba(15,45,87,0.52) !important;
+        }
+
+.tuition-glass-ui input:focus,
+.tuition-glass-ui textarea:focus,
+.tuition-glass-ui select:focus {
+  background: rgba(255,255,255,0.11) !important;
+  border-color: rgba(255,255,255,0.96) !important;
+  box-shadow:
+    inset 0 2px 2px rgba(255,255,255,0.98),
+    inset 0 -16px 30px rgba(255,255,255,0.20),
+    0 20px 36px rgba(59,130,246,0.12),
+    0 8px 20px rgba(15,45,87,0.08),
+    0 1px 0 rgba(255,255,255,0.98) !important;
+  outline: none !important;
+}
+        .tuition-glass-ui textarea {
+          min-height: 190px;
+        }
+
+        .tuition-glass-ui label {
+          text-shadow: 0 1px 0 rgba(255,255,255,0.45);
+        }
+
+        .tuition-glass-ui .pf-card h3,
+        .tuition-glass-ui .pf-card h4,
+        .tuition-glass-ui .pf-card p {
+          text-shadow: 0 1px 0 rgba(255,255,255,0.35);
+        }
+      `}</style>
       <div className="text-center pf-e1">
         <h2 className="pf-heading text-3xl font-display font-extrabold">One-to-One Tuition</h2>
         <p className="text-brand-mediumText text-sm mt-1">Our advisor will contact you shortly</p>
@@ -1659,7 +1887,7 @@ const TuitionForm = ({ data, updateData, errors }: Pick<StepProps,'data'|'update
         </div>
       </div>
 
-      <div className="pf-card p-5 pf-e5" style={{background:'linear-gradient(135deg,rgba(29,111,206,0.04),rgba(14,165,233,0.02))'}}>
+      <div className="pf-card p-5 pf-e5">
         <div className="flex items-center gap-3">
           <div className="pf-icon"><Phone className="w-5 h-5 text-white"/></div>
           <div>
@@ -2210,7 +2438,268 @@ const CouponCodeSection = ({ data, updateData }: CouponProps) => {
 
 export const Step2_FinalSteps = ({ data, updateData }: StepProps) => {
   usePremiumStyles();
+const [isFinalQuranSubjectDropdownOpen, setIsFinalQuranSubjectDropdownOpen] = React.useState(false);
 
+const FINAL_STEP_QURAN_UI = `
+.final-quran-note {
+  font-size: 12px;
+  color: #047857;
+  background: linear-gradient(
+    180deg,
+    rgba(16,185,129,0.08),
+    rgba(16,185,129,0.03)
+  );
+  border: 1px solid rgba(167,243,208,0.95);
+  border-radius: 16px;
+  padding: 12px 14px;
+  line-height: 1.6;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.80),
+    0 14px 28px rgba(15,45,87,0.06),
+    0 4px 10px rgba(15,45,87,0.04);
+}
+
+.final-quran-multi {
+  position: relative;
+}
+
+.final-quran-multi-trigger {
+  width: 100%;
+  min-height: 64px;
+  padding: 14px 16px;
+  border-radius: 22px;
+  border: 1px solid rgba(167,243,208,0.92);
+  background: linear-gradient(
+    180deg,
+    rgba(255,255,255,0.08),
+    rgba(255,255,255,0.02)
+  );
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  text-align: left;
+  color: #243b53;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.97),
+    inset 0 -10px 24px rgba(255,255,255,0.06),
+    0 16px 32px rgba(15,45,87,0.12),
+    0 5px 12px rgba(15,45,87,0.06);
+}
+
+.final-quran-multi-trigger:hover {
+  border-color: rgba(16,185,129,0.42);
+}
+
+.final-quran-multi-trigger.active {
+  border-color: rgba(16,185,129,0.52);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.98),
+    inset 0 -10px 24px rgba(255,255,255,0.08),
+    0 18px 34px rgba(16,185,129,0.12),
+    0 6px 14px rgba(15,45,87,0.08);
+}
+
+.final-quran-multi-value {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  flex: 1;
+}
+
+.final-quran-multi-placeholder {
+  color: #8aa0bb;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.final-quran-multi-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 7px 12px;
+  border-radius: 999px;
+  background: linear-gradient(
+    180deg,
+    rgba(16,185,129,0.10),
+    rgba(16,185,129,0.04)
+  );
+  border: 1px solid rgba(167,243,208,0.95);
+  color: #059669;
+  font-size: 12px;
+  font-weight: 700;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.72),
+    0 8px 18px rgba(15,45,87,0.05);
+}
+
+.final-quran-multi-menu {
+  margin-top: 12px;
+  padding: 12px;
+  border-radius: 24px;
+  border: 1px solid rgba(201,225,255,0.82);
+  background: linear-gradient(
+    180deg,
+    rgba(255,255,255,0.05),
+    rgba(255,255,255,0.015)
+  );
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.92),
+    0 16px 36px rgba(15,45,87,0.08),
+    0 4px 12px rgba(15,45,87,0.04);
+  display: grid;
+  gap: 10px;
+  max-height: 280px;
+  overflow-y: auto;
+}
+
+.final-quran-multi-option {
+  width: 100%;
+  padding: 14px 16px;
+  border-radius: 18px;
+  border: 1px solid rgba(255,255,255,0.84);
+  background: linear-gradient(
+    180deg,
+    rgba(255,255,255,0.06),
+    rgba(255,255,255,0.02)
+  );
+  color: #163761;
+  font-size: 14px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  text-align: left;
+  transition: all 0.18s ease;
+  cursor: pointer;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.96),
+    inset 0 -10px 20px rgba(255,255,255,0.06),
+    0 12px 26px rgba(15,45,87,0.08),
+    0 4px 10px rgba(15,45,87,0.04);
+}
+
+.final-quran-multi-option:hover {
+  border-color: rgba(16,185,129,0.32);
+  transform: translateY(-1px);
+}
+
+.final-quran-multi-option.active {
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+  border-color: transparent;
+  box-shadow:
+    0 14px 26px rgba(16,185,129,0.18),
+    0 6px 12px rgba(15,45,87,0.06);
+}
+
+.final-quran-multi-check {
+  width: 20px;
+  height: 20px;
+  border-radius: 999px;
+  border: 2px solid currentColor;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 900;
+  flex-shrink: 0;
+}
+
+.final-quran-day-btn {
+  padding: 11px 12px;
+  border-radius: 18px;
+  border: 1px solid rgba(255,255,255,0.84);
+  background: linear-gradient(
+    180deg,
+    rgba(255,255,255,0.06),
+    rgba(255,255,255,0.02)
+  );
+  color: rgba(15,45,87,0.72);
+  font-size: 12px;
+  font-weight: 800;
+  transition: all 0.18s ease;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.96),
+    inset 0 -10px 20px rgba(255,255,255,0.06),
+    0 12px 24px rgba(15,45,87,0.08),
+    0 4px 10px rgba(15,45,87,0.04);
+}
+
+.final-quran-day-btn:hover {
+  border-color: rgba(16,185,129,0.32);
+  transform: translateY(-1px);
+}
+
+.final-quran-day-btn.active {
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+  border-color: transparent;
+  box-shadow:
+    0 14px 26px rgba(16,185,129,0.18),
+    0 6px 12px rgba(15,45,87,0.06);
+}
+
+.final-quran-time-wrap {
+  position: relative;
+}
+
+.final-quran-time-wrap select {
+  width: 100%;
+  padding: 14px 16px 14px 44px;
+  border-radius: 22px;
+  border: 1px solid rgba(255,255,255,0.90);
+  background: linear-gradient(
+    180deg,
+    rgba(255,255,255,0.08),
+    rgba(255,255,255,0.02)
+  );
+  color: #243b53;
+  font-weight: 600;
+  outline: none;
+  appearance: none;
+  transition: all 0.18s ease;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.97),
+    inset 0 -10px 24px rgba(255,255,255,0.06),
+    0 16px 32px rgba(15,45,87,0.12),
+    0 5px 12px rgba(15,45,87,0.06);
+}
+
+.final-quran-time-wrap select:focus {
+  border-color: rgba(255,255,255,0.98);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.98),
+    inset 0 -10px 24px rgba(255,255,255,0.08),
+    0 18px 34px rgba(16,185,129,0.12),
+    0 6px 14px rgba(15,45,87,0.08);
+}
+
+.final-quran-time-icon {
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: rgba(15,45,87,0.55);
+  pointer-events: none;
+}
+
+.final-quran-multi-menu::-webkit-scrollbar {
+  width: 10px;
+}
+
+.final-quran-multi-menu::-webkit-scrollbar-track {
+  background: rgba(255,255,255,0.08);
+  border-radius: 999px;
+}
+
+.final-quran-multi-menu::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #7dd3fc, #60a5fa);
+  border-radius: 999px;
+}
+`;
   type SummaryStudent = {
     id: string;
     name: string;
@@ -2276,17 +2765,29 @@ export const Step2_FinalSteps = ({ data, updateData }: StepProps) => {
       ? (primarySummaryStudent?.curriculum as Curriculum | null) || null
       : null;
 
-  const hasLowerGrades =
-    data.leadType === LeadType.FULL_TIME || data.leadType === LeadType.ONE_ON_ONE_SCHOOLING
-      ? summaryStudents.some((s) => getGV(s.grade) < 10)
-      : false;
+const hasLowerGrades =
+  data.leadType === LeadType.FULL_TIME || data.leadType === LeadType.ONE_ON_ONE_SCHOOLING
+    ? summaryStudents.some((s) => getGV(s.grade) < 10)
+    : false;
 
-  const schoolTrialTime = hasLowerGrades
+const hasUpperGrades =
+  data.leadType === LeadType.FULL_TIME || data.leadType === LeadType.ONE_ON_ONE_SCHOOLING
+    ? summaryStudents.some((s) => getGV(s.grade) >= 10)
+    : false;
+
+const schoolTrialTime =
+  hasLowerGrades && hasUpperGrades
+    ? "Multiple schedules based on grade"
+    : hasLowerGrades
     ? "3:30 PM KSA | 4:30 PM UAE | 5:30 PM PAK"
-    : "9:30 PM KSA | 10:30 PM UAE | 11:30 PM PAK";
+    : "9:30 AM KSA | 10:30 AM UAE | 11:30 AM PAK";
 
-  const schoolTrialLabel = hasLowerGrades ? "KG1 to Grade 7" : "Grade 8 to 12";
-
+const schoolTrialLabel =
+  hasLowerGrades && hasUpperGrades
+    ? "KG1 to Grade 12"
+    : hasLowerGrades
+    ? "KG1 to Grade 7"
+    : "Grade 8 to 12";
   const selectedQuranStudent = (data.quranStudents || [])[0];
   const selectedQuranTime =
     selectedQuranStudent?.classTime || data.quranClassTime || "To be confirmed on WhatsApp";
@@ -2403,8 +2904,124 @@ export const Step2_FinalSteps = ({ data, updateData }: StepProps) => {
     visibleUpsellTuitionStudents.length > 0 ||
     visibleUpsellQuranStudents.length > 0;
 
-  return (
-    <div className="space-y-8 transition-all duration-300">
+ return (
+  <div className="final-step-glass space-y-8 transition-all duration-300">
+  <style>{`
+  .final-step-glass .pf-card,
+  .final-step-glass .ivs-applied-voucher,
+  .final-step-glass div[class*="rounded-[24px]"],
+  .final-step-glass div[class*="rounded-[22px]"],
+  .final-step-glass div[class*="rounded-2xl"],
+  .final-step-glass div[class*="rounded-3xl"] {
+    background: transparent !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    border-color: rgba(201, 225, 255, 0.82) !important;
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.60),
+      0 16px 34px rgba(15,45,87,0.07),
+      0 6px 14px rgba(15,45,87,0.04) !important;
+  }
+
+  .final-step-glass input,
+  .final-step-glass textarea,
+  .final-step-glass select,
+  .final-step-glass .qf-multi-trigger,
+  .final-step-glass .qf-multi-menu,
+  .final-step-glass .qf-multi-option,
+  .final-step-glass .qf-time-wrap,
+  .final-step-glass .qf-time-wrap select,
+  .final-step-glass .qf-day-btn {
+    background: linear-gradient(
+      180deg,
+      rgba(255,255,255,0.08),
+      rgba(255,255,255,0.02)
+    ) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    border: 1px solid rgba(255,255,255,0.90) !important;
+    color: #243b53 !important;
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.97),
+      inset 0 -10px 24px rgba(255,255,255,0.06),
+      0 16px 32px rgba(15,45,87,0.12),
+      0 5px 12px rgba(15,45,87,0.06) !important;
+  }
+
+  .final-step-glass input::placeholder,
+  .final-step-glass textarea::placeholder {
+    color: #7b8faa !important;
+  }
+
+  .final-step-glass input:focus,
+  .final-step-glass textarea:focus,
+  .final-step-glass select:focus,
+  .final-step-glass .qf-multi-trigger:focus {
+    outline: none !important;
+    border-color: rgba(255,255,255,0.98) !important;
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.98),
+      inset 0 -10px 24px rgba(255,255,255,0.08),
+      0 18px 34px rgba(59,130,246,0.13),
+      0 6px 14px rgba(15,45,87,0.08) !important;
+  }
+
+  .final-step-glass .qf-note {
+    background: linear-gradient(
+      180deg,
+      rgba(16,185,129,0.08),
+      rgba(16,185,129,0.03)
+    ) !important;
+    border: 1px solid rgba(167, 243, 208, 0.95) !important;
+    color: #047857 !important;
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.80),
+      0 14px 28px rgba(15,45,87,0.06),
+      0 4px 10px rgba(15,45,87,0.04) !important;
+  }
+
+  .final-step-glass .qf-multi-chip {
+    background: linear-gradient(
+      180deg,
+      rgba(16,185,129,0.08),
+      rgba(16,185,129,0.03)
+    ) !important;
+    border: 1px solid rgba(167, 243, 208, 0.95) !important;
+    color: #059669 !important;
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.70),
+      0 8px 18px rgba(15,45,87,0.05) !important;
+  }
+
+  .final-step-glass .qf-multi-option.active,
+  .final-step-glass .qf-day-btn.active {
+    background: linear-gradient(135deg, #10b981, #059669) !important;
+    color: #ffffff !important;
+    border-color: transparent !important;
+    box-shadow:
+      0 14px 26px rgba(16,185,129,0.18),
+      0 6px 12px rgba(15,45,87,0.06) !important;
+  }
+
+  .final-step-glass .qf-multi-check {
+    border-color: currentColor !important;
+  }
+
+  .final-step-glass .qf-multi-menu::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  .final-step-glass .qf-multi-menu::-webkit-scrollbar-track {
+    background: rgba(255,255,255,0.08);
+    border-radius: 999px;
+  }
+
+  .final-step-glass .qf-multi-menu::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #7dd3fc, #60a5fa);
+    border-radius: 999px;
+  }
+`}</style>
+    <style>{FINAL_STEP_QURAN_UI}</style>
       <div className="text-center pf-e1">
         <h2 className="pf-heading text-3xl sm:text-4xl font-display font-extrabold">
           Final Steps
@@ -2657,213 +3274,279 @@ export const Step2_FinalSteps = ({ data, updateData }: StepProps) => {
         </div>
       )}
 
-      {data.leadType !== LeadType.QURAN && (
-        <div className="pf-card p-5 sm:p-6 shadow-[0_18px_50px_rgba(16,185,129,0.06)]">
-          <div className="flex items-start justify-between gap-4 flex-wrap">
-            <div className="flex items-center gap-4">
-              <div className="pf-icon pf-icon-green">
-                <BookOpen className="w-5 h-5 text-white" />
+{data.leadType !== LeadType.QURAN && (
+  <div className="pf-card p-5 sm:p-6 shadow-[0_18px_50px_rgba(16,185,129,0.06)]">
+    <div className="flex items-start justify-between gap-4 flex-wrap">
+      <div className="flex items-center gap-4">
+        <div className="pf-icon pf-icon-green">
+          <BookOpen className="w-5 h-5 text-white" />
+        </div>
+        <div>
+          <h4 className="font-extrabold text-brand-darkText text-base">Online Quran</h4>
+          <p className="text-sm text-brand-mediumText">3-day free trial</p>
+        </div>
+      </div>
+      <Toggle label="Interested?" checked={data.quranInterest} onChange={(v) => updateData({ quranInterest: v })} />
+    </div>
+
+    {data.quranInterest && (
+      <div className="mt-5 pt-5 border-t border-brand-lightGray space-y-4 animate-fade-in">
+        <div className="rounded-2xl border border-emerald-200 bg-emerald-50/80 px-4 py-3 shadow-[0_8px_24px_rgba(16,185,129,0.08)]">
+          <p className="text-sm font-semibold text-emerald-700">
+            Student details are pre-filled from your application. You can edit them below.
+          </p>
+        </div>
+
+        {visibleUpsellQuranStudents.length > 0 && (
+          <div className="space-y-3">
+            {visibleUpsellQuranStudents.map((student, idx) => (
+              <div
+                key={student.id}
+                className="flex items-center justify-between p-4 bg-emerald-50/80 rounded-2xl border border-emerald-200 shadow-[0_10px_30px_rgba(16,185,129,0.06)]"
+              >
+                <div className="flex items-center gap-3">
+                  <span className="w-9 h-9 bg-gradient-to-br from-emerald-500 to-teal-500 text-white rounded-full flex items-center justify-center text-sm font-extrabold shadow-[0_8px_20px_rgba(16,185,129,0.24)]">
+                    {idx + 1}
+                  </span>
+                  <div>
+                    <p className="text-sm font-bold text-emerald-800">{student.name}</p>
+                    <p className="text-xs text-emerald-600">
+                      Age {student.age}
+                      {student.subjects?.length ? ` • ${student.subjects.join(", ")}` : ""}
+                      {student.classDays?.length ? ` • ${student.classDays.join(", ")}` : ""}
+                      {student.classTime ? ` • ${student.classTime}` : ""}
+                      {student.country ? ` • ${student.country}` : ""}
+                    </p>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() =>
+                    student.id === "__pending_quran__"
+                      ? (
+                          setIsFinalQuranSubjectDropdownOpen(false),
+                          updateData({
+                            pendingQuranName: "",
+                            pendingQuranAge: "",
+                            pendingQuranTime: "",
+                            pendingQuranSubjects: [],
+                            pendingQuranCountry: "",
+                            pendingQuranDays: [],
+                          })
+                        )
+                      : updateData({
+                          upsellQuranStudents: (data.upsellQuranStudents || []).filter((s) => s.id !== student.id),
+                        })
+                  }
+                  className="text-xs font-semibold text-red-500 hover:text-red-600"
+                >
+                  Remove
+                </button>
               </div>
-              <div>
-                <h4 className="font-extrabold text-brand-darkText text-base">Online Quran</h4>
-                <p className="text-sm text-brand-mediumText">3-day free trial</p>
+            ))}
+          </div>
+        )}
+
+        <div className="grid sm:grid-cols-2 gap-3">
+          <InputField
+            label="Name"
+            value={data.pendingQuranName || ""}
+            onChange={(e) => updateData({ pendingQuranName: e.target.value })}
+            placeholder="Ahmed"
+          />
+
+          <InputField
+            label="Age"
+            type="text"
+            value={data.pendingQuranAge || ""}
+            onChange={(e) => updateData({ pendingQuranAge: cleanAgeInput(e.target.value) })}
+            placeholder="10"
+          />
+        </div>
+
+        <SelectField
+          label="Country"
+          value={data.pendingQuranCountry || ""}
+          onChange={(e) => updateData({ pendingQuranCountry: e.target.value })}
+          options={COUNTRIES}
+        />
+
+        <p className="final-quran-note">
+          <strong>Note:</strong>{" "}
+          {data.pendingQuranCountry
+            ? `Class timing will be confirmed according to local time in ${data.pendingQuranCountry}.`
+            : "Class timing will be confirmed according to your local country time."}
+        </p>
+
+        <div>
+          <label className="text-sm font-semibold text-brand-darkText block mb-2">
+            What does the student want to learn?
+          </label>
+
+          <div className="final-quran-multi">
+            <button
+              type="button"
+              onClick={() => setIsFinalQuranSubjectDropdownOpen((prev) => !prev)}
+              className={`final-quran-multi-trigger ${isFinalQuranSubjectDropdownOpen ? "active" : ""}`}
+            >
+              <div className="final-quran-multi-value">
+                {(data.pendingQuranSubjects || []).length > 0 ? (
+                  (data.pendingQuranSubjects || []).map((subject) => (
+                    <span key={subject} className="final-quran-multi-chip">
+                      {subject}
+                    </span>
+                  ))
+                ) : (
+                  <span className="final-quran-multi-placeholder">Select one or more lessons</span>
+                )}
               </div>
-            </div>
-            <Toggle label="Interested?" checked={data.quranInterest} onChange={(v) => updateData({ quranInterest: v })} />
+
+              <ChevronDown
+                className={`w-5 h-5 shrink-0 transition-transform ${
+                  isFinalQuranSubjectDropdownOpen ? "rotate-180" : ""
+                }`}
+              />
+            </button>
+
+            {isFinalQuranSubjectDropdownOpen && (
+              <div className="final-quran-multi-menu">
+                {QURAN_SUBJECT_OPTIONS.map((subject) => {
+                  const active = (data.pendingQuranSubjects || []).includes(subject);
+
+                  return (
+                    <button
+                      key={subject}
+                      type="button"
+                      onClick={() =>
+                        updateData({
+                          pendingQuranSubjects: active
+                            ? (data.pendingQuranSubjects || []).filter((x) => x !== subject)
+                            : [...(data.pendingQuranSubjects || []), subject],
+                        })
+                      }
+                      className={`final-quran-multi-option ${active ? "active" : ""}`}
+                    >
+                      <span>{subject}</span>
+                      <span className="final-quran-multi-check">{active ? "✓" : ""}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {(data.pendingQuranSubjects || []).length > 0 && (
+          <p className="text-xs text-emerald-600 font-semibold">
+            {(data.pendingQuranSubjects || []).length} lesson
+            {(data.pendingQuranSubjects || []).length > 1 ? "s" : ""} selected
+          </p>
+        )}
+
+        <div>
+          <div className="flex items-center justify-between mb-2">
+            <label className="text-sm font-semibold text-brand-darkText">Class Days</label>
+            <span className="text-xs text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200 font-semibold">
+              ✓ 24/7 Available
+            </span>
           </div>
 
-          {data.quranInterest && (
-            <div className="mt-5 pt-5 border-t border-brand-lightGray space-y-4 animate-fade-in">
-              <div className="rounded-2xl border border-emerald-200 bg-emerald-50/80 px-4 py-3 shadow-[0_8px_24px_rgba(16,185,129,0.08)]">
-                <p className="text-sm font-semibold text-emerald-700">
-                  Student details are pre-filled from your application. You can edit them below.
-                </p>
-              </div>
+          <div className="grid grid-cols-4 sm:grid-cols-7 gap-2">
+            {DAYS.map((day) => {
+              const active = (data.pendingQuranDays || []).includes(day);
 
-              {visibleUpsellQuranStudents.length > 0 && (
-                <div className="space-y-3">
-                  {visibleUpsellQuranStudents.map((student, idx) => (
-                    <div key={student.id} className="flex items-center justify-between p-4 bg-emerald-50/80 rounded-2xl border border-emerald-200 shadow-[0_10px_30px_rgba(16,185,129,0.06)]">
-                      <div className="flex items-center gap-3">
-                        <span className="w-9 h-9 bg-gradient-to-br from-emerald-500 to-teal-500 text-white rounded-full flex items-center justify-center text-sm font-extrabold shadow-[0_8px_20px_rgba(16,185,129,0.24)]">
-                          {idx + 1}
-                        </span>
-                        <div>
-                          <p className="text-sm font-bold text-emerald-800">{student.name}</p>
-                          <p className="text-xs text-emerald-600">
-                            Age {student.age}
-                            {student.subjects?.length ? ` • ${student.subjects.join(", ")}` : ""}
-                            {student.classDays?.length ? ` • ${student.classDays.join(", ")}` : ""}
-                            {student.classTime ? ` • ${student.classTime}` : ""}
-                            {student.country ? ` • ${student.country}` : ""}
-                          </p>
-                        </div>
-                      </div>
-
-                      <button
-                        type="button"
-                        onClick={() =>
-                          student.id === "__pending_quran__"
-                            ? updateData({
-                                pendingQuranName: "",
-                                pendingQuranAge: "",
-                                pendingQuranTime: "",
-                                pendingQuranSubjects: [],
-                                pendingQuranCountry: "",
-                                pendingQuranDays: [],
-                              })
-                            : updateData({
-                                upsellQuranStudents: (data.upsellQuranStudents || []).filter((s) => s.id !== student.id),
-                              })
-                        }
-                        className="text-xs font-semibold text-red-500 hover:text-red-600"
-                      >
-                        Remove
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              <div className="grid sm:grid-cols-2 gap-3">
-                <InputField
-                  label="Name"
-                  value={data.pendingQuranName || ""}
-                  onChange={(e) => updateData({ pendingQuranName: e.target.value })}
-                  placeholder="Ahmed"
-                />
-
-                <InputField
-                  label="Age"
-                  type="text"
-                  value={data.pendingQuranAge || ""}
-                  onChange={(e) => updateData({ pendingQuranAge: cleanAgeInput(e.target.value) })}
-                  placeholder="10"
-                />
-              </div>
-
-              <SelectField
-                label="Country"
-                value={data.pendingQuranCountry || ""}
-                onChange={(e) => updateData({ pendingQuranCountry: e.target.value })}
-                options={COUNTRIES}
-              />
-
-              <div>
-                <label className="text-sm font-semibold text-brand-darkText block mb-2">
-                  What does the student want to learn?
-                </label>
-                <div className="grid sm:grid-cols-2 gap-2">
-                  {QURAN_SUBJECT_OPTIONS.map((subject) => {
-                    const active = (data.pendingQuranSubjects || []).includes(subject);
-                    return (
-                      <button
-                        key={subject}
-                        type="button"
-                        onClick={() =>
-                          updateData({
-                            pendingQuranSubjects: active
-                              ? (data.pendingQuranSubjects || []).filter((x) => x !== subject)
-                              : [...(data.pendingQuranSubjects || []), subject],
-                          })
-                        }
-                        className={`px-3 py-3 rounded-xl border text-sm font-semibold text-left transition-all ${
-                          active
-                            ? "bg-emerald-500 text-white border-emerald-500 shadow-[0_10px_22px_rgba(16,185,129,0.16)]"
-                            : "bg-white text-brand-darkText border-brand-lightGray hover:border-emerald-400 hover:bg-emerald-50/60"
-                        }`}
-                      >
-                        {subject}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              <div>
-                <label className="text-sm font-semibold text-brand-darkText block mb-2">
-                  Class Days
-                </label>
-                <div className="grid grid-cols-4 sm:grid-cols-7 gap-2">
-                  {DAYS.map((day) => {
-                    const active = (data.pendingQuranDays || []).includes(day);
-                    return (
-                      <button
-                        key={day}
-                        type="button"
-                        onClick={() =>
-                          updateData({
-                            pendingQuranDays: active
-                              ? (data.pendingQuranDays || []).filter((x) => x !== day)
-                              : [...(data.pendingQuranDays || []), day],
-                          })
-                        }
-                        className={`qf-day-btn ${active ? "active" : ""}`}
-                      >
-                        {day.slice(0, 3)}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              <div className="qf-time-wrap">
-                <Clock className="w-4 h-4 qf-time-icon" />
-                <select
-                  value={data.pendingQuranTime || ""}
-                  onChange={(e) => updateData({ pendingQuranTime: e.target.value })}
-                >
-                  <option value="">Select time</option>
-                  {QURAN_CLASS_TIMES.map((t) => (
-                    <option key={t} value={t}>
-                      {t}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <button
-                type="button"
-                onClick={() => {
-                  if (data.pendingQuranName && data.pendingQuranAge) {
+              return (
+                <button
+                  key={day}
+                  type="button"
+                  onClick={() =>
                     updateData({
-                      upsellQuranStudents: [
-                        ...(data.upsellQuranStudents || []),
-                        {
-                          id: Date.now().toString(),
-                          name: data.pendingQuranName,
-                          age: data.pendingQuranAge,
-                          subjects: data.pendingQuranSubjects || [],
-                          classDays: data.pendingQuranDays || [],
-                          classTime: data.pendingQuranTime || "Flexible",
-                          country: data.pendingQuranCountry || "",
-                        },
-                      ],
-                      pendingQuranName: "",
-                      pendingQuranAge: "",
-                      pendingQuranTime: "",
-                      pendingQuranSubjects: [],
-                      pendingQuranCountry: "",
-                      pendingQuranDays: [],
-                    });
+                      pendingQuranDays: active
+                        ? (data.pendingQuranDays || []).filter((x) => x !== day)
+                        : [...(data.pendingQuranDays || []), day],
+                    })
                   }
-                }}
-                disabled={
-                  !data.pendingQuranName ||
-                  !data.pendingQuranAge ||
-                  !(data.pendingQuranSubjects || []).length ||
-                  !(data.pendingQuranDays || []).length ||
-                  !data.pendingQuranTime ||
-                  !data.pendingQuranCountry
-                }
-                className="w-full py-3.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-700 font-bold text-sm disabled:opacity-40 hover:bg-emerald-500/15 hover:shadow-[0_10px_30px_rgba(16,185,129,0.10)] transition-all"
-              >
-                + Add to Quran
-              </button>
-            </div>
-          )}
+                  className={`final-quran-day-btn ${active ? "active" : ""}`}
+                >
+                  {day.slice(0, 3)}
+                </button>
+              );
+            })}
+          </div>
         </div>
-      )}
+
+        <div>
+          <label className="text-sm font-semibold text-brand-darkText block mb-2">
+            Preferred Time
+          </label>
+
+          <div className="final-quran-time-wrap">
+            <Clock className="w-4 h-4 final-quran-time-icon" />
+            <select
+              value={data.pendingQuranTime || ""}
+              onChange={(e) => updateData({ pendingQuranTime: e.target.value })}
+            >
+              <option value="">Select time</option>
+              {QURAN_CLASS_TIMES.map((t) => (
+                <option key={t} value={t}>
+                  {t}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        <button
+          type="button"
+          onClick={() => {
+            if (
+              data.pendingQuranName &&
+              data.pendingQuranAge &&
+              (data.pendingQuranSubjects || []).length > 0 &&
+              (data.pendingQuranDays || []).length > 0 &&
+              data.pendingQuranTime &&
+              data.pendingQuranCountry
+            ) {
+              updateData({
+                upsellQuranStudents: [
+                  ...(data.upsellQuranStudents || []),
+                  {
+                    id: Date.now().toString(),
+                    name: data.pendingQuranName,
+                    age: data.pendingQuranAge,
+                    subjects: data.pendingQuranSubjects || [],
+                    classDays: data.pendingQuranDays || [],
+                    classTime: data.pendingQuranTime || "Flexible",
+                    country: data.pendingQuranCountry || "",
+                  },
+                ],
+                pendingQuranName: "",
+                pendingQuranAge: "",
+                pendingQuranTime: "",
+                pendingQuranSubjects: [],
+                pendingQuranCountry: "",
+                pendingQuranDays: [],
+              });
+              setIsFinalQuranSubjectDropdownOpen(false);
+            }
+          }}
+          disabled={
+            !data.pendingQuranName ||
+            !data.pendingQuranAge ||
+            !(data.pendingQuranSubjects || []).length ||
+            !(data.pendingQuranDays || []).length ||
+            !data.pendingQuranTime ||
+            !data.pendingQuranCountry
+          }
+          className="w-full py-3.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-700 font-bold text-sm disabled:opacity-40 hover:bg-emerald-500/15 hover:shadow-[0_10px_30px_rgba(16,185,129,0.10)] transition-all"
+        >
+          + Add to Quran
+        </button>
+      </div>
+    )}
+  </div>
+)}
 
       {hasAdditionalPrograms && (
         <div className="pf-card p-6 sm:p-8 border border-amber-200 bg-gradient-to-br from-amber-50/90 via-orange-50/75 to-amber-50/80 shadow-[0_16px_45px_rgba(245,158,11,0.10)]">
@@ -2957,7 +3640,9 @@ export const Step2_FinalSteps = ({ data, updateData }: StepProps) => {
         </div>
       )}
 
-      <CouponCodeSection data={data} updateData={updateData} />
+      <div className="final-step-referral-wrap">
+  <CouponCodeSection data={data} updateData={updateData} />
+</div>
 
       <div className="pf-card p-5 sm:p-6 border border-brand-lightGray bg-white/80 shadow-[0_12px_34px_rgba(15,45,87,0.05)]">
         <div className="flex items-center justify-between gap-3 flex-wrap mb-5">
@@ -3105,56 +3790,81 @@ export const Step2_FinalSteps = ({ data, updateData }: StepProps) => {
                 </p>
               </div>
             ) : (
-              <div className="p-4 rounded-2xl bg-[linear-gradient(135deg,#f7fbff_0%,#f1f8ff_100%)] border border-blue-100 shadow-[0_8px_20px_rgba(59,130,246,0.05)]">
-                <div className="flex items-center gap-2">
-                  <div className="w-7 h-7 rounded-full bg-white border border-blue-100 flex items-center justify-center shadow-sm">
-                    <Clock className="w-3.5 h-3.5 text-blue-500" />
-                  </div>
-                  <p className="text-sm text-blue-700 font-semibold">3 Days Free Trial Classes</p>
-                </div>
+<div className="space-y-3">
+  {hasLowerGrades && (
+    <div className="p-4 rounded-2xl bg-[linear-gradient(135deg,#f7fbff_0%,#f1f8ff_100%)] border border-blue-100 shadow-[0_8px_20px_rgba(59,130,246,0.05)]">
+      <div className="flex items-center gap-2">
+        <div className="w-7 h-7 rounded-full bg-white border border-blue-100 flex items-center justify-center shadow-sm">
+          <Clock className="w-3.5 h-3.5 text-blue-500" />
+        </div>
+        <p className="text-sm text-blue-700 font-semibold">3 Days Free Trial Classes</p>
+      </div>
 
-                <div className="grid grid-cols-3 gap-3 mt-4">
-                  {[
-                    {
-                      tz: "KSA",
-                      time: hasLowerGrades ? "3:30" : "9:30",
-                      accent: "text-blue-600",
-                      border: "border-blue-100",
-                    },
-                    {
-                      tz: "UAE",
-                      time: hasLowerGrades ? "4:30" : "10:30",
-                      accent: "text-sky-600",
-                      border: "border-blue-100",
-                    },
-                    {
-                      tz: "PAK",
-                      time: hasLowerGrades ? "5:30" : "11:30",
-                      accent: "text-cyan-600",
-                      border: "border-blue-100",
-                    },
-                  ].map((item) => (
-                    <div
-                      key={item.tz}
-                      className={`rounded-2xl border ${item.border} bg-white px-3 py-3.5 text-center shadow-[0_4px_12px_rgba(15,45,87,0.03)]`}
-                    >
-                      <div className="flex items-center justify-center gap-1.5 mb-2">
-                        <Clock className={`w-3 h-3 ${item.accent}`} />
-                        <p className={`text-[11px] font-bold ${item.accent}`}>{item.tz}</p>
-                      </div>
+      <div className="grid grid-cols-3 gap-3 mt-4">
+        {[
+          { tz: "KSA", time: "3:30 PM", accent: "text-blue-600", border: "border-blue-100" },
+          { tz: "UAE", time: "4:30 PM", accent: "text-sky-600", border: "border-blue-100" },
+          { tz: "PAK", time: "5:30 PM", accent: "text-cyan-600", border: "border-blue-100" },
+        ].map((item) => (
+          <div
+            key={item.tz}
+            className={`rounded-2xl border ${item.border} bg-white px-3 py-3.5 text-center shadow-[0_4px_12px_rgba(15,45,87,0.03)]`}
+          >
+            <div className="flex items-center justify-center gap-1.5 mb-2">
+              <Clock className={`w-3 h-3 ${item.accent}`} />
+              <p className={`text-[11px] font-bold ${item.accent}`}>{item.tz}</p>
+            </div>
 
-                      <p className="text-lg font-extrabold text-[#0f2d57] leading-none">
-                        <span className="block">{item.time}</span>
-                        <span className="block mt-2">AM</span>
-                      </p>
-                    </div>
-                  ))}
-                </div>
+            <p className="text-lg font-extrabold text-[#0f2d57] leading-none">
+              {item.time}
+            </p>
+          </div>
+        ))}
+      </div>
 
-                <p className="text-sm text-blue-600 mt-4 font-medium">
-                  {schoolTrialLabel}
-                </p>
-              </div>
+      <p className="text-sm text-blue-600 mt-4 font-medium">
+        KG1 to Grade 7
+      </p>
+    </div>
+  )}
+
+  {hasUpperGrades && (
+    <div className="p-4 rounded-2xl bg-[linear-gradient(135deg,#f7fbff_0%,#f1f8ff_100%)] border border-blue-100 shadow-[0_8px_20px_rgba(59,130,246,0.05)]">
+      <div className="flex items-center gap-2">
+        <div className="w-7 h-7 rounded-full bg-white border border-blue-100 flex items-center justify-center shadow-sm">
+          <Clock className="w-3.5 h-3.5 text-blue-500" />
+        </div>
+        <p className="text-sm text-blue-700 font-semibold">3 Days Free Trial Classes</p>
+      </div>
+
+      <div className="grid grid-cols-3 gap-3 mt-4">
+        {[
+          { tz: "KSA", time: "9:30 AM", accent: "text-blue-600", border: "border-blue-100" },
+          { tz: "UAE", time: "10:30 AM", accent: "text-sky-600", border: "border-blue-100" },
+          { tz: "PAK", time: "11:30 AM", accent: "text-cyan-600", border: "border-blue-100" },
+        ].map((item) => (
+          <div
+            key={item.tz}
+            className={`rounded-2xl border ${item.border} bg-white px-3 py-3.5 text-center shadow-[0_4px_12px_rgba(15,45,87,0.03)]`}
+          >
+            <div className="flex items-center justify-center gap-1.5 mb-2">
+              <Clock className={`w-3 h-3 ${item.accent}`} />
+              <p className={`text-[11px] font-bold ${item.accent}`}>{item.tz}</p>
+            </div>
+
+            <p className="text-lg font-extrabold text-[#0f2d57] leading-none">
+              {item.time}
+            </p>
+          </div>
+        ))}
+      </div>
+
+      <p className="text-sm text-blue-600 mt-4 font-medium">
+        Grade 8 to 12
+      </p>
+    </div>
+  )}
+</div>
             )}
           </div>
         </div>
