@@ -797,8 +797,7 @@ if (data.leadType === LeadType.TUITION) return <TuitionForm data={data} updateDa
 
 
 return (
-  <div className="relative">
-
+  <div className="relative overflow-x-clip">
     <div className="relative z-10 space-y-8 sm:space-y-10">
         <div className="text-center pf-e1 pt-2 xl:pt-4">
           {data.leadType !== LeadType.ONE_ON_ONE_SCHOOLING && (
@@ -904,16 +903,16 @@ return (
 
               <div className="space-y-2.5">
                 {realStudents.map((student, idx) => (
-                  <div key={student.id} className="pf-student-row flex items-center gap-3 p-3 sm:p-4">
+                  <div key={student.id} className="pf-student-row flex flex-col gap-3 p-3 sm:flex-row sm:items-center sm:p-4">
                     <div className="pf-badge">{idx + 1}</div>
                     <div className="flex-1 min-w-0">
                       <p className="font-extrabold text-[#0f2d57] text-sm truncate">{student.name}</p>
-                      <p className="text-xs text-brand-mediumText mt-0.5 truncate">
+                      <p className="text-xs text-brand-mediumText mt-0.5 break-words">
                         Age {student.age} · {student.grade}
                         {student.curriculum ? ` · ${student.curriculum}` : ''}
                       </p>
                     </div>
-                    <div className="flex gap-2 shrink-0">
+                    <div className="flex flex-wrap gap-2 shrink-0">
                       <button
                         onClick={() => editStudent(student)}
                         className="px-3 py-1.5 rounded-full text-xs font-bold text-[#1d6fce] transition-all"
@@ -1162,25 +1161,26 @@ const QuranForm = ({
 .qf-page {
   position: relative;
   min-height: auto;
-  width: 100vw;
-  margin-left: calc(50% - 50vw);
-  margin-right: calc(50% - 50vw);
-  overflow: hidden;
+  width: 100%;
+  overflow-x: clip;
+  overflow-y: visible;
 }
 
 .qf-shell {
   position: relative;
   width: 100%;
   min-height: auto;
-  padding: 24px 24px 8px;
+  padding: 24px 16px 8px;
+  max-width: 100%;
+  box-sizing: border-box;
 }
-
-  .qf-main {
-    position: relative;
-    max-width: 640px;
-    margin-left: auto;
-    margin-right: 260px;
-  }
+.qf-main {
+  position: relative;
+  max-width: 640px;
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+}
 
   .qf-head {
     text-align: center;
@@ -1321,11 +1321,7 @@ const QuranForm = ({
     cursor: not-allowed;
   }
 
-  @media (max-width: 1400px) {
-    .qf-main {
-      margin-right: 180px;
-    }
-  }
+
 
   @media (max-width: 1024px) {
     .qf-page {
@@ -1344,11 +1340,11 @@ const QuranForm = ({
     }
   }
 
-  @media (max-width: 640px) {
-    .qf-shell {
-      padding: 12px 10px 20px;
-    }
+@media (max-width: 640px) {
+  .qf-shell {
+    padding: 12px 12px 20px;
   }
+}
 
   @keyframes ivsVoucherFlyToCoupon {
   0% {
@@ -1585,7 +1581,7 @@ const QuranForm = ({
 
                 <div className="space-y-2.5 mt-3">
                   {data.quranStudents.map((s, i) => (
-                    <div key={s.id} className="pf-student-row flex items-center gap-3 p-3">
+                    <div key={s.id} className="pf-student-row flex flex-col gap-3 p-3 sm:flex-row sm:items-center">
                       <div className="pf-badge">{i + 1}</div>
 
                       <div className="flex-1 min-w-0">
@@ -1596,7 +1592,7 @@ const QuranForm = ({
                         </p>
                       </div>
 
-                      <div className="flex gap-2 shrink-0">
+                      <div className="flex flex-wrap gap-2 shrink-0">
                         <button
                           onClick={() => editQ(s)}
                           className="px-3 py-1 rounded-full text-xs font-bold text-[#1d6fce]"
@@ -1720,7 +1716,7 @@ const QuranForm = ({
                   </span>
                 </div>
 
-                <div className="grid grid-cols-4 sm:grid-cols-7 gap-2">
+                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-7 gap-2">
                   {DAYS.map((day) => (
                     <button
                       key={day}
@@ -2000,14 +1996,25 @@ export const Step5_Summary = ({ data, updateData }: StepProps) => (
   </div>
 );
 
-const validateCoupon=(code:string)=>{
-  try{
-    const env=(process.env.COUPON_CODES as unknown) as Record<string,string>||{};
-    const raw=env[`COUPON_${code.toUpperCase()}`];
-    if(!raw)return null;
-    const[referrerName,discountType,discountValue,message]=raw.split('|');
-    return{valid:true,referrerName,discountType,discountValue:parseInt(discountValue,10),message};
-  }catch{return null;}
+const validateCoupon = (code: string) => {
+  try {
+    const env = import.meta.env as Record<string, string | undefined>;
+    const raw = env[`VITE_COUPON_${code.toUpperCase()}`];
+
+    if (!raw) return null;
+
+    const [referrerName, discountType, discountValue, message] = raw.split('|');
+
+    return {
+      valid: true,
+      referrerName,
+      discountType,
+      discountValue: parseInt(discountValue, 10),
+      message,
+    };
+  } catch {
+    return null;
+  }
 };
 
 interface CouponProps {
@@ -3073,7 +3080,10 @@ const schoolTrialLabel =
               {visibleUpsellSchoolStudents.length > 0 && (
                 <div className="space-y-3">
                   {visibleUpsellSchoolStudents.map((student, idx) => (
-                    <div key={student.id} className="flex items-center justify-between p-4 bg-blue-50/80 rounded-2xl border border-blue-200 shadow-[0_10px_30px_rgba(59,130,246,0.06)]">
+                    <div
+  key={student.id}
+  className="flex flex-col gap-3 p-4 bg-blue-50/80 rounded-2xl border border-blue-200 shadow-[0_10px_30px_rgba(59,130,246,0.06)] sm:flex-row sm:items-center sm:justify-between"
+>
                       <div className="flex items-center gap-3">
                         <span className="w-9 h-9 bg-gradient-to-br from-blue-500 to-sky-500 text-white rounded-full flex items-center justify-center text-sm font-extrabold shadow-[0_8px_20px_rgba(59,130,246,0.24)]">
                           {idx + 1}
@@ -3186,7 +3196,10 @@ const schoolTrialLabel =
               {visibleUpsellTuitionStudents.length > 0 && (
                 <div className="space-y-3">
                   {visibleUpsellTuitionStudents.map((student, idx) => (
-                    <div key={student.id} className="flex items-center justify-between p-4 bg-purple-50/80 rounded-2xl border border-purple-200 shadow-[0_10px_30px_rgba(139,92,246,0.06)]">
+                   <div
+  key={student.id}
+  className="flex flex-col gap-3 p-4 bg-purple-50/80 rounded-2xl border border-purple-200 shadow-[0_10px_30px_rgba(139,92,246,0.06)] sm:flex-row sm:items-center sm:justify-between"
+>
                       <div className="flex items-center gap-3">
                         <span className="w-9 h-9 bg-gradient-to-br from-purple-500 to-fuchsia-500 text-white rounded-full flex items-center justify-center text-sm font-extrabold shadow-[0_8px_20px_rgba(139,92,246,0.24)]">
                           {idx + 1}
@@ -3452,7 +3465,7 @@ const schoolTrialLabel =
             </span>
           </div>
 
-          <div className="grid grid-cols-4 sm:grid-cols-7 gap-2">
+          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-7 gap-2">
             {DAYS.map((day) => {
               const active = (data.pendingQuranDays || []).includes(day);
 
@@ -3684,7 +3697,7 @@ const schoolTrialLabel =
                       {i + 1}
                     </div>
 
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-x-5 gap-y-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-5 gap-y-4">
                       <div>
                         <p className="text-[11px] uppercase tracking-[0.10em] text-gray-500 font-semibold mb-1">
                           Name

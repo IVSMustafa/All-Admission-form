@@ -963,9 +963,28 @@ const App = () => {
               0 16px 34px rgba(15,45,87,0.07),
               0 6px 14px rgba(15,45,87,0.04) !important;
           }
+
+          @media (max-width: 640px) {
+  .ivs-success-wrap {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+
+  .ivs-success-main {
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .ivs-success-main p,
+  .ivs-success-main h2,
+  .ivs-success-main h4 {
+    word-break: break-word;
+  }
+}
         `}</style>
 
-        <div className="ivs-success-wrap relative z-10 w-full max-w-[980px] pl-[70px]">
+        <div className="ivs-success-wrap relative z-10 w-full max-w-[980px] px-0 sm:px-4 xl:pl-[70px]">
           <div
             className="absolute left-[-400px] top-[55%] -translate-y-1/2 z-0 hidden xl:block pointer-events-none"
             aria-hidden="true"
@@ -979,7 +998,7 @@ const App = () => {
               }}
             />
           </div>
-          <div className="ivs-success-main relative z-10 mr-auto w-full max-w-[760px] rounded-[28px] border border-[rgba(29,111,206,0.10)] bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(244,249,255,0.96))] px-5 py-6 sm:px-7 sm:py-8 md:px-8 md:py-9">
+         <div className="ivs-success-main relative z-10 mx-auto w-full max-w-[760px] rounded-[24px] sm:rounded-[28px] border border-[rgba(29,111,206,0.10)] bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(244,249,255,0.96))] px-4 py-5 sm:px-7 sm:py-8 md:px-8 md:py-9">
             <div className="relative text-center">
               <div className="absolute left-[10%] top-1 text-sky-300 text-sm ivs-sparkle-1">✦</div>
               <div className="absolute right-[12%] top-6 text-blue-300 text-xs ivs-sparkle-2">✦</div>
@@ -1003,9 +1022,9 @@ const App = () => {
             </div>
 
             {successData.appliedCoupon && (
-              <div className="mt-7 grid gap-4 md:grid-cols-[1.35fr_180px] items-stretch">
-                <div className="rounded-[24px] border border-[rgba(29,111,206,0.14)] bg-[linear-gradient(135deg,#f3faff_0%,#eaf5ff_50%,#f7fbff_100%)] overflow-hidden shadow-[0_12px_28px_rgba(29,111,206,0.08)]">
-                  <div className="flex flex-col sm:flex-row sm:items-center gap-4 p-5">
+              <div className="mt-7 grid grid-cols-1 gap-4 md:grid-cols-[minmax(0,1.35fr)_180px] items-stretch">
+               <div className="rounded-[20px] sm:rounded-[24px] border border-[rgba(29,111,206,0.14)] bg-[linear-gradient(135deg,#f3faff_0%,#eaf5ff_50%,#f7fbff_100%)] overflow-hidden shadow-[0_12px_28px_rgba(29,111,206,0.08)]">
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-4 p-4 sm:p-5">
                     <div className="w-16 h-16 rounded-[18px] flex items-center justify-center bg-[linear-gradient(135deg,#1d6fce_0%,#0ea5e9_100%)] text-white text-[28px] shadow-[0_12px_24px_rgba(29,111,206,0.18)] shrink-0">
                       🎁
                     </div>
@@ -1021,7 +1040,7 @@ const App = () => {
                         </span>
                       </div>
 
-                      <h4 className="text-[24px] sm:text-[28px] leading-none font-black tracking-[0.01em] text-[#0f2d57]">
+                      <h4 className="text-[20px] sm:text-[28px] leading-tight font-black tracking-[0.01em] text-[#0f2d57] break-words">
                         {successData.couponCode}
                       </h4>
 
@@ -1039,7 +1058,7 @@ const App = () => {
                   </div>
                 </div>
 
-                <div className="rounded-[24px] border border-[rgba(29,111,206,0.14)] bg-[linear-gradient(180deg,rgba(255,255,255,0.88)_0%,rgba(238,247,255,0.94)_100%)] p-5 flex flex-col items-center justify-center text-center shadow-[0_12px_28px_rgba(29,111,206,0.07)]">
+                <div className="rounded-[20px] sm:rounded-[24px] border border-[rgba(29,111,206,0.14)] bg-[linear-gradient(180deg,rgba(255,255,255,0.88)_0%,rgba(238,247,255,0.94)_100%)] p-4 sm:p-5 flex flex-col items-center justify-center text-center shadow-[0_12px_28px_rgba(29,111,206,0.07)]">
                   <p className="text-[11px] uppercase tracking-[0.16em] font-extrabold text-[#6c87a7]">
                     Savings
                   </p>
@@ -1107,13 +1126,13 @@ const App = () => {
                         ? (successData.quranStudents || []).map((student, idx) => (
                             <div
                               key={student.id}
-                              className="grid gap-3 md:grid-cols-[56px_1fr] items-center rounded-2xl border border-emerald-200 bg-emerald-50/70 px-4 py-4"
+                             className="grid gap-3 grid-cols-1 md:grid-cols-[56px_1fr] items-start md:items-center rounded-2xl border border-emerald-200 bg-emerald-50/70 px-4 py-4"
                             >
                               <div className="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-500 to-teal-500 text-white flex items-center justify-center font-extrabold text-base">
                                 {idx + 1}
                               </div>
 
-                              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
                                 <div>
                                   <p className="text-xs uppercase tracking-wide text-gray-500">Name</p>
                                   <p className="font-bold text-brand-darkText">{student.name}</p>
@@ -1142,13 +1161,13 @@ const App = () => {
                             return (
                               <div
                                 key={student.id}
-                                className="grid gap-3 md:grid-cols-[56px_1fr] items-center rounded-2xl border border-[rgba(29,111,206,0.08)] bg-[linear-gradient(135deg,#fafcff,#f3f9ff)] px-4 py-4"
+                               className="grid gap-3 grid-cols-1 md:grid-cols-[56px_1fr] items-start md:items-center rounded-2xl border border-[rgba(29,111,206,0.08)] bg-[linear-gradient(135deg,#fafcff,#f3f9ff)] px-4 py-4"
                               >
                                 <div className="w-10 h-10 rounded-full bg-brand-orange/20 text-brand-orange flex items-center justify-center font-extrabold text-base">
                                   {idx + 1}
                                 </div>
 
-                                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
                                   <div>
                                     <p className="text-xs uppercase tracking-wide text-gray-500">Name</p>
                                     <p className="font-bold text-brand-darkText">{student.name}</p>
@@ -1199,7 +1218,7 @@ const App = () => {
                           </p>
                         </div>
                       ) : (
-                        <div className="grid gap-3 md:grid-cols-3">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                           <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-4 shadow-[0_8px_20px_rgba(16,185,129,0.05)]">
                             <p className="text-sm text-emerald-700 font-semibold">⏰ KSA</p>
                             <p className="text-lg text-emerald-800 font-extrabold mt-2">

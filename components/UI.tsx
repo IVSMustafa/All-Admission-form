@@ -51,7 +51,7 @@ export const InputField = ({
 
     <div className="relative">
       <input
-        className={`w-full glass-input rounded-xl px-4 py-3 text-sm bg-white/75 border border-black/10
+       className={`w-full min-h-[56px] glass-input rounded-xl px-4 py-3 text-sm bg-white/75 border border-black/10
         focus:outline-none focus:ring-2 focus:ring-[rgba(29,111,206,0.18)] focus:border-[rgba(29,111,206,0.45)]
         transition-all ${Icon ? "pl-10" : ""} ${error ? "border-red-400" : ""}`}
         {...props}
@@ -88,7 +88,7 @@ export const SelectField = ({
 
     <div className="relative">
       <select
-        className={`w-full glass-input rounded-xl px-4 py-3 text-sm bg-white/75 border border-black/10
+        className={`w-full min-h-[56px] glass-input rounded-xl px-4 py-3 text-sm bg-white/75 border border-black/10
         focus:outline-none focus:ring-2 focus:ring-[rgba(29,111,206,0.18)] focus:border-[rgba(29,111,206,0.45)]
         appearance-none transition-all ${error ? "border-red-400" : ""}`}
         {...props}
@@ -128,7 +128,7 @@ export const Button = ({
   ...props
 }: ButtonProps) => {
   const base =
-    "relative inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-semibold transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed text-sm";
+   "relative inline-flex min-h-[56px] items-center justify-center gap-2 px-6 py-3 rounded-xl font-semibold transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed text-sm";
 
   const variants = {
     primary:
@@ -216,7 +216,7 @@ export const Toggle = ({
   checked: boolean;
   onChange: (val: boolean) => void;
 }) => (
-  <div className="flex items-center justify-between p-3 rounded-xl bg-white/60 border border-black/10">
+  <div className="min-h-[56px] flex items-center justify-between px-4 py-3 rounded-xl bg-white/60 border border-black/10">
     <span className="text-brand-darkText text-sm font-medium">{label}</span>
     <button
       type="button"
@@ -388,6 +388,7 @@ const toggleCountryDropdown = () => {
     : "";
 
   return (
+    
     <div className="flex flex-col gap-2 w-full">
       {/* Label */}
       <label className="text-[12px] font-semibold tracking-wide text-brand-darkText/80 ml-1">
@@ -399,29 +400,26 @@ const toggleCountryDropdown = () => {
           [flag+chevron] [divider] [+code] [divider] [input→flex-1]
           ════════════════════════════════════════ */}
       <div
-        className={`
-          flex items-stretch h-14 w-full
-          rounded-2xl bg-white/85 border shadow-sm
-          transition-all duration-200 overflow-hidden
-          ${borderClass} ${ringClass}
-        `}
-      >
+  className={`
+    flex items-stretch min-h-[56px] w-full
+    rounded-2xl bg-white/85 border shadow-sm
+    transition-all duration-200 overflow-hidden
+    ${borderClass} ${ringClass}
+  `}
+>
 
         {/* ── Country selector ── */}
         <div ref={btnWrapRef} className="shrink-0">
-          <button
-            type="button"
-            onClick={toggleCountryDropdown}
-            className="h-14 pl-4 pr-3 flex items-center gap-2 hover:bg-black/5 transition-colors focus:outline-none"
-          >
+<button
+  type="button"
+  onClick={toggleCountryDropdown}
+  className="min-h-[56px] pl-3 sm:pl-4 pr-2 sm:pr-3 flex items-center gap-2 hover:bg-black/5 transition-colors focus:outline-none max-w-[140px] sm:max-w-[220px]"
+>
             {/* Flag */}
             <span className="text-xl leading-none select-none ivs-emoji">{flag}</span>
 
             {/* Country name — truncated, max 130 px so it can't swallow the row */}
-            <span
-              className="font-semibold text-sm text-[#0f2d57] truncate"
-              style={{ maxWidth: "130px" }}
-            >
+<span className="font-semibold text-sm text-[#0f2d57] truncate max-w-[64px] sm:max-w-[130px]">
               {hasSelectedCountry ? country : "Country"}
             </span>
 
@@ -438,8 +436,8 @@ const toggleCountryDropdown = () => {
         <div className="w-px bg-black/10 my-3 shrink-0" />
 
         {/* ── Dial code ── */}
-        <div className="shrink-0 flex items-center px-3">
-          <span className="font-extrabold text-[#1d6fce] text-sm tabular-nums select-none whitespace-nowrap">
+        <div className="shrink-0 flex items-center px-2 sm:px-3">
+          <span className="font-extrabold text-[#1d6fce] text-[13px] sm:text-sm tabular-nums select-none whitespace-nowrap">
             {hasSelectedCountry ? code : ""}
           </span>
         </div>
@@ -466,13 +464,13 @@ const toggleCountryDropdown = () => {
                   : (countryData?.example || "Enter number")
                 : "Select a country first"
             }
-            className={`
-              w-full h-full bg-transparent outline-none
-              pl-3 pr-10
-              font-bold text-sm text-[#0f2d57]
-              placeholder:font-normal placeholder:text-[#0f2d57]/35
-              ${!hasSelectedCountry ? "cursor-not-allowed opacity-40" : ""}
-            `}
+className={`
+  w-full h-full bg-transparent outline-none
+  pl-2 sm:pl-3 pr-10
+  font-bold text-sm text-[#0f2d57]
+  placeholder:font-normal placeholder:text-[#0f2d57]/35
+  ${!hasSelectedCountry ? "cursor-not-allowed opacity-40" : ""}
+`}
           />
 
           {/* Validation icon */}
