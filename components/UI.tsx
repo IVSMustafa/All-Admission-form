@@ -399,10 +399,11 @@ const toggleCountryDropdown = () => {
           MAIN ROW  —  flex, not grid
           [flag+chevron] [divider] [+code] [divider] [input→flex-1]
           ════════════════════════════════════════ */}
-      <div
+      
+<div
   className={`
-    flex items-stretch min-h-[56px] w-full
-    rounded-2xl bg-white/85 border shadow-sm
+    flex items-stretch h-14 w-full
+    rounded-2xl bg-white/[0.08] border shadow-none
     transition-all duration-200 overflow-hidden
     ${borderClass} ${ringClass}
   `}

@@ -920,15 +920,15 @@ const App = () => {
             overflow: visible;
           }
 
-          .ivs-phone-peek {
-            position: absolute;
-            top: 58%;
-            right: -80px;
-            width: 210px;
-            z-index: 1;
-            pointer-events: none;
-            animation: ivsPhonePeekIn 1.6s cubic-bezier(0.16, 1, 0.3, 1) 0.55s both;
-          }
+.ivs-phone-peek {
+  position: absolute;
+  top: 56%;
+  right: -185px;
+  width: 255px;
+  z-index: 1;
+  pointer-events: none;
+  animation: ivsPhonePeekIn 1.6s cubic-bezier(0.16, 1, 0.3, 1) 0.55s both;
+}
 
           .ivs-phone-peek-inner {
             animation: ivsPhoneSoftFloat 6s ease-in-out infinite;
@@ -943,11 +943,47 @@ const App = () => {
               drop-shadow(0 8px 18px rgba(29,111,206,0.10));
           }
 
-          @media (max-width: 1180px) {
-            .ivs-phone-peek {
-              display: none;
-            }
-          }
+@media (max-width: 1180px) {
+  .ivs-phone-peek {
+    position: absolute;
+    top: auto;
+    bottom: 22px;
+    left: 36%;
+    right: auto;
+    transform: translateX(-50%);
+    width: 150px;
+    z-index: 2;
+    display: block;
+    opacity: 1;
+  }
+
+  .ivs-phone-peek-inner {
+    animation: ivsPhoneSoftFloat 6s ease-in-out infinite;
+  }
+
+  .ivs-phone-peek img {
+    width: 100%;
+    height: auto;
+    display: block;
+    filter:
+      drop-shadow(0 16px 26px rgba(15,45,87,0.16))
+      drop-shadow(0 6px 12px rgba(29,111,206,0.08));
+  }
+}
+
+@media (max-width: 768px) {
+  .ivs-phone-peek {
+    bottom: 18px;
+    width: 128px;
+  }
+}
+
+@media (max-width: 480px) {
+  .ivs-phone-peek {
+    bottom: 16px;
+    width: 112px;
+  }
+}
 
           .success-glass-scope .ivs-success-main,
           .success-glass-scope .ivs-applied-voucher,
@@ -982,6 +1018,34 @@ const App = () => {
     word-break: break-word;
   }
 }
+  .ivs-phone-inline {
+  width: 150px;
+  max-width: 42vw;
+  pointer-events: none;
+}
+
+.ivs-phone-inline img {
+  width: 100%;
+  height: auto;
+  display: block;
+  filter:
+    drop-shadow(0 16px 26px rgba(15,45,87,0.16))
+    drop-shadow(0 6px 12px rgba(29,111,206,0.08));
+}
+
+@media (max-width: 768px) {
+  .ivs-phone-inline {
+    width: 128px;
+    max-width: 46vw;
+  }
+}
+
+@media (max-width: 480px) {
+  .ivs-phone-inline {
+    width: 112px;
+    max-width: 48vw;
+  }
+}
         `}</style>
 
         <div className="ivs-success-wrap relative z-10 w-full max-w-[980px] px-0 sm:px-4 xl:pl-[70px]">
@@ -998,7 +1062,7 @@ const App = () => {
               }}
             />
           </div>
-         <div className="ivs-success-main relative z-10 mx-auto w-full max-w-[760px] rounded-[24px] sm:rounded-[28px] border border-[rgba(29,111,206,0.10)] bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(244,249,255,0.96))] px-4 py-5 sm:px-7 sm:py-8 md:px-8 md:py-9">
+       <div className="ivs-success-main relative z-10 mx-auto w-full max-w-[760px] rounded-[24px] sm:rounded-[28px] border border-[rgba(29,111,206,0.10)] bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(244,249,255,0.96))] px-4 py-5 sm:px-7 sm:py-8 md:px-8 md:py-9">
             <div className="relative text-center">
               <div className="absolute left-[10%] top-1 text-sky-300 text-sm ivs-sparkle-1">✦</div>
               <div className="absolute right-[12%] top-6 text-blue-300 text-xs ivs-sparkle-2">✦</div>
@@ -1349,33 +1413,36 @@ const App = () => {
               </div>
             )}
 
-            <p className="mt-6 text-sm text-brand-mediumText text-center">
-              {successData.leadType === LeadType.TUITION
-                ? "Our advisor will reach out to you shortly on WhatsApp."
-                : "If you need immediate help, just message us on WhatsApp."}
-            </p>
+<p className="mt-6 text-sm text-brand-mediumText text-center">
+  {successData.leadType === LeadType.TUITION
+    ? "Our advisor will reach out to you shortly on WhatsApp."
+    : "If you need immediate help, just message us on WhatsApp."}
+</p>
 
-            <div className="mt-5 text-center">
-              <button
-                onClick={handleStartNewApplication}
-                className="ivs-cta-button inline-flex items-center justify-center rounded-full px-8 py-3.5 text-white font-bold text-base transition-all hover:scale-[1.04] hover:-translate-y-0.5"
-                style={{
-                  background: "linear-gradient(135deg,#1d6fce 0%,#0ea5e9 100%)",
-                }}
-              >
-                Start New Application
-              </button>
-            </div>
+<div className="mt-6 flex justify-center lg:hidden">
+  <div className="ivs-phone-inline">
+    <img
+      src="/images/ivs-whatsapp-phone.png"
+      alt="Official IVS WhatsApp QR"
+      className="w-full h-auto block"
+    />
+  </div>
+</div>
+
+<div className="mt-5 text-center">
+  <button
+    onClick={handleStartNewApplication}
+    className="ivs-cta-button inline-flex items-center justify-center rounded-full px-8 py-3.5 text-white font-bold text-base transition-all hover:scale-[1.04] hover:-translate-y-0.5"
+    style={{
+      background: "linear-gradient(135deg,#1d6fce 0%,#0ea5e9 100%)",
+    }}
+  >
+    Start New Application
+  </button>
+</div>
           </div>
 
-          <div className="ivs-phone-peek" aria-hidden="true">
-            <div className="ivs-phone-peek-inner">
-              <img
-                src="/images/ivs-whatsapp-phone.png"
-                alt="Official IVS WhatsApp QR"
-              />
-            </div>
-          </div>
+
         </div>
       </div>
     );
@@ -1447,82 +1514,84 @@ const App = () => {
         />
       )}
 
-      {isFullTimeDetailsStep && (
-        <div
-          className="fixed inset-0 z-0 pointer-events-none hidden xl:block"
-          aria-hidden="true"
-          style={{
-            backgroundImage:
-              "linear-gradient(rgba(255,255,255,0.76),rgba(255,255,255,0.76)), url('/images/full-time-school-side.png')",
-            backgroundRepeat: "no-repeat",
-            backgroundSize: "cover",
-            backgroundPosition: "center center",
-          }}
-        />
-      )}
+{isFullTimeDetailsStep && (
+  <div
+    className="fixed inset-0 z-0 pointer-events-none"
+    aria-hidden="true"
+    style={{
+      backgroundImage:
+        "linear-gradient(rgba(255,255,255,0.82),rgba(255,255,255,0.82)), url('/images/full-time-school-side.png')",
+      backgroundRepeat: "no-repeat",
+      backgroundSize: "cover",
+      backgroundPosition: "center center",
+    }}
+  />
+)}
 
-      {isOneToOneDetailsStep && (
-        <div
-          className="fixed inset-0 z-0 pointer-events-none hidden xl:block"
-          aria-hidden="true"
-          style={{
-            backgroundImage:
-              "linear-gradient(rgba(255,255,255,0.76),rgba(255,255,255,0.76)), url('/images/one-to-one-schooling-bg.png')",
-            backgroundRepeat: "no-repeat",
-            backgroundSize: "cover",
-            backgroundPosition: "center center",
-          }}
-        />
-      )}
+{isOneToOneDetailsStep && (
+  <div
+    className="fixed inset-0 z-0 pointer-events-none"
+    aria-hidden="true"
+    style={{
+      backgroundImage:
+        "linear-gradient(rgba(255,255,255,0.82),rgba(255,255,255,0.82)), url('/images/one-to-one-schooling-bg.png')",
+      backgroundRepeat: "no-repeat",
+      backgroundSize: "cover",
+      backgroundPosition: "center center",
+    }}
+  />
+)}
 
-      {isTuitionDetailsStep && (
-        <div
-          className="fixed inset-0 z-0 pointer-events-none hidden xl:block"
-          aria-hidden="true"
-          style={{
-            backgroundImage:
-              "linear-gradient(rgba(255,255,255,0.76),rgba(255,255,255,0.76)), url('/images/tuition-side.png')",
-            backgroundRepeat: "no-repeat",
-            backgroundSize: "cover",
-            backgroundPosition: "center center",
-          }}
-        />
-      )}
+{isTuitionDetailsStep && (
+  <div
+    className="fixed inset-0 z-0 pointer-events-none"
+    aria-hidden="true"
+    style={{
+      backgroundImage:
+        "linear-gradient(rgba(255,255,255,0.84),rgba(255,255,255,0.84)), url('/images/tuition-side.png')",
+      backgroundRepeat: "no-repeat",
+      backgroundSize: "cover",
+      backgroundPosition: "center center",
+    }}
+  />
+)}
 
-      {isFinalStep && (
-        <div
-          className="fixed inset-0 z-0 pointer-events-none hidden xl:block"
-          aria-hidden="true"
-          style={{
-            backgroundImage:
-              "linear-gradient(rgba(255,255,255,0.82),rgba(255,255,255,0.82)), url('/images/final-step-education.png')",
-            backgroundRepeat: "no-repeat",
-            backgroundSize: "cover",
-            backgroundPosition: "center center",
-          }}
-        />
-      )}
+{isFinalStep && (
+  <div
+    className="fixed inset-0 z-0 pointer-events-none"
+    aria-hidden="true"
+    style={{
+      backgroundImage:
+        "linear-gradient(rgba(255,255,255,0.86),rgba(255,255,255,0.86)), url('/images/final-step-education.png')",
+      backgroundRepeat: "no-repeat",
+      backgroundSize: "cover",
+      backgroundPosition: "center center",
+    }}
+  />
+)}
 
-      <div
-        className={
-          isQuranDetailsStep
-            ? "relative z-10 w-full max-w-6xl mx-auto px-4 pt-4 pb-24 md:px-6 md:pt-6 lg:px-8 2xl:pr-[360px]"
-            : isFinalStep
-            ? "relative z-10 w-full max-w-6xl mx-auto px-4 pt-4 pb-24 md:px-6 md:pt-6 lg:px-8 xl:pt-20 2xl:pr-[360px]"
-            : isSchoolStep1Details
-            ? "relative z-10 w-full max-w-6xl mx-auto px-4 pt-6 pb-24 md:px-6 md:pt-8 lg:px-8 xl:pt-20 2xl:pr-[360px]"
-            : "relative z-10 w-full max-w-6xl mx-auto px-4 pt-4 pb-24 md:px-6 lg:px-8 2xl:pr-[360px]"
-        }
-      >
-        <div
-          className={
-            isQuranDetailsStep
-              ? "w-full max-w-3xl mx-auto"
-              : step === 1
-              ? `w-full max-w-3xl mx-auto pt-4 md:pt-6 xl:pt-0 ${detailsStepShift}`
-              : "w-full max-w-3xl mx-auto"
-          }
-        >
+<div
+  className={
+    isQuranDetailsStep
+      ? "relative z-10 w-full max-w-[1700px] mx-auto px-4 pt-4 pb-24 md:px-6 md:pt-6 lg:px-8 2xl:pr-[360px]"
+      : isFinalStep
+      ? "relative z-10 w-full max-w-[1400px] mx-auto px-4 pt-4 pb-24 md:px-6 md:pt-6 lg:px-8 xl:pt-20 2xl:pr-[360px]"
+      : isSchoolStep1Details
+      ? "relative z-10 w-full max-w-[1500px] mx-auto px-4 pt-6 pb-24 md:px-6 md:pt-8 lg:px-8 xl:pt-20 2xl:pr-[360px]"
+      : "relative z-10 w-full max-w-[1550px] mx-auto px-4 pt-4 pb-24 md:px-6 lg:px-8 2xl:pr-[360px]"
+  }
+>
+<div
+  className={
+    isQuranDetailsStep
+      ? "w-full max-w-3xl mx-auto xl:ml-auto xl:mr-0"
+      : step === 1
+      ? `w-full max-w-3xl mx-auto xl:ml-auto xl:mr-0 pt-4 md:pt-6 xl:pt-0 ${detailsStepShift}`
+      : step === 2
+      ? "w-full max-w-3xl mx-auto xl:ml-auto xl:mr-0"
+      : "w-full max-w-3xl mx-auto"
+  }
+>
           <div className={isQuranDetailsStep ? "mb-6" : "mb-10"}>
             {step === 1 && (
               <Step1_Details

@@ -242,13 +242,16 @@ export const HeroCard: React.FC<HeroCardProps> = ({
     font-family: 'DM Sans', system-ui, sans-serif;
   }
 
-  .hero-wrap {
-    position: relative;
-    border-radius: 32px;
-    overflow: hidden;
-    border: 1px solid rgba(15,23,42,0.08);
-    box-shadow: 0 24px 64px rgba(15,23,42,0.08), 0 4px 12px rgba(15,23,42,0.04);
-  }
+.hero-wrap {
+  position: relative;
+  border-radius: 42px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.62);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.75),
+    0 24px 64px rgba(15,23,42,0.08),
+    0 6px 18px rgba(15,23,42,0.05);
+}
 
   .hero-bg-img {
     position: absolute;
@@ -348,16 +351,16 @@ export const HeroCard: React.FC<HeroCardProps> = ({
   }
 
   .hero-h1 {
-    font-family: 'DM Serif Display', Georgia, serif;
-    font-weight: 400;
-    letter-spacing: -0.025em;
-    line-height: 1.06;
-    color: var(--ink);
-    white-space: nowrap;
-    font-size: clamp(19px, 3.2vw, 46px);
-    overflow: visible;
-  }
-
+  font-family: 'DM Serif Display', Georgia, serif;
+  font-weight: 400;
+  letter-spacing: -0.025em;
+  line-height: 1.08;
+  color: var(--ink);
+  white-space: normal;
+  font-size: clamp(22px, 4vw, 46px);
+  overflow-wrap: anywhere;
+  max-width: 100%;
+}
   .hero-h1 .accent-word {
     position: relative;
     display: inline-block;
@@ -545,11 +548,11 @@ export const HeroCard: React.FC<HeroCardProps> = ({
     pointer-events: none;
   }
 
-  .feat-grid {
-    display: grid;
-    grid-template-columns: repeat(2,1fr);
-    gap: 14px;
-  }
+.feat-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
 
   .feat-scene {
     perspective: 1200px;
@@ -767,48 +770,48 @@ export const HeroCard: React.FC<HeroCardProps> = ({
       0 12px 28px rgba(15,23,42,0.08);
   }
 
-  .svc-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 14px;
-  }
-
-  .svc-chip {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 0 18px;
-    height: 72px;
-    border-radius: 999px;
-    position: relative;
-    overflow: hidden;
-    isolation: isolate;
-    cursor: default;
-    background:
-      radial-gradient(ellipse at 20% 30%, rgba(255,255,255,0.36) 0%, transparent 55%),
-      radial-gradient(ellipse at 80% 72%, rgba(190,228,255,0.18) 0%, transparent 50%),
-      linear-gradient(
-        160deg,
-        rgba(255,255,255,0.22) 0%,
-        rgba(215,238,255,0.12) 50%,
-        rgba(200,232,255,0.08) 100%
-      );
-    backdrop-filter: blur(16px) saturate(150%);
-    -webkit-backdrop-filter: blur(16px) saturate(150%);
-    border: 1.5px solid rgba(255,255,255,0.62);
-    border-bottom-color: rgba(175,213,240,0.42);
-    border-right-color: rgba(210,235,255,0.32);
-    box-shadow:
-      inset 0 2px 0 rgba(255,255,255,0.92),
-      inset 0 -2px 0 rgba(155,205,238,0.38),
-      inset 3px 0 8px rgba(255,255,255,0.18),
-      0 5px 0 rgba(148,200,235,0.62),
-      0 9px 3px rgba(118,178,220,0.32),
-      0 16px 12px rgba(100,165,215,0.20),
-      0 24px 22px rgba(80,150,210,0.12),
-      0 2px 20px rgba(118,185,230,0.18);
-    transition: transform 0.22s, box-shadow 0.22s, border-color 0.22s;
-  }
+.svc-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+.svc-chip {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 18px;
+  min-width: 0;
+  height: 72px;
+  border-radius: 999px;
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  cursor: default;
+  background:
+    radial-gradient(ellipse at 20% 30%, rgba(255,255,255,0.36) 0%, transparent 55%),
+    radial-gradient(ellipse at 80% 72%, rgba(190,228,255,0.18) 0%, transparent 50%),
+    linear-gradient(
+      160deg,
+      rgba(255,255,255,0.22) 0%,
+      rgba(215,238,255,0.12) 50%,
+      rgba(200,232,255,0.08) 100%
+    );
+  backdrop-filter: blur(16px) saturate(150%);
+  -webkit-backdrop-filter: blur(16px) saturate(150%);
+  border: 1.5px solid rgba(255,255,255,0.62);
+  border-bottom-color: rgba(175,213,240,0.42);
+  border-right-color: rgba(210,235,255,0.32);
+  box-shadow:
+    inset 0 2px 0 rgba(255,255,255,0.92),
+    inset 0 -2px 0 rgba(155,205,238,0.38),
+    inset 3px 0 8px rgba(255,255,255,0.18),
+    0 5px 0 rgba(148,200,235,0.62),
+    0 9px 3px rgba(118,178,220,0.32),
+    0 16px 12px rgba(100,165,215,0.20),
+    0 24px 22px rgba(80,150,210,0.12),
+    0 2px 20px rgba(118,185,230,0.18);
+  transition: transform 0.22s, box-shadow 0.22s, border-color 0.22s;
+}
 
   .svc-chip::after {
     content: "";
@@ -852,6 +855,21 @@ export const HeroCard: React.FC<HeroCardProps> = ({
   }
 
   .svc-chip:hover {
+  .svc-chip > div:last-child {
+  min-width: 0;
+}
+
+.svc-chip > div:last-child .text-\[12\.5px\] {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.svc-chip > div:last-child .text-\[11px\] {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
     transform: translateY(-2px);
     border-color: rgba(255,255,255,0.72);
     box-shadow:
@@ -969,39 +987,220 @@ export const HeroCard: React.FC<HeroCardProps> = ({
     background: linear-gradient(90deg,transparent,rgba(15,23,42,0.09) 30%,rgba(15,23,42,0.09) 70%,transparent);
   }
 
+.hero-av-col {
+  overflow: visible !important;
+  align-self: stretch;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+}
+
+.hero-av-sink {
+  overflow: visible;
+  position: relative;
+  z-index: 20;
+  width: 100%;
+  max-width: 620px;
+  margin-bottom: -14px;
+  margin-right: -12px;
+  transform: translateX(-35px);
+}
+@media (max-width: 1200px) {
+  .svc-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 1024px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .feat-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .svc-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .feat-scene {
+    height: 88px;
+  }
+
+  .hero-h1 {
+    font-size: clamp(24px, 7vw, 34px);
+  }
+}
+
+@media (max-width: 640px) {
+  .hero-cta-p,
+  .hero-cta-s {
+    width: 100%;
+    justify-content: center;
+    min-width: 0;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+}
+ @media (max-width: 1199px) {
+  .hero-wrap {
+    border-radius: 34px;
+  }
+
   .hero-av-col {
-    overflow: visible !important;
-    align-self: stretch;
-    display: flex;
+    justify-content: flex-end;
     align-items: flex-end;
   }
 
   .hero-av-sink {
-    overflow: visible;
-    margin-bottom: -48px;
-    position: relative;
-    z-index: 20;
-    width: 100%;
+    max-width: 430px;
+    margin-bottom: -8px;
+    margin-right: -18px;
+    transform: translateX(20px);
+  }
+}
+
+@media (max-width: 991px) {
+  .hero-wrap {
+    border-radius: 30px;
   }
 
-  @media (max-width: 1024px) {
-    .svc-grid { grid-template-columns: repeat(2, 1fr); }
-    .stats-grid { grid-template-columns: 1fr; }
+  .hero-av-col {
+    justify-content: flex-end;
+    align-items: flex-end;
   }
 
-  @media (max-width:768px) {
-    .feat-grid { grid-template-columns: 1fr; }
-    .svc-grid { grid-template-columns: repeat(2,1fr); }
-    .feat-scene { height: 88px; }
-    .hero-h1 { font-size: clamp(16px, 5vw, 34px); white-space: normal; }
+  .hero-av-sink {
+    max-width: 320px;
+    margin-bottom: 0;
+    margin-right: -10px;
+    transform: translateX(14px);
+  }
+}
+
+@media (max-width: 768px) {
+  .hero-wrap {
+    border-radius: 28px;
   }
 
-  @media (max-width:640px) {
-    .svc-grid { grid-template-columns: 1fr 1fr; }
-    .hero-cta-p,
-    .hero-cta-s { width: 100%; justify-content: center; min-width: 0; }
-    .stats-grid { grid-template-columns: 1fr; }
+  .hero-bg-img {
+    background-position: center center;
   }
+
+  .hero-av-col {
+    justify-content: flex-end;
+    align-items: flex-end;
+  }
+
+  .hero-av-sink {
+    max-width: 240px;
+    margin-bottom: 0;
+    margin-right: -6px;
+    transform: translateX(10px);
+  }
+
+  .hero-h1 {
+    font-size: clamp(18px, 5.8vw, 34px);
+    white-space: normal;
+  }
+}
+
+@media (max-width: 1199px) {
+  .hero-wrap {
+    border-radius: 34px;
+  }
+
+  .hero-av-col {
+    justify-content: center;
+    align-items: flex-end;
+  }
+
+  .hero-av-sink {
+    max-width: 500px;
+    margin-bottom: -8px;
+    margin-right: 0;
+    transform: translateX(0);
+  }
+}
+
+@media (max-width: 991px) {
+  .hero-wrap {
+    border-radius: 30px;
+  }
+
+  .hero-av-col {
+    justify-content: center;
+    align-items: flex-end;
+  }
+
+  .hero-av-sink {
+    max-width: 420px;
+    margin-bottom: 0;
+    margin-right: 0;
+    transform: translateX(0);
+  }
+}
+
+@media (max-width: 768px) {
+  .hero-wrap {
+    border-radius: 28px;
+  }
+
+  .hero-bg-img {
+    background-position: center center;
+  }
+
+  .hero-h1 {
+    font-size: clamp(18px, 5.8vw, 34px);
+    white-space: normal;
+  }
+
+  .hero-av-col {
+    justify-content: flex-end;
+    align-items: flex-end;
+  }
+
+  .hero-av-sink {
+    max-width: 320px;
+    margin-bottom: 0;
+    margin-right: -6px;
+    transform: translateX(0);
+  }
+}
+
+@media (max-width: 560px) {
+  .hero-wrap {
+    border-radius: 24px;
+  }
+
+  .hero-av-col {
+    justify-content: flex-end;
+    align-items: flex-end;
+  }
+
+  .hero-av-sink {
+    max-width: 250px;
+    margin-bottom: 0;
+    margin-right: -4px;
+    transform: translateX(0);
+  }
+
+  .feat-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .svc-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+}
+ 
+
 `}</style>
 
       <div className="hero-root hero-wrap">
@@ -1009,7 +1208,7 @@ export const HeroCard: React.FC<HeroCardProps> = ({
         <div className="hero-bg-overlay" aria-hidden="true" />
         <div className="hero-shine" />
 
-        <div className="relative z-10 px-6 py-8 sm:px-8 sm:py-10 lg:px-12 lg:py-12">
+        <div className="relative z-10 px-4 py-6 sm:px-6 sm:py-8 md:px-8 md:py-10 lg:px-10 lg:py-12 xl:px-12">
           <div className="grid lg:grid-cols-12 gap-10 items-start">
             <div className="lg:col-span-7 space-y-7">
               <div
@@ -1185,11 +1384,12 @@ export const HeroCard: React.FC<HeroCardProps> = ({
               </div>
             </div>
 
-            <div
-              className={`hidden lg:flex lg:col-span-5 hero-av-col h-enter h-d7 ${
-                mounted ? "in" : ""
-              }`}
-            >
+<div
+  className={`hidden lg:flex lg:col-span-5 hero-av-col h-enter h-d7 ${
+    mounted ? "in" : ""
+  }`}
+  style={{ paddingLeft: "0px" }}
+>
               <div className="hero-av-sink">
                 <IVSAvatarShowcase />
               </div>

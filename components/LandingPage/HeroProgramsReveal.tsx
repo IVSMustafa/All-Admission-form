@@ -46,11 +46,10 @@ const HeroProgramsReveal: React.FC<HeroProgramsRevealProps> = ({
       const ratio = vw / Math.max(vh, 1);
       const dpr = window.devicePixelRatio || 1;
 
-      const isSmallWidth = vw < 1180;
-      const isShortHeight = vh < 760;
-      const isVeryWide = ratio > 2.05;
-      const looksZoomedOut = dpr < 0.9;
-
+const isSmallWidth = vw < 1280;
+const isShortHeight = vh < 820;
+const isVeryWide = ratio > 1.95;
+const looksZoomedOut = dpr < 0.95;
       setUseSimpleLayout(
         isSmallWidth || isShortHeight || isVeryWide || looksZoomedOut
       );

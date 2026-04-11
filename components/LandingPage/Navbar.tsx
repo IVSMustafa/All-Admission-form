@@ -137,34 +137,27 @@ export const Navbar: React.FC<NavbarProps> = ({
           animation: ivsNavFadeIn 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
         }
 
-        .ivs-nav-shell {
-          max-width: 1480px;
-          margin: 0 auto;
-        }
-
+.ivs-nav-shell {
+  width: min(100%, 1380px);
+  margin: 0 auto;
+}
 .ivs-nav-bar {
   position: relative;
   overflow: hidden;
   display: flex;
   align-items: center;
-  gap: 18px;
-  padding: 20px 24px;
-  border-radius: 34px;
-
-  /* GLASS BORDER ONLY */
+  gap: clamp(10px, 1.6vw, 18px);
+  padding: clamp(12px, 1.8vw, 20px) clamp(14px, 2vw, 24px);
+  border-radius: clamp(20px, 2.2vw, 34px);
   border: 1px solid rgba(255,255,255,0.45);
-
-  /* REMOVE WHITE BACKGROUND */
   background: transparent;
-
-  /* KEEP PREMIUM DEPTH */
   box-shadow:
     inset 0 1px 0 rgba(255,255,255,0.45),
     inset 0 -1px 0 rgba(255,255,255,0.06),
     0 18px 38px rgba(15,23,42,0.04),
     0 4px 14px rgba(15,23,42,0.03);
-
   transition: all 0.25s ease;
+  min-width: 0;
 }
 
 .ivs-nav-bar.scrolled {
@@ -213,21 +206,21 @@ export const Navbar: React.FC<NavbarProps> = ({
           pointer-events: none;
         }
 
-        .ivs-logo {
-          display: flex;
-          align-items: center;
-          gap: 16px;
-          min-width: 0;
-          flex-shrink: 0;
-          position: relative;
-          z-index: 2;
-        }
+.ivs-logo {
+  display: flex;
+  align-items: center;
+  gap: clamp(8px, 1.2vw, 16px);
+  min-width: 0;
+  flex: 1 1 auto;
+  position: relative;
+  z-index: 2;
+}
 
-        .ivs-logo-ring {
-          position: relative;
-          width: 88px;
-          height: 88px;
-          border-radius: 24px;
+.ivs-logo-ring {
+  position: relative;
+  width: clamp(52px, 6vw, 88px);
+  height: clamp(52px, 6vw, 88px);
+  border-radius: clamp(16px, 2vw, 24px);
           background:
             linear-gradient(180deg, rgba(255,255,255,0.88), rgba(245,249,255,0.68));
           border: 1px solid rgba(255,255,255,0.82);
@@ -259,52 +252,57 @@ export const Navbar: React.FC<NavbarProps> = ({
           pointer-events: none;
         }
 
-        .ivs-logo-ring img {
-          width: 58px;
-          height: 58px;
+.ivs-logo-ring img {
+  width: clamp(34px, 4vw, 58px);
+  height: clamp(34px, 4vw, 58px);
           object-fit: contain;
           position: relative;
           z-index: 1;
         }
 
-        .ivs-logo-copy {
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-          min-width: 0;
-          line-height: 1.05;
-        }
+.ivs-logo-copy {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 0;
+  line-height: 1.08;
+  flex: 1 1 auto;
+}
 
-        .ivs-logo-text {
-          font-size: 26px;
-          font-weight: 800;
-          letter-spacing: -0.04em;
-          background: linear-gradient(110deg, #8d183d 0%, #b21f51 58%, #9b1d40 100%);
-          -webkit-background-clip: text;
-          background-clip: text;
-          color: transparent;
-          white-space: nowrap;
-        }
+.ivs-logo-text {
+  font-size: clamp(15px, 2vw, 26px);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  background: linear-gradient(110deg, #8d183d 0%, #b21f51 58%, #9b1d40 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  line-height: 1.05;
+}
+.ivs-logo-sub {
+  margin-top: 4px;
+  font-size: clamp(9px, 1vw, 13px);
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  color: #7a879a;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  line-height: 1.2;
+}
+.ivs-nav-gap {
+  flex: 0 1 16px;
+}
 
-        .ivs-logo-sub {
-          margin-top: 6px;
-          font-size: 13px;
-          font-weight: 700;
-          letter-spacing: 0.01em;
-          color: #7a879a;
-          white-space: nowrap;
-        }
-
-        .ivs-nav-gap {
-          flex: 1;
-        }
-
-        .ivs-nav-items {
-          position: relative;
-          display: flex;
-          align-items: center;
-          gap: 8px;
-          padding: 8px;
+.ivs-nav-items {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px;
+  flex-shrink: 0;
+  max-width: 100%;
           border-radius: 26px;
           background:
             linear-gradient(180deg, rgba(255,255,255,0.60), rgba(244,248,255,0.46));
@@ -359,27 +357,27 @@ export const Navbar: React.FC<NavbarProps> = ({
           opacity: 1;
         }
 
-        .ivs-nav-btn {
-          position: relative;
-          z-index: 1;
-          display: inline-flex;
-          align-items: center;
-          gap: 12px;
-          height: 62px;
-          padding: 0 22px;
-          border: none;
-          border-radius: 18px;
-          background: transparent;
-          color: #3b4a62;
-          font-family: inherit;
-          font-size: 15px;
-          font-weight: 800;
-          white-space: nowrap;
-          cursor: pointer;
-          transition:
-            color 0.22s ease,
-            transform 0.22s ease;
-        }
+.ivs-nav-btn {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  height: clamp(48px, 4.6vw, 62px);
+  padding: 0 clamp(12px, 1.2vw, 22px);
+  border: none;
+  border-radius: 18px;
+  background: transparent;
+  color: #3b4a62;
+  font-family: inherit;
+  font-size: clamp(13px, 1vw, 15px);
+  font-weight: 800;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    color 0.22s ease,
+    transform 0.22s ease;
+}
 
         .ivs-nav-btn:hover {
           color: #245da8;
@@ -463,159 +461,136 @@ export const Navbar: React.FC<NavbarProps> = ({
           display: none;
         }
 
-        @media (max-width: 1180px) {
-          .ivs-logo-text {
-            font-size: 22px;
-          }
+@media (max-width: 1180px) {
+  .ivs-nav-items {
+    display: none;
+  }
 
-          .ivs-nav-btn {
-            padding: 0 16px;
-            font-size: 14px;
-          }
-        }
+  .ivs-mobile-toggle {
+    display: inline-flex;
+    margin-left: auto;
+  }
 
-        @media (max-width: 960px) {
-          .ivs-nav-bar {
-            padding: 18px;
-            border-radius: 26px;
-            gap: 12px;
-          }
+  .ivs-mobile-menu {
+    display: block;
+    margin-top: 12px;
+    border-radius: 22px;
+    border: 1px solid rgba(255,255,255,0.82);
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.80), rgba(245,249,255,0.62));
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.90),
+      0 16px 30px rgba(15,23,42,0.06),
+      0 4px 12px rgba(15,23,42,0.04);
+    overflow: hidden;
+    max-height: 0;
+    opacity: 0;
+    transform: translateY(-8px);
+    pointer-events: none;
+    transition:
+      max-height 0.32s ease,
+      opacity 0.25s ease,
+      transform 0.25s ease;
+  }
 
-          .ivs-logo-ring {
-            width: 72px;
-            height: 72px;
-            border-radius: 20px;
-          }
+  .ivs-mobile-menu.open {
+    max-height: 420px;
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
 
-          .ivs-logo-ring img {
-            width: 48px;
-            height: 48px;
-          }
+  .ivs-mobile-inner {
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
 
-          .ivs-logo-text {
-            font-size: 20px;
-          }
+  .ivs-mobile-btn {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    padding: 14px 14px;
+    border-radius: 18px;
+    border: 1px solid rgba(255,255,255,0.78);
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.60), rgba(245,249,255,0.40));
+    color: #334155;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 800;
+    text-align: left;
+    cursor: pointer;
+    transition:
+      background 0.2s ease,
+      color 0.2s ease,
+      transform 0.2s ease,
+      box-shadow 0.2s ease;
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.84),
+      0 6px 12px rgba(15,23,42,0.03);
+  }
 
-          .ivs-logo-sub {
-            font-size: 11px;
-          }
+  .ivs-mobile-btn.active {
+    color: #1d6fce;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.70), rgba(233,242,255,0.46));
+  }
 
-          .ivs-nav-items {
-            display: none;
-          }
+  .ivs-mobile-icon-wrap {
+    width: 36px;
+    height: 36px;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #1d6fce;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.58), rgba(240,247,255,0.30));
+    border: 1px solid rgba(255,255,255,0.80);
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.86),
+      0 6px 12px rgba(29,111,206,0.04);
+    flex-shrink: 0;
+  }
+}
 
-          .ivs-mobile-toggle {
-            display: inline-flex;
-            margin-left: auto;
-          }
+@media (max-width: 768px) {
+  .ivs-nav-outer {
+    padding: 8px 10px 0;
+  }
 
-          .ivs-mobile-menu {
-            display: block;
-            margin-top: 12px;
-            border-radius: 22px;
-            border: 1px solid rgba(255,255,255,0.82);
-            background:
-              linear-gradient(180deg, rgba(255,255,255,0.80), rgba(245,249,255,0.62));
-            box-shadow:
-              inset 0 1px 0 rgba(255,255,255,0.90),
-              0 16px 30px rgba(15,23,42,0.06),
-              0 4px 12px rgba(15,23,42,0.04);
-            overflow: hidden;
-            max-height: 0;
-            opacity: 0;
-            transform: translateY(-8px);
-            pointer-events: none;
-            transition:
-              max-height 0.32s ease,
-              opacity 0.25s ease,
-              transform 0.25s ease;
-          }
+  .ivs-nav-bar {
+    align-items: center;
+  }
 
-          .ivs-mobile-menu.open {
-            max-height: 420px;
-            opacity: 1;
-            transform: translateY(0);
-            pointer-events: auto;
-          }
+  .ivs-logo {
+    min-width: 0;
+  }
 
-          .ivs-mobile-inner {
-            padding: 10px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-          }
+  .ivs-mobile-toggle {
+    width: 44px;
+    height: 44px;
+    border-radius: 14px;
+  }
+}
 
-          .ivs-mobile-btn {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            width: 100%;
-            padding: 14px 14px;
-            border-radius: 18px;
-            border: 1px solid rgba(255,255,255,0.78);
-            background:
-              linear-gradient(180deg, rgba(255,255,255,0.60), rgba(245,249,255,0.40));
-            color: #334155;
-            font-family: inherit;
-            font-size: 14px;
-            font-weight: 800;
-            text-align: left;
-            cursor: pointer;
-            transition:
-              background 0.2s ease,
-              color 0.2s ease,
-              transform 0.2s ease,
-              box-shadow 0.2s ease;
-            box-shadow:
-              inset 0 1px 0 rgba(255,255,255,0.84),
-              0 6px 12px rgba(15,23,42,0.03);
-          }
+@media (max-width: 480px) {
+  .ivs-nav-outer {
+    padding: 6px 8px 0;
+  }
 
-          .ivs-mobile-btn:hover {
-            color: #1d6fce;
-            transform: translateY(-1px);
-            box-shadow:
-              inset 0 1px 0 rgba(255,255,255,0.88),
-              0 8px 14px rgba(29,111,206,0.05);
-          }
+  .ivs-nav-bar {
+    padding: 12px;
+    border-radius: 18px;
+  }
 
-          .ivs-mobile-btn.active {
-            color: #1d6fce;
-            background:
-              linear-gradient(180deg, rgba(255,255,255,0.70), rgba(233,242,255,0.46));
-          }
-
-          .ivs-mobile-icon-wrap {
-            width: 36px;
-            height: 36px;
-            border-radius: 999px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            color: #1d6fce;
-            background:
-              linear-gradient(180deg, rgba(255,255,255,0.58), rgba(240,247,255,0.30));
-            border: 1px solid rgba(255,255,255,0.80);
-            box-shadow:
-              inset 0 1px 0 rgba(255,255,255,0.86),
-              0 6px 12px rgba(29,111,206,0.04);
-            flex-shrink: 0;
-          }
-        }
-
-        @media (max-width: 560px) {
-          .ivs-nav-outer {
-            padding: 8px 10px 0;
-          }
-
-          .ivs-nav-bar {
-            border-radius: 22px;
-            padding: 14px;
-          }
-
-          .ivs-logo {
-            gap: 10px;
-          }
+  .ivs-logo {
+    gap: 8px;
+  }
+}
 
           .ivs-logo-ring {
             width: 58px;

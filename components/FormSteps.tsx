@@ -86,18 +86,17 @@ const PREMIUM_CSS = `
   background: transparent !important;
   border: 1.5px solid rgba(29,111,206,0.18);
   border-radius: 24px;
-  box-shadow: 0 2px 16px rgba(15,45,87,0.04), 0 1px 3px rgba(0,0,0,0.02);
+  box-shadow: none;
   transition:
-    box-shadow 0.25s ease,
+    border-color 0.25s ease,
     transform 0.25s cubic-bezier(0.22,1,0.36,1);
 }
-
 .pf-card::before {
   display: none;
 }
 
 .pf-card:hover {
-  box-shadow: 0 8px 24px rgba(29,111,206,0.06), 0 2px 8px rgba(0,0,0,0.03);
+  box-shadow: none;
   transform: translateY(-1px);
 }
 
@@ -166,6 +165,7 @@ const PREMIUM_CSS = `
   background: rgba(248,251,255,0.9);
   border: 1.5px solid rgba(29,111,206,0.09);
   border-radius: 16px;
+  box-shadow: none !important;
   transition: all 0.2s ease;
 }
 
@@ -366,10 +366,7 @@ const PREMIUM_CSS = `
   border: 1px solid rgba(201, 225, 255, 0.82) !important;
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.58),
-    0 16px 34px rgba(15,45,87,0.07),
-    0 6px 14px rgba(15,45,87,0.04) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.58) !important;
 }
 
 .pf-card::before {
