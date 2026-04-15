@@ -854,8 +854,7 @@ export const HeroCard: React.FC<HeroCardProps> = ({
     pointer-events: none;
   }
 
-  .svc-chip:hover {
-  .svc-chip > div:last-child {
+.svc-chip > div:last-child {
   min-width: 0;
 }
 
@@ -870,7 +869,20 @@ export const HeroCard: React.FC<HeroCardProps> = ({
   overflow: hidden;
   text-overflow: ellipsis;
 }
-    transform: translateY(-2px);
+
+.svc-chip:hover {
+  transform: translateY(-2px);
+  border-color: rgba(255,255,255,0.72);
+  box-shadow:
+    inset 0 2px 0 rgba(255,255,255,0.96),
+    inset 0 -2px 0 rgba(155,205,238,0.44),
+    inset 3px 0 8px rgba(255,255,255,0.22),
+    0 6px 0 rgba(136,192,228,0.66),
+    0 10px 4px rgba(112,175,218,0.36),
+    0 18px 14px rgba(100,165,215,0.24),
+    0 28px 24px rgba(80,150,210,0.14),
+    0 2px 22px rgba(118,185,230,0.22);
+}
     border-color: rgba(255,255,255,0.72);
     box-shadow:
       inset 0 2px 0 rgba(255,255,255,0.96),
@@ -1001,67 +1013,19 @@ export const HeroCard: React.FC<HeroCardProps> = ({
   z-index: 20;
   width: 100%;
   max-width: 620px;
-  margin-bottom: -14px;
-  margin-right: -12px;
-  transform: translateX(-35px);
-}
-@media (max-width: 1200px) {
-  .svc-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
+  margin: 0;
+  transform: none;
 }
 
-@media (max-width: 1024px) {
-  .stats-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-@media (max-width: 768px) {
-  .feat-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .svc-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .feat-scene {
-    height: 88px;
-  }
-
-  .hero-h1 {
-    font-size: clamp(24px, 7vw, 34px);
-  }
-}
-
-@media (max-width: 640px) {
-  .hero-cta-p,
-  .hero-cta-s {
-    width: 100%;
-    justify-content: center;
-    min-width: 0;
-  }
-
-  .stats-grid {
-    grid-template-columns: 1fr;
-  }
-}
- @media (max-width: 1199px) {
-  .hero-wrap {
-    border-radius: 34px;
-  }
-
-  .hero-av-col {
-    justify-content: flex-end;
-    align-items: flex-end;
-  }
-
+@media (max-width: 1530px) {
   .hero-av-sink {
-    max-width: 430px;
-    margin-bottom: -8px;
-    margin-right: -18px;
-    transform: translateX(20px);
+    max-width: 560px;
+  }
+}
+
+@media (max-width: 1280px) {
+  .hero-av-sink {
+    max-width: 500px;
   }
 }
 
@@ -1209,8 +1173,8 @@ export const HeroCard: React.FC<HeroCardProps> = ({
         <div className="hero-shine" />
 
         <div className="relative z-10 px-4 py-6 sm:px-6 sm:py-8 md:px-8 md:py-10 lg:px-10 lg:py-12 xl:px-12">
-          <div className="grid lg:grid-cols-12 gap-10 items-start">
-            <div className="lg:col-span-7 space-y-7">
+          <div className="grid lg:grid-cols-12 gap-8 xl:gap-10 items-start">
+            <div className="lg:col-span-7 space-y-7 min-w-0">
               <div
                 className={`h-enter h-d1 ${
                   mounted ? "in" : ""
@@ -1388,7 +1352,6 @@ export const HeroCard: React.FC<HeroCardProps> = ({
   className={`hidden lg:flex lg:col-span-5 hero-av-col h-enter h-d7 ${
     mounted ? "in" : ""
   }`}
-  style={{ paddingLeft: "0px" }}
 >
               <div className="hero-av-sink">
                 <IVSAvatarShowcase />

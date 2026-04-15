@@ -60,205 +60,373 @@ const IVSAvatarShowcase: React.FC = () => {
 
   return (
     <div style={{ position: "relative", width: "100%" }}>
-      <style>{`
-        .sc-scene {
-          position: relative;
-          width: 100%;
-          height: 580px;
-          overflow: visible;
-        }
+<style>{`
+  .sc-scene {
+    position: relative;
+    width: 100%;
+    height: 560px;
+    min-height: 560px;
+    overflow: hidden;
+  }
 
-        /* ── Avatar: right side, big, always on top ── */
-        .sc-av {
-          position: absolute;
-          right: -14px;
-          bottom: 0;
-          width: 55%;
-          height: 97%;
-          z-index: 10;
-          pointer-events: none;
-        }
-        .sc-av img {
-          width: 100%; height: 100%;
-          object-fit: contain;
-          object-position: bottom right;
-          display: block;
-          user-select: none;
-          -webkit-user-drag: none;
-        }
+  .sc-av {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 260px;
+    height: 96%;
+    z-index: 10;
+    pointer-events: none;
+  }
 
-        /* ── Card row: left side — pushed to top so all 3 cards
-           are fully visible above the kid avatar ── */
-        .sc-row {
-          position: absolute;
-          top: 18px;
-          left: 0;
-          display: flex;
-          flex-direction: row;
-          align-items: flex-start;
-          gap: 8px;
-          z-index: 8;
-        }
+  .sc-av img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: bottom right;
+    display: block;
+    user-select: none;
+    -webkit-user-drag: none;
+  }
 
-        /* ── Cards: fixed width, never shrink ── */
-        .sc-card {
-          width: 148px;
-          flex-shrink: 0;
-          border-radius: 22px;
-          background: rgba(255,255,255,0.97);
-          border: 1px solid rgba(15,23,42,0.07);
-          box-shadow:
-            0 12px 30px rgba(15,23,42,0.10),
-            0 3px 8px rgba(15,23,42,0.04);
-          padding: 17px 13px 13px;
-          position: relative;
-          backdrop-filter: blur(14px);
-          overflow: hidden;
-          will-change: transform, opacity;
-          transition: box-shadow 0.25s ease;
-        }
-        .sc-card:hover {
-          box-shadow: 0 18px 40px rgba(15,23,42,0.13), 0 4px 10px rgba(15,23,42,0.06);
-        }
-        .sc-card::after {
-          content: "";
-          position: absolute; inset: 1px;
-          border-radius: 21px;
-          border: 1px solid rgba(255,255,255,0.65);
-          pointer-events: none;
-        }
+  .sc-row {
+    position: absolute;
+    top: 18px;
+    left: 0;
+    width: calc(100% - 280px);
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    z-index: 8;
+  }
 
-        /* ── Ribbon ── */
-        .sc-ribbon {
-          position: absolute;
-          top: -8px; right: 14px;
-          width: 32px; height: 46px;
-          clip-path: polygon(0 0,100% 0,100% 80%,50% 100%,0 80%);
-        }
-        .sc-blue   { background: linear-gradient(160deg,#2f80ed,#56b4f5); }
-        .sc-purple { background: linear-gradient(160deg,#7c3aed,#a855f7); }
-        .sc-gold   { background: linear-gradient(160deg,#f59e0b,#fbbf24); }
+  .sc-card {
+    width: 150px;
+    min-width: 150px;
+    max-width: 150px;
+    flex: 0 0 150px;
+    border-radius: 22px;
+    background: rgba(255,255,255,0.97);
+    border: 1px solid rgba(15,23,42,0.07);
+    box-shadow:
+      0 12px 30px rgba(15,23,42,0.10),
+      0 3px 8px rgba(15,23,42,0.04);
+    padding: 17px 13px 13px;
+    position: relative;
+    backdrop-filter: blur(14px);
+    overflow: hidden;
+    will-change: transform, opacity;
+    transition: box-shadow 0.25s ease;
+  }
 
-        /* ── Icon ── */
-        .sc-icon-wrap {
-          width: 38px; height: 38px; border-radius: 12px;
-          background: rgba(248,250,252,0.98);
-          border: 1px solid rgba(15,23,42,0.06);
-          display: flex; align-items: center; justify-content: center;
-          box-shadow: 0 3px 8px rgba(15,23,42,0.06);
-          margin-bottom: 10px; font-size: 17px; flex-shrink: 0;
-        }
+  .sc-card:hover {
+    box-shadow: 0 18px 40px rgba(15,23,42,0.13), 0 4px 10px rgba(15,23,42,0.06);
+  }
 
-        /* ── Text ── */
-        .sc-label {
-          font-size: 8px; font-weight: 700;
-          letter-spacing: 0.07em; text-transform: uppercase;
-          color: #9ca3af; margin-bottom: 3px;
-          overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-        }
-        .sc-title {
-          font-size: 18px; line-height: 1.08; font-weight: 800;
-          color: #111827; letter-spacing: -0.03em; margin-bottom: 2px;
-        }
-        .sc-sub {
-          font-size: 10.5px; font-weight: 500;
-          color: #6b7280; margin-bottom: 10px;
-          overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-        }
+  .sc-card::after {
+    content: "";
+    position: absolute;
+    inset: 1px;
+    border-radius: 21px;
+    border: 1px solid rgba(255,255,255,0.65);
+    pointer-events: none;
+  }
 
-        /* ── List ── */
-        .sc-list { display: flex; flex-direction: column; gap: 5px; margin-bottom: 12px; }
-        .sc-li {
-          display: flex; align-items: flex-start;
-          gap: 5px; font-size: 10px; line-height: 1.38;
-          color: #374151; font-weight: 500;
-        }
-        .sc-check { color: #22c55e; font-weight: 900; font-size: 11px; line-height: 1.2; flex-shrink: 0; }
+  .sc-ribbon {
+    position: absolute;
+    top: -8px;
+    right: 14px;
+    width: 32px;
+    height: 46px;
+    clip-path: polygon(0 0,100% 0,100% 80%,50% 100%,0 80%);
+  }
 
-        /* ── Button ── */
-        .sc-btn {
-          width: 100%; height: 31px; border-radius: 10px;
-          display: flex; align-items: center; justify-content: center;
-          background: linear-gradient(90deg,#3b82f6,#38bdf8);
-          color: white; font-size: 11px; font-weight: 700;
-          border: none; cursor: pointer;
-          box-shadow: 0 5px 12px rgba(59,130,246,0.22);
-          transition: transform 0.18s ease, box-shadow 0.18s ease;
-          white-space: nowrap;
-        }
-        .sc-btn:hover { transform: translateY(-1px); box-shadow: 0 8px 18px rgba(59,130,246,0.28); }
-        .sc-btn:active { transform: translateY(0); }
+  .sc-blue { background: linear-gradient(160deg,#2f80ed,#56b4f5); }
+  .sc-purple { background: linear-gradient(160deg,#7c3aed,#a855f7); }
+  .sc-gold { background: linear-gradient(160deg,#f59e0b,#fbbf24); }
 
-        /* ── Phase animations ── */
-        .ph-e { animation: scEnter 560ms cubic-bezier(0.22,1,0.36,1) both; }
-        @keyframes scEnter {
-          from { opacity:0; transform: translateY(28px) scale(0.91); }
-          to   { opacity:1; transform: translateY(0) scale(1); }
-        }
-        .ph-v { opacity:1; transform:none; }
-        .ph-x { animation: scExit 560ms cubic-bezier(0.55,0,1,0.45) both; }
-        @keyframes scExit {
-          from { opacity:1; transform: translateY(0) scale(1); }
-          to   { opacity:0; transform: translateY(-24px) scale(0.91); }
-        }
-        .ph-h { opacity:0; pointer-events:none; visibility:hidden; }
+  .sc-icon-wrap {
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    background: rgba(248,250,252,0.98);
+    border: 1px solid rgba(15,23,42,0.06);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 3px 8px rgba(15,23,42,0.06);
+    margin-bottom: 10px;
+    font-size: 17px;
+    flex-shrink: 0;
+  }
 
-        /* ── Responsive ── */
-        @media (max-width:1280px){
-          .sc-scene { height:540px; }
-          .sc-card  { width:136px; padding:15px 11px 12px; border-radius:20px; }
-          .sc-card::after { border-radius:19px; }
-          .sc-title { font-size:16px; }
-          .sc-row   { gap:7px; }
-        }
-        @media (max-width:1100px){
-          .sc-scene { height:500px; }
-          .sc-av    { width:54%; }
-          .sc-card  { width:122px; padding:13px 10px 11px; border-radius:18px; }
-          .sc-title { font-size:15px; }
-          .sc-sub   { font-size:9.5px; }
-          .sc-li    { font-size:9px; }
-          .sc-btn   { height:28px; font-size:10px; border-radius:9px; }
-          .sc-row   { gap:6px; }
-        }
-        @media (max-width:900px){
-          .sc-scene { height:460px; }
-          .sc-av    { width:56%; }
-          .sc-card  { width:108px; padding:11px 9px 10px; border-radius:16px; }
-          .sc-icon-wrap { width:32px; height:32px; font-size:14px; margin-bottom:8px; border-radius:10px; }
-          .sc-label { font-size:7px; }
-          .sc-title { font-size:13px; }
-          .sc-sub   { font-size:9px; margin-bottom:7px; }
-          .sc-li    { font-size:8.5px; gap:4px; }
-          .sc-check { font-size:10px; }
-          .sc-list  { gap:4px; margin-bottom:9px; }
-          .sc-btn   { height:25px; font-size:9px; border-radius:8px; }
-          .sc-row   { gap:5px; }
-        }
-        @media (max-width:768px){
-          .sc-scene { height:420px; }
-          .sc-av    { width:58%; height:88%; right:-6px; }
-          .sc-card  { width:96px; padding:10px 8px 9px; }
-          .sc-ribbon{ width:24px; height:34px; right:10px; top:-5px; }
-          .sc-title { font-size:12px; }
-          .sc-list  { gap:3px; margin-bottom:8px; }
-          .sc-btn   { height:23px; font-size:8.5px; border-radius:7px; }
-        }
-        @media (max-width:480px){
-          .sc-scene { height:360px; }
-          .sc-av    { width:60%; height:84%; }
-          .sc-card  { width:84px; padding:9px 7px 8px; }
-          .sc-sub   { display:none; }
-          .sc-li    { font-size:7.5px; }
-        }
-        @media (prefers-reduced-motion:reduce){
-          .ph-e,.ph-v,.ph-x,.ph-h { animation:none!important; }
-          .ph-e { opacity:1; transform:none; }
-          .ph-x { opacity:0; }
-          .ph-h { opacity:0; }
-        }
-      `}</style>
+  .sc-label {
+    font-size: 8px;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: #9ca3af;
+    margin-bottom: 3px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
 
+  .sc-title {
+    font-size: 18px;
+    line-height: 1.08;
+    font-weight: 800;
+    color: #111827;
+    letter-spacing: -0.03em;
+    margin-bottom: 2px;
+  }
+
+  .sc-sub {
+    font-size: 10.5px;
+    font-weight: 500;
+    color: #6b7280;
+    margin-bottom: 10px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .sc-list {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin-bottom: 12px;
+  }
+
+  .sc-li {
+    display: flex;
+    align-items: flex-start;
+    gap: 5px;
+    font-size: 10px;
+    line-height: 1.38;
+    color: #374151;
+    font-weight: 500;
+  }
+
+  .sc-check {
+    color: #22c55e;
+    font-weight: 900;
+    font-size: 11px;
+    line-height: 1.2;
+    flex-shrink: 0;
+  }
+
+  .sc-btn {
+    width: 100%;
+    height: 31px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(90deg,#3b82f6,#38bdf8);
+    color: white;
+    font-size: 11px;
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 5px 12px rgba(59,130,246,0.22);
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+    white-space: nowrap;
+  }
+
+  .sc-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 18px rgba(59,130,246,0.28);
+  }
+
+  .sc-btn:active {
+    transform: translateY(0);
+  }
+
+  .ph-e { animation: scEnter 560ms cubic-bezier(0.22,1,0.36,1) both; }
+
+  @keyframes scEnter {
+    from { opacity: 0; transform: translateY(28px) scale(0.91); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  .ph-v { opacity: 1; transform: none; }
+
+  .ph-x { animation: scExit 560ms cubic-bezier(0.55,0,1,0.45) both; }
+
+  @keyframes scExit {
+    from { opacity: 1; transform: translateY(0) scale(1); }
+    to { opacity: 0; transform: translateY(-24px) scale(0.91); }
+  }
+
+  .ph-h {
+    opacity: 0;
+    pointer-events: none;
+    visibility: hidden;
+  }
+
+  @media (max-width: 1400px) {
+    .sc-scene {
+      height: 530px;
+      min-height: 530px;
+    }
+
+    .sc-av {
+      width: 240px;
+    }
+
+    .sc-row {
+      width: calc(100% - 255px);
+      gap: 10px;
+    }
+
+    .sc-card {
+      width: 138px;
+      min-width: 138px;
+      max-width: 138px;
+      flex: 0 0 138px;
+      padding: 15px 11px 12px;
+      border-radius: 20px;
+    }
+
+    .sc-card::after {
+      border-radius: 19px;
+    }
+
+    .sc-title { font-size: 16px; }
+    .sc-sub { font-size: 9.5px; }
+    .sc-li { font-size: 9px; }
+    .sc-btn { height: 28px; font-size: 10px; border-radius: 9px; }
+  }
+
+  @media (max-width: 1180px) {
+    .sc-scene {
+      height: 500px;
+      min-height: 500px;
+    }
+
+    .sc-av {
+      width: 210px;
+    }
+
+    .sc-row {
+      width: calc(100% - 220px);
+      gap: 8px;
+    }
+
+    .sc-card {
+      width: 122px;
+      min-width: 122px;
+      max-width: 122px;
+      flex: 0 0 122px;
+      padding: 13px 10px 11px;
+      border-radius: 18px;
+    }
+
+    .sc-title { font-size: 15px; }
+    .sc-sub { font-size: 9px; }
+    .sc-li { font-size: 8.7px; }
+    .sc-btn { height: 27px; font-size: 9.5px; border-radius: 9px; }
+  }
+
+  @media (max-width: 768px) {
+    .sc-scene {
+      height: auto;
+      min-height: 0;
+      overflow: visible;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 18px;
+      padding-top: 8px;
+    }
+
+    .sc-row {
+      position: relative;
+      top: auto;
+      left: auto;
+      width: 100%;
+      max-width: 100%;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .sc-card {
+      width: 92px;
+      min-width: 92px;
+      max-width: 92px;
+      flex: 0 0 92px;
+      padding: 10px 8px 9px;
+      border-radius: 16px;
+    }
+
+    .sc-ribbon {
+      width: 24px;
+      height: 34px;
+      right: 10px;
+      top: -5px;
+    }
+
+    .sc-icon-wrap {
+      width: 32px;
+      height: 32px;
+      font-size: 14px;
+      margin-bottom: 8px;
+      border-radius: 10px;
+    }
+
+    .sc-label { font-size: 7px; }
+    .sc-title { font-size: 12px; }
+    .sc-sub { display: none; }
+    .sc-li { font-size: 7.6px; gap: 4px; }
+    .sc-list { gap: 3px; margin-bottom: 8px; }
+    .sc-btn { height: 23px; font-size: 8.5px; border-radius: 7px; }
+
+    .sc-av {
+      position: relative;
+      right: auto;
+      bottom: auto;
+      width: min(220px, 62vw);
+      height: auto;
+    }
+
+    .sc-av img {
+      width: 100%;
+      height: auto;
+      object-fit: contain;
+      object-position: center bottom;
+    }
+  }
+
+  @media (max-width: 420px) {
+    .sc-row {
+      gap: 6px;
+    }
+
+    .sc-card {
+      width: 84px;
+      min-width: 84px;
+      max-width: 84px;
+      flex: 0 0 84px;
+      padding: 9px 7px 8px;
+    }
+
+    .sc-li {
+      font-size: 7px;
+    }
+
+    .sc-av {
+      width: min(200px, 64vw);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ph-e,.ph-v,.ph-x,.ph-h { animation: none !important; }
+    .ph-e { opacity: 1; transform: none; }
+    .ph-x { opacity: 0; }
+    .ph-h { opacity: 0; }
+  }
+`}</style>
       <div className="sc-scene">
         {/* Cards row — left side, fixed widths, never collapses */}
         <div className="sc-row">

@@ -84,9 +84,88 @@ const GLASS_ACTION_BUTTONS = `
 }
 `;
 
+type AppliedCoupon = NonNullable<FormData['appliedCoupon']>;
+
+const normalizeEnvKey = (value: string) =>
+  value.trim().toUpperCase().replace(/[^A-Z0-9]+/g, '_');
+
+const validateCouponFromEnv = (code: string): AppliedCoupon | null => {
+  try {
+    const env = import.meta.env as Record<string, string | undefined>;
+    const raw = env[`VITE_COUPON_${normalizeEnvKey(code)}`];
+
+    if (!raw) return null;
+
+    const [referrerName = '', discountType = '', discountValue = '', message = ''] = raw.split('|');
+    const parsedDiscountValue = parseInt(discountValue, 10);
+
+    if (!referrerName || !discountType || Number.isNaN(parsedDiscountValue)) {
+      return null;
+    }
+
+    return {
+      referrerName,
+      discountType,
+      discountValue: parsedDiscountValue,
+      message,
+    };
+  } catch {
+    return null;
+  }
+};
+
+const getUrlBasedCouponState = (): Pick<FormData, 'couponCode' | 'appliedCoupon'> => {
+  if (typeof window === 'undefined') {
+    return {
+      couponCode: '',
+      appliedCoupon: null,
+    };
+  }
+
+  const params = new URLSearchParams(window.location.search);
+  const env = import.meta.env as Record<string, string | undefined>;
+
+  const rawCoupon = params.get('coupon')?.trim() || '';
+  const rawClient = params.get('client')?.trim() || '';
+
+  let resolvedCouponCode = rawCoupon;
+
+  if (!resolvedCouponCode && rawClient) {
+    const clientMappedCoupon = env[`VITE_CLIENT_${normalizeEnvKey(rawClient)}`];
+    if (clientMappedCoupon) {
+      resolvedCouponCode = clientMappedCoupon.trim();
+    }
+  }
+
+  if (!resolvedCouponCode) {
+    return {
+      couponCode: '',
+      appliedCoupon: null,
+    };
+  }
+
+  const normalizedCouponCode = normalizeEnvKey(resolvedCouponCode);
+  const appliedCoupon = validateCouponFromEnv(normalizedCouponCode);
+
+  if (!appliedCoupon) {
+    return {
+      couponCode: '',
+      appliedCoupon: null,
+    };
+  }
+
+  return {
+    couponCode: normalizedCouponCode,
+    appliedCoupon,
+  };
+};
+
 const App = () => {
   const [step, setStep] = useState(0);
-  const [formData, setFormData] = useState<FormData>(INITIAL_DATA);
+  const [formData, setFormData] = useState<FormData>(() => ({
+    ...INITIAL_DATA,
+    ...getUrlBasedCouponState(),
+  }));
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [playConfetti, setPlayConfetti] = useState(false);
@@ -123,6 +202,26 @@ const App = () => {
     return () => {
       window.removeEventListener('popstate', handlePopState);
     };
+  }, []);
+
+  useEffect(() => {
+    const urlCouponState = getUrlBasedCouponState();
+
+    setFormData(prev => {
+      const sameCouponCode = (prev.couponCode || '') === (urlCouponState.couponCode || '');
+      const sameAppliedCoupon =
+        JSON.stringify(prev.appliedCoupon || null) === JSON.stringify(urlCouponState.appliedCoupon || null);
+
+      if (sameCouponCode && sameAppliedCoupon) {
+        return prev;
+      }
+
+      return {
+        ...prev,
+        couponCode: urlCouponState.couponCode,
+        appliedCoupon: urlCouponState.appliedCoupon,
+      };
+    });
   }, []);
 
   useEffect(() => {
@@ -369,7 +468,10 @@ const App = () => {
   };
 
   const handleStartNewApplication = () => {
-    setFormData(INITIAL_DATA);
+    setFormData({
+      ...INITIAL_DATA,
+      ...getUrlBasedCouponState(),
+    });
     setSubmittedSnapshot(null);
     setErrors({});
     setIsSubmitted(false);
@@ -451,9 +553,7 @@ const App = () => {
     setSubmittedSnapshot(updatedFormData);
     console.log('Submitting Data:', updatedFormData);
 
-    // --- SUPABASE & WEBHOOK INTEGRATION ---
     try {
-      // 1. Map React formData to Supabase Postgres Schema (registrations table)
       const supabasePayload = {
         submission_id: `IVS-${Date.now()}`,
         source: 'website',
@@ -483,12 +583,8 @@ const App = () => {
         raw_data: updatedFormData 
       };
 
-      // 2. Fire requests concurrently
       await Promise.allSettled([
-        // Send mapped payload to the correct 'registrations' table
         supabase.from('registrations').insert([supabasePayload]),
-        
-        // Send raw payload to Webhook
         fetch(import.meta.env.VITE_WEBHOOK_URL, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -498,7 +594,6 @@ const App = () => {
     } catch (error) {
       console.error('Integration Error:', error);
     }
-    // ---------------------------------------
 
     setIsSubmitted(true);
     setPlayConfetti(true);
@@ -1109,10 +1204,10 @@ const App = () => {
                       </h4>
 
                       <p className="mt-2 text-[15px] font-semibold text-[#23527c]">
-                        {successData.appliedCoupon.discountValue}% off on{" "}
-                        {successData.appliedCoupon.discountType === "REGISTRATION_FEE"
-                          ? "registration fee"
-                          : "first month fee"}
+                        {successData.appliedCoupon.discountValue}% off on{' '}
+                        {successData.appliedCoupon.discountType === 'REGISTRATION_FEE'
+                          ? 'registration fee'
+                          : 'first month fee'}
                       </p>
 
                       <p className="mt-2 text-sm text-[#5c7593] leading-relaxed">
@@ -1190,13 +1285,13 @@ const App = () => {
                         ? (successData.quranStudents || []).map((student, idx) => (
                             <div
                               key={student.id}
-                             className="grid gap-3 grid-cols-1 md:grid-cols-[56px_1fr] items-start md:items-center rounded-2xl border border-emerald-200 bg-emerald-50/70 px-4 py-4"
+                              className="grid gap-3 grid-cols-1 md:grid-cols-[56px_1fr] items-start md:items-center rounded-2xl border border-emerald-200 bg-emerald-50/70 px-4 py-4"
                             >
                               <div className="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-500 to-teal-500 text-white flex items-center justify-center font-extrabold text-base">
                                 {idx + 1}
                               </div>
 
-                             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
+                              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
                                 <div>
                                   <p className="text-xs uppercase tracking-wide text-gray-500">Name</p>
                                   <p className="font-bold text-brand-darkText">{student.name}</p>
@@ -1207,7 +1302,7 @@ const App = () => {
                                 </div>
                                 <div>
                                   <p className="text-xs uppercase tracking-wide text-gray-500">Days</p>
-                                  <p className="font-bold text-brand-darkText">{student.classDays.map(d => d.slice(0, 3)).join(", ")}</p>
+                                  <p className="font-bold text-brand-darkText">{student.classDays.map(d => d.slice(0, 3)).join(', ')}</p>
                                 </div>
                                 <div>
                                   <p className="text-xs uppercase tracking-wide text-gray-500">Time</p>
@@ -1220,18 +1315,18 @@ const App = () => {
                             const studentGradeVal = getGradeValue(student.grade);
                             const displayCurriculum = student.curriculum
                               ? student.curriculum
-                              : (studentGradeVal < 10 ? "British Curriculum" : "—");
+                              : (studentGradeVal < 10 ? 'British Curriculum' : '—');
 
                             return (
                               <div
                                 key={student.id}
-                               className="grid gap-3 grid-cols-1 md:grid-cols-[56px_1fr] items-start md:items-center rounded-2xl border border-[rgba(29,111,206,0.08)] bg-[linear-gradient(135deg,#fafcff,#f3f9ff)] px-4 py-4"
+                                className="grid gap-3 grid-cols-1 md:grid-cols-[56px_1fr] items-start md:items-center rounded-2xl border border-[rgba(29,111,206,0.08)] bg-[linear-gradient(135deg,#fafcff,#f3f9ff)] px-4 py-4"
                               >
                                 <div className="w-10 h-10 rounded-full bg-brand-orange/20 text-brand-orange flex items-center justify-center font-extrabold text-base">
                                   {idx + 1}
                                 </div>
 
-                               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
                                   <div>
                                     <p className="text-xs uppercase tracking-wide text-gray-500">Name</p>
                                     <p className="font-bold text-brand-darkText">{student.name}</p>
@@ -1257,7 +1352,7 @@ const App = () => {
 
                   <div className="rounded-[24px] border border-brand-lightGray bg-white/78 p-5 shadow-[0_8px_24px_rgba(15,45,87,0.04)]">
                     <h4 className="text-sm uppercase tracking-[0.16em] font-extrabold text-gray-500 border-b border-brand-lightGray pb-3">
-                      Trial Schedule ({successData.leadType === LeadType.QURAN ? "3 Days" : "1 Day"})
+                      Trial Schedule ({successData.leadType === LeadType.QURAN ? '3 Days' : '1 Day'})
                     </h4>
 
                     <div className="mt-4 space-y-3">
@@ -1286,17 +1381,17 @@ const App = () => {
                           <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-4 shadow-[0_8px_20px_rgba(16,185,129,0.05)]">
                             <p className="text-sm text-emerald-700 font-semibold">⏰ KSA</p>
                             <p className="text-lg text-emerald-800 font-extrabold mt-2">
-                              {hasLowerGrades ? "3:30 PM KSA" : "9:30 AM KSA"}
+                              {hasLowerGrades ? '3:30 PM KSA' : '9:30 AM KSA'}
                             </p>
                             <p className="text-xs text-emerald-600 mt-2">
-                              {hasLowerGrades ? "KG1 to Grade 7" : "Grade 8 to 12"}
+                              {hasLowerGrades ? 'KG1 to Grade 7' : 'Grade 8 to 12'}
                             </p>
                           </div>
 
                           <div className="rounded-2xl border border-blue-200 bg-blue-50 p-4 shadow-[0_8px_20px_rgba(59,130,246,0.05)]">
                             <p className="text-sm text-blue-700 font-semibold">⏰ UAE</p>
                             <p className="text-lg text-blue-800 font-extrabold mt-2">
-                              {hasLowerGrades ? "4:30 PM UAE" : "10:30 AM UAE"}
+                              {hasLowerGrades ? '4:30 PM UAE' : '10:30 AM UAE'}
                             </p>
                             <p className="text-xs text-blue-600 mt-2">
                               Teacher guided slot
@@ -1306,7 +1401,7 @@ const App = () => {
                           <div className="rounded-2xl border border-cyan-200 bg-cyan-50 p-4 shadow-[0_8px_20px_rgba(6,182,212,0.05)]">
                             <p className="text-sm text-cyan-700 font-semibold">⏰ PAK</p>
                             <p className="text-lg text-cyan-800 font-extrabold mt-2">
-                              {hasLowerGrades ? "5:30 PM PAK" : "11:30 AM PAK"}
+                              {hasLowerGrades ? '5:30 PM PAK' : '11:30 AM PAK'}
                             </p>
                             <p className="text-xs text-cyan-600 mt-2">
                               Trial timing
@@ -1366,7 +1461,7 @@ const App = () => {
                             </p>
                             <p className="text-sm text-purple-700">
                               Age {student.age}
-                              {student.requirements ? ` • ${student.requirements}` : ""}
+                              {student.requirements ? ` • ${student.requirements}` : ''}
                             </p>
                           </div>
                         ))}
@@ -1390,10 +1485,10 @@ const App = () => {
                             </p>
                             <p className="text-sm text-emerald-700">
                               Age {student.age}
-                              {student.subjects?.length ? ` • ${student.subjects.join(", ")}` : ""}
-                              {student.classDays?.length ? ` • ${student.classDays.join(", ")}` : ""}
-                              {student.classTime ? ` • ${student.classTime}` : ""}
-                              {student.country ? ` • ${student.country}` : ""}
+                              {student.subjects?.length ? ` • ${student.subjects.join(', ')}` : ''}
+                              {student.classDays?.length ? ` • ${student.classDays.join(', ')}` : ''}
+                              {student.classTime ? ` • ${student.classTime}` : ''}
+                              {student.country ? ` • ${student.country}` : ''}
                             </p>
                           </div>
                         ))}
@@ -1407,42 +1502,40 @@ const App = () => {
             {successData.leadType !== LeadType.TUITION && (
               <div className="mt-6 rounded-[22px] border border-brand-orange/20 bg-[linear-gradient(135deg,rgba(255,248,243,0.95),rgba(255,244,239,0.90))] p-4 text-center shadow-[0_8px_20px_rgba(180,83,9,0.05)]">
                 <p className="text-sm sm:text-[15px] text-brand-burgundy">
-                  📹 We will send the <strong>Zoom link</strong> to{" "}
-                  <strong>{formatPhoneForWhatsApp(successData.country || "Other", successData.whatsapp)}</strong> shortly.
+                  📹 We will send the <strong>Zoom link</strong> to{' '}
+                  <strong>{formatPhoneForWhatsApp(successData.country || 'Other', successData.whatsapp)}</strong> shortly.
                 </p>
               </div>
             )}
 
-<p className="mt-6 text-sm text-brand-mediumText text-center">
-  {successData.leadType === LeadType.TUITION
-    ? "Our advisor will reach out to you shortly on WhatsApp."
-    : "If you need immediate help, just message us on WhatsApp."}
-</p>
+            <p className="mt-6 text-sm text-brand-mediumText text-center">
+              {successData.leadType === LeadType.TUITION
+                ? 'Our advisor will reach out to you shortly on WhatsApp.'
+                : 'If you need immediate help, just message us on WhatsApp.'}
+            </p>
 
-<div className="mt-6 flex justify-center lg:hidden">
-  <div className="ivs-phone-inline">
-    <img
-      src="/images/ivs-whatsapp-phone.png"
-      alt="Official IVS WhatsApp QR"
-      className="w-full h-auto block"
-    />
-  </div>
-</div>
+            <div className="mt-6 flex justify-center lg:hidden">
+              <div className="ivs-phone-inline">
+                <img
+                  src="/images/ivs-whatsapp-phone.png"
+                  alt="Official IVS WhatsApp QR"
+                  className="w-full h-auto block"
+                />
+              </div>
+            </div>
 
-<div className="mt-5 text-center">
-  <button
-    onClick={handleStartNewApplication}
-    className="ivs-cta-button inline-flex items-center justify-center rounded-full px-8 py-3.5 text-white font-bold text-base transition-all hover:scale-[1.04] hover:-translate-y-0.5"
-    style={{
-      background: "linear-gradient(135deg,#1d6fce 0%,#0ea5e9 100%)",
-    }}
-  >
-    Start New Application
-  </button>
-</div>
+            <div className="mt-5 text-center">
+              <button
+                onClick={handleStartNewApplication}
+                className="ivs-cta-button inline-flex items-center justify-center rounded-full px-8 py-3.5 text-white font-bold text-base transition-all hover:scale-[1.04] hover:-translate-y-0.5"
+                style={{
+                  background: 'linear-gradient(135deg,#1d6fce 0%,#0ea5e9 100%)',
+                }}
+              >
+                Start New Application
+              </button>
+            </div>
           </div>
-
-
         </div>
       </div>
     );
@@ -1507,92 +1600,92 @@ const App = () => {
           style={{
             backgroundImage:
               "linear-gradient(rgba(255,255,255,0.38),rgba(255,255,255,0.38)), url('/images/quran-cover-bluee.png')",
-            backgroundRepeat: "no-repeat",
-            backgroundSize: "cover",
-            backgroundPosition: "center center",
+            backgroundRepeat: 'no-repeat',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center center',
           }}
         />
       )}
 
-{isFullTimeDetailsStep && (
-  <div
-    className="fixed inset-0 z-0 pointer-events-none"
-    aria-hidden="true"
-    style={{
-      backgroundImage:
-        "linear-gradient(rgba(255,255,255,0.82),rgba(255,255,255,0.82)), url('/images/full-time-school-side.png')",
-      backgroundRepeat: "no-repeat",
-      backgroundSize: "cover",
-      backgroundPosition: "center center",
-    }}
-  />
-)}
+      {isFullTimeDetailsStep && (
+        <div
+          className="fixed inset-0 z-0 pointer-events-none"
+          aria-hidden="true"
+          style={{
+            backgroundImage:
+              "linear-gradient(rgba(255,255,255,0.82),rgba(255,255,255,0.82)), url('/images/full-time-school-side.png')",
+            backgroundRepeat: 'no-repeat',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center center',
+          }}
+        />
+      )}
 
-{isOneToOneDetailsStep && (
-  <div
-    className="fixed inset-0 z-0 pointer-events-none"
-    aria-hidden="true"
-    style={{
-      backgroundImage:
-        "linear-gradient(rgba(255,255,255,0.82),rgba(255,255,255,0.82)), url('/images/one-to-one-schooling-bg.png')",
-      backgroundRepeat: "no-repeat",
-      backgroundSize: "cover",
-      backgroundPosition: "center center",
-    }}
-  />
-)}
+      {isOneToOneDetailsStep && (
+        <div
+          className="fixed inset-0 z-0 pointer-events-none"
+          aria-hidden="true"
+          style={{
+            backgroundImage:
+              "linear-gradient(rgba(255,255,255,0.82),rgba(255,255,255,0.82)), url('/images/one-to-one-schooling-bg.png')",
+            backgroundRepeat: 'no-repeat',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center center',
+          }}
+        />
+      )}
 
-{isTuitionDetailsStep && (
-  <div
-    className="fixed inset-0 z-0 pointer-events-none"
-    aria-hidden="true"
-    style={{
-      backgroundImage:
-        "linear-gradient(rgba(255,255,255,0.84),rgba(255,255,255,0.84)), url('/images/tuition-side.png')",
-      backgroundRepeat: "no-repeat",
-      backgroundSize: "cover",
-      backgroundPosition: "center center",
-    }}
-  />
-)}
+      {isTuitionDetailsStep && (
+        <div
+          className="fixed inset-0 z-0 pointer-events-none"
+          aria-hidden="true"
+          style={{
+            backgroundImage:
+              "linear-gradient(rgba(255,255,255,0.84),rgba(255,255,255,0.84)), url('/images/tuition-side.png')",
+            backgroundRepeat: 'no-repeat',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center center',
+          }}
+        />
+      )}
 
-{isFinalStep && (
-  <div
-    className="fixed inset-0 z-0 pointer-events-none"
-    aria-hidden="true"
-    style={{
-      backgroundImage:
-        "linear-gradient(rgba(255,255,255,0.86),rgba(255,255,255,0.86)), url('/images/final-step-education.png')",
-      backgroundRepeat: "no-repeat",
-      backgroundSize: "cover",
-      backgroundPosition: "center center",
-    }}
-  />
-)}
+      {isFinalStep && (
+        <div
+          className="fixed inset-0 z-0 pointer-events-none"
+          aria-hidden="true"
+          style={{
+            backgroundImage:
+              "linear-gradient(rgba(255,255,255,0.86),rgba(255,255,255,0.86)), url('/images/final-step-education.png')",
+            backgroundRepeat: 'no-repeat',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center center',
+          }}
+        />
+      )}
 
-<div
-  className={
-    isQuranDetailsStep
-      ? "relative z-10 w-full max-w-[1700px] mx-auto px-4 pt-4 pb-24 md:px-6 md:pt-6 lg:px-8 2xl:pr-[360px]"
-      : isFinalStep
-      ? "relative z-10 w-full max-w-[1400px] mx-auto px-4 pt-4 pb-24 md:px-6 md:pt-6 lg:px-8 xl:pt-20 2xl:pr-[360px]"
-      : isSchoolStep1Details
-      ? "relative z-10 w-full max-w-[1500px] mx-auto px-4 pt-6 pb-24 md:px-6 md:pt-8 lg:px-8 xl:pt-20 2xl:pr-[360px]"
-      : "relative z-10 w-full max-w-[1550px] mx-auto px-4 pt-4 pb-24 md:px-6 lg:px-8 2xl:pr-[360px]"
-  }
->
-<div
-  className={
-    isQuranDetailsStep
-      ? "w-full max-w-3xl mx-auto xl:ml-auto xl:mr-0"
-      : step === 1
-      ? `w-full max-w-3xl mx-auto xl:ml-auto xl:mr-0 pt-4 md:pt-6 xl:pt-0 ${detailsStepShift}`
-      : step === 2
-      ? "w-full max-w-3xl mx-auto xl:ml-auto xl:mr-0"
-      : "w-full max-w-3xl mx-auto"
-  }
->
-          <div className={isQuranDetailsStep ? "mb-6" : "mb-10"}>
+      <div
+        className={
+          isQuranDetailsStep
+            ? 'relative z-10 w-full max-w-[1700px] mx-auto px-4 pt-4 pb-24 md:px-6 md:pt-6 lg:px-8 2xl:pr-[360px]'
+            : isFinalStep
+            ? 'relative z-10 w-full max-w-[1400px] mx-auto px-4 pt-4 pb-24 md:px-6 md:pt-6 lg:px-8 xl:pt-20 2xl:pr-[360px]'
+            : isSchoolStep1Details
+            ? 'relative z-10 w-full max-w-[1500px] mx-auto px-4 pt-6 pb-24 md:px-6 md:pt-8 lg:px-8 xl:pt-20 2xl:pr-[360px]'
+            : 'relative z-10 w-full max-w-[1550px] mx-auto px-4 pt-4 pb-24 md:px-6 lg:px-8 2xl:pr-[360px]'
+        }
+      >
+        <div
+          className={
+            isQuranDetailsStep
+              ? 'w-full max-w-3xl mx-auto xl:ml-auto xl:mr-0'
+              : step === 1
+              ? `w-full max-w-3xl mx-auto xl:ml-auto xl:mr-0 pt-4 md:pt-6 xl:pt-0 ${detailsStepShift}`
+              : step === 2
+              ? 'w-full max-w-3xl mx-auto xl:ml-auto xl:mr-0'
+              : 'w-full max-w-3xl mx-auto'
+          }
+        >
+          <div className={isQuranDetailsStep ? 'mb-6' : 'mb-10'}>
             {step === 1 && (
               <Step1_Details
                 data={formData}
