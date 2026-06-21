@@ -645,7 +645,13 @@ export const Navbar: React.FC<NavbarProps> = ({
           >
             <div className="ivs-logo">
               <div className="ivs-logo-ring">
-                <img src="/images/ivs-logo.png" alt="IVS Logo" />
+                <img
+                  src="/images/ivs-logo.webp"
+                  alt="IVS Logo"
+                  width={256}
+                  height={265}
+                  decoding="async"
+                />
               </div>
 
               <div className="ivs-logo-copy">

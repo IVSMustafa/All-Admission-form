@@ -16,6 +16,7 @@ const HeroProgramsReveal: React.FC<HeroProgramsRevealProps> = ({
 }) => {
   const shellRef = useRef<HTMLDivElement>(null);
   const heroInnerRef = useRef<HTMLDivElement>(null);
+  const progressRef = useRef(0);
 
   const [progress, setProgress] = useState(0);
   const [heroHeight, setHeroHeight] = useState(0);
@@ -79,6 +80,8 @@ const looksZoomedOut = dpr < 0.95;
       const distance = Math.max(heroHeight * 0.72, 260);
       const next = clamp(scrolled / distance, 0, 1);
 
+      if (Math.abs(next - progressRef.current) < 0.005) return;
+      progressRef.current = next;
       setProgress(next);
     };
 

@@ -105,7 +105,15 @@ const PremiumImageBadge = ({
       <div className="pc-premium-media-bottom-depth" />
       <div className="pc-premium-media-side-depth" />
       <div className="pc-premium-media-shadow" />
-      <img src={imageSrc} alt={title} className="pc-premium-media-img" />
+      <img
+        src={imageSrc}
+        alt={title}
+        className="pc-premium-media-img"
+        width={900}
+        height={600}
+        loading="lazy"
+        decoding="async"
+      />
     </div>
   );
 };
@@ -640,14 +648,47 @@ export const ProgramCard: React.FC<ProgramCardProps> = ({
         }
 
         @media (max-width: 768px) {
+          .pc-reveal {
+            opacity: 1;
+            transform: none;
+            transition: none;
+          }
+
           .pc-card {
             min-height: auto;
-            padding: 26px 22px;
-            border-radius: 28px;
+            padding: 24px 20px;
+            border-radius: 26px;
+            transform: none !important;
+            transition: box-shadow 0.22s ease, border-color 0.22s ease;
+            box-shadow:
+              inset 0 1px 0 rgba(255,255,255,0.96),
+              0 10px 24px rgba(15,23,42,0.05),
+              0 18px 38px rgba(15,23,42,0.07);
+          }
+
+          .pc-card:hover {
+            transform: none;
+            box-shadow:
+              inset 0 1px 0 rgba(255,255,255,0.96),
+              0 10px 24px rgba(15,23,42,0.05),
+              0 18px 38px rgba(15,23,42,0.07);
+          }
+
+          .pc-card::after {
+            display: none;
+          }
+
+          .pc-glow,
+          .pc-premium-media-back-glow,
+          .pc-premium-media-shadow,
+          .pc-premium-media-bottom-depth,
+          .pc-premium-media-side-depth,
+          .pc-premium-media-highlight-side {
+            display: none;
           }
 
           .pc-top {
-            margin-bottom: 20px;
+            margin-bottom: 18px;
           }
 
           .pc-title,
@@ -656,37 +697,93 @@ export const ProgramCard: React.FC<ProgramCardProps> = ({
             max-width: 100%;
           }
 
+          .pc-title {
+            font-size: 24px;
+          }
+
           .pc-desc {
             min-height: auto;
+            font-size: 14px;
+            line-height: 1.7;
+          }
+
+          .pc-feature-list {
+            gap: 11px;
+            margin-top: 18px;
+            margin-bottom: 24px;
+          }
+
+          .pc-feature {
+            font-size: 14px;
           }
 
           .pc-button {
             width: 100%;
+            min-height: 54px;
+            transition: none;
+            box-shadow:
+              inset 0 1px 0 rgba(255,255,255,0.28),
+              inset 0 -2px 0 rgba(0,0,0,0.10),
+              0 10px 20px var(--pc-button-glow),
+              0 6px 14px rgba(15,23,42,0.10);
           }
 
-.pc-premium-media {
-  width: 94px;
-  height: 94px;
-  border-radius: 26px;
-}
+          .pc-card:hover .pc-button {
+            transform: none;
+            filter: none;
+          }
 
-.pc-premium-media-inner-stroke {
-  inset: 2px;
-  border-radius: 24px;
-}
+          .pc-card:hover .pc-button::after {
+            left: -42%;
+            opacity: 0;
+          }
 
-.pc-premium-media-img {
-  inset: 12px;
-  width: calc(100% - 24px);
-  height: calc(100% - 24px);
-}
+          .pc-premium-media {
+            width: 88px;
+            height: 88px;
+            border-radius: 24px;
+            box-shadow:
+              inset 0 1px 0 rgba(255,255,255,0.72),
+              0 10px 20px rgba(15,23,42,0.06),
+              0 3px 10px rgba(15,23,42,0.04);
+          }
+
+          .pc-premium-media-inner-stroke {
+            inset: 2px;
+            border-radius: 22px;
+          }
+
+          .pc-premium-media-highlight-top {
+            left: 12px;
+            right: 12px;
+            top: 6px;
+            height: 13px;
+          }
+
+          .pc-premium-media-img {
+            inset: 11px;
+            width: calc(100% - 22px);
+            height: calc(100% - 22px);
+          }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          .pc-reveal,
+          .pc-card,
+          .pc-button,
+          .pc-card::after,
+          .pc-feature {
+            transition: none !important;
+            animation: none !important;
+            transform: none !important;
+          }
         }
       `}</style>
 
       <div
         ref={ref}
-        className={`pc-reveal ${visible ? "in" : ""}`}
-        style={{ transitionDelay: `${index * 90}ms` }}
+        className="pc-reveal in"
+        style={{ transitionDelay: `${index * 70}ms` }}
       >
         <div
           className="pc-card"

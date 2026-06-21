@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from "react";
-import { GoogleGenAI } from "@google/genai";
 import type { LiveServerMessage } from "@google/genai";
 
 function decode(base64: string) {
@@ -55,9 +54,9 @@ type Props = {
 export default function AIAssistantMascot({ idleSrc, listeningSrc, speakingSrc }: Props) {
   const base = (import.meta as any).env?.BASE_URL || "/";
 
-  const IDLE_IMG = idleSrc || `${base}images/assistant-sofa.png`;
-  const LISTENING_IMG = listeningSrc || `${base}images/assistant-listening.png`;
-  const SPEAKING_IMG = speakingSrc || `${base}images/assistant-speaking.png`;
+  const IDLE_IMG = idleSrc || `${base}images/assistant-sofa.webp`;
+  const LISTENING_IMG = listeningSrc || `${base}images/assistant-listening.webp`;
+  const SPEAKING_IMG = speakingSrc || `${base}images/assistant-speaking.webp`;
 
   const [isConnecting, setIsConnecting] = useState(false);
   const [isVoiceActive, setIsVoiceActive] = useState(false);
@@ -133,6 +132,7 @@ export default function AIAssistantMascot({ idleSrc, listeningSrc, speakingSrc }
         (process as any).env?.GEMINI_API_KEY ||
         "";
 
+      const { GoogleGenAI } = await import("@google/genai");
       const ai = new GoogleGenAI({ apiKey });
 
       const inputCtx = new (window.AudioContext || (window as any).webkitAudioContext)({
@@ -300,6 +300,10 @@ export default function AIAssistantMascot({ idleSrc, listeningSrc, speakingSrc }
             src={currentImg}
             alt="IVS AI Assistant"
             className="ivs-assistant-img"
+            width={512}
+            height={501}
+            loading="lazy"
+            decoding="async"
             draggable={false}
             onError={() => {
               if (desiredImg === SPEAKING_IMG) setCurrentImg(LISTENING_IMG);

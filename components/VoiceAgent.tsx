@@ -99,7 +99,7 @@ const HolographicAvatarActive = ({ isSpeaking, volume }: { isSpeaking: boolean, 
   const mouthHeight = Math.max(2, Math.min(20, volume / 5));
   
   return (
-    <div className="relative w-28 h-28 sm:w-40 sm:h-40 flex items-center justify-center my-3 sm:my-4">
+    <div className="relative w-40 h-40 flex items-center justify-center my-4">
       {/* Outer Rotating Rings */}
       <div className="absolute inset-0 border border-brand-orange/20 rounded-full animate-[spin_8s_linear_infinite]"></div>
       <div className="absolute inset-4 border border-brand-orange/10 rounded-full animate-[spin_12s_linear_infinite_reverse]"></div>
@@ -108,19 +108,19 @@ const HolographicAvatarActive = ({ isSpeaking, volume }: { isSpeaking: boolean, 
       <div className={`absolute inset-0 bg-brand-orange/10 rounded-full blur-2xl transition-opacity duration-300 ${isSpeaking ? 'opacity-100' : 'opacity-30'}`}></div>
 
       {/* Head Container */}
-     <div className="relative z-10 w-20 h-20 sm:w-28 sm:h-28 bg-brand-cream/90 border border-brand-orange/40 rounded-[1.5rem] sm:rounded-[2rem] flex flex-col items-center justify-center shadow-[0_0_24px_rgba(34,211,238,0.16)] backdrop-blur-xl overflow-hidden">
+      <div className="relative z-10 w-28 h-28 bg-brand-cream/90 border border-brand-orange/40 rounded-[2rem] flex flex-col items-center justify-center shadow-[0_0_30px_rgba(34,211,238,0.2)] backdrop-blur-xl overflow-hidden">
         
         {/* Holographic Scanline Overlay */}
         <div className="absolute inset-0 bg-[linear-gradient(rgba(34,211,238,0.1)_1px,transparent_1px)] bg-[size:100%_4px] opacity-30 pointer-events-none"></div>
 
         {/* Eyes */}
-        <div className="flex gap-4 sm:gap-6 mb-3 sm:mb-4">
+        <div className="flex gap-6 mb-4">
           <div className="relative">
-            <div className={`w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-brand-orange shadow-[0_0_10px_#22d3ee] transition-transform duration-100 ${isSpeaking ? 'scale-110' : 'scale-100'}`}></div>
+            <div className={`w-3 h-3 rounded-full bg-brand-orange shadow-[0_0_10px_#22d3ee] transition-transform duration-100 ${isSpeaking ? 'scale-110' : 'scale-100'}`}></div>
             <div className="absolute top-0 left-0 w-3 h-3 bg-white blur-[2px] opacity-50"></div>
           </div>
           <div className="relative">
-            <div className={`w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-brand-orange shadow-[0_0_10px_#22d3ee] transition-transform duration-100 ${isSpeaking ? 'scale-110' : 'scale-100'}`}></div>
+            <div className={`w-3 h-3 rounded-full bg-brand-orange shadow-[0_0_10px_#22d3ee] transition-transform duration-100 ${isSpeaking ? 'scale-110' : 'scale-100'}`}></div>
             <div className="absolute top-0 left-0 w-3 h-3 bg-white blur-[2px] opacity-50"></div>
           </div>
         </div>
@@ -128,7 +128,7 @@ const HolographicAvatarActive = ({ isSpeaking, volume }: { isSpeaking: boolean, 
         {/* Mouth (Dynamic) */}
         <div className="h-6 flex items-center justify-center">
            <div 
-             className="w-8 sm:w-10 bg-brand-orange/90 rounded-full shadow-[0_0_10px_#22d3ee] transition-all duration-75 ease-linear"
+             className="w-10 bg-brand-orange/90 rounded-full shadow-[0_0_10px_#22d3ee] transition-all duration-75 ease-linear"
              style={{ height: `${mouthHeight}px` }}
            ></div>
         </div>
@@ -213,7 +213,7 @@ const VoiceAgent = ({ variant = 'floating' }: VoiceAgentProps) => {
       setError(null);
       setIsConnecting(true);
 
-      const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_GEMINI_API_KEY });
+      const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
       
       // Initialize Audio Contexts
       const inputCtx = new (window.AudioContext || (window as any).webkitAudioContext)({ sampleRate: 16000 });
@@ -362,7 +362,7 @@ const VoiceAgent = ({ variant = 'floating' }: VoiceAgentProps) => {
     if (variant === 'sidebar') {
        return (
          <div 
-           className="glass-panel p-4 rounded-2xl border border-brand-orange/30 relative overflow-hidden group cursor-pointer transition-all hover:bg-white/60 animate-fade-in-up"
+           className="glass-panel p-5 rounded-2xl border border-brand-orange/30 relative overflow-visible group cursor-pointer transition-all hover:bg-white/60 animate-fade-in-up" 
            onClick={connect}
          >
             {/* "Any help needed?" Bubble */}
@@ -397,38 +397,34 @@ const VoiceAgent = ({ variant = 'floating' }: VoiceAgentProps) => {
     }
     
     // Floating Button for Mobile - Using a Div instead to ensure visibility
-return (
-  <div className="fixed bottom-4 right-4 sm:bottom-5 sm:right-5 z-30">
-    <button
-      onClick={connect}
-      className="flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 rounded-full shadow-[0_8px_24px_rgba(34,211,238,0.22)] hover:shadow-[0_12px_34px_rgba(34,211,238,0.32)] transition-all duration-300 hover:scale-105 relative"
-      title="Start IVS Advisor"
-    >
-      <div className="absolute inset-0 bg-brand-orange/10 rounded-full animate-ping opacity-20"></div>
-      <img
-        src="/images/assistant-sofa.png"
-        alt="AI Assistant"
-        className="w-full h-full rounded-full object-cover transition-opacity duration-300"
-        style={{
-          objectPosition: 'center',
-          boxShadow: '0 0 16px rgba(34, 211, 238, 0.28)'
-        }}
-      />
-    </button>
-    {error && (
-      <span className="absolute -top-12 right-0 bg-red-500 text-white text-xs px-2 py-1 rounded w-32 text-center shadow-lg">
-        {error}
-      </span>
-    )}
-  </div>
-);
+    return (
+      <div className="fixed bottom-6 right-6 z-40">
+        <button 
+          onClick={connect}
+          className="flex items-center justify-center w-20 h-20 rounded-full shadow-[0_8px_32px_rgba(34,211,238,0.3)] hover:shadow-[0_12px_48px_rgba(34,211,238,0.5)] transition-all duration-300 hover:scale-110 relative"
+          title="Start IVS Advisor"
+        >
+          <div className="absolute inset-0 bg-brand-orange/10 rounded-full animate-ping opacity-20"></div>
+          <img 
+            src="/images/assistant-sofa.png" 
+            alt="AI Assistant"
+            className="w-full h-full rounded-full object-cover transition-opacity duration-300"
+            style={{ 
+              objectPosition: 'center',
+              boxShadow: '0 0 20px rgba(34, 211, 238, 0.4)'
+            }}
+          />
+        </button>
+        {error && <span className="absolute -top-12 right-0 bg-red-500 text-white text-xs px-2 py-1 rounded w-32 text-center shadow-lg">{error}</span>}
+      </div>
+    );
   }
 
   // ACTIVE STATE (Connected/Connecting)
   
   if (variant === 'sidebar') {
     return (
-     <div className="glass-panel p-4 rounded-[2rem] border border-brand-orange/50 shadow-[0_0_24px_rgba(34,211,238,0.12)] bg-brand-cream/80 flex flex-col items-center animate-fade-in relative overflow-hidden">
+      <div className="glass-panel p-6 rounded-[2rem] border border-brand-orange/50 shadow-[0_0_30px_rgba(34,211,238,0.15)] bg-brand-cream/80 flex flex-col items-center animate-fade-in relative overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between w-full mb-2 z-10">
           <div className="flex items-center gap-2 text-brand-burgundy">
@@ -467,9 +463,9 @@ return (
   }
 
   // Floating Active State (Mobile)
-return (
-  <div className="fixed bottom-4 right-4 sm:bottom-5 sm:right-5 z-30 animate-fade-in-up w-[calc(100vw-1.5rem)] max-w-[320px] sm:max-w-[340px]">
-    <div className="glass-panel p-4 sm:p-5 rounded-[2rem] border border-brand-orange/30 shadow-[0_0_32px_rgba(34,211,238,0.16)] backdrop-blur-xl bg-brand-cream/90 flex flex-col items-center w-full">
+  return (
+    <div className="fixed bottom-6 right-6 z-50 animate-fade-in-up">
+      <div className="glass-panel p-6 rounded-[2.5rem] border border-brand-orange/30 shadow-[0_0_50px_rgba(34,211,238,0.2)] backdrop-blur-xl bg-brand-cream/90 flex flex-col items-center min-w-[300px]">
         {/* Header */}
         <div className="flex items-center justify-between w-full mb-2">
           <div className="flex items-center gap-2 text-brand-burgundy">
@@ -482,16 +478,16 @@ return (
         </div>
 
         {/* Holographic Avatar */}
-<div className="relative scale-[0.88] sm:scale-100">
-  {isConnecting ? (
-    <div className="w-28 h-28 sm:w-36 sm:h-36 flex flex-col items-center justify-center gap-3 text-brand-burgundy/70">
-      <Loader2 className="w-8 h-8 sm:w-10 sm:h-10 animate-spin" />
-      <span className="text-[10px] sm:text-xs font-mono text-center">ESTABLISHING UPLINK...</span>
-    </div>
-  ) : (
-    <HolographicAvatarActive isSpeaking={isAgentSpeaking} volume={volume} />
-  )}
-</div>
+        <div className="relative">
+          {isConnecting ? (
+            <div className="w-40 h-40 flex flex-col items-center justify-center gap-3 text-brand-burgundy/70">
+              <Loader2 className="w-10 h-10 animate-spin" />
+              <span className="text-xs font-mono">ESTABLISHING UPLINK...</span>
+            </div>
+          ) : (
+            <HolographicAvatarActive isSpeaking={isAgentSpeaking} volume={volume} />
+          )}
+        </div>
 
         {/* Controls */}
         <div className="flex items-center gap-4 mt-6 w-full">

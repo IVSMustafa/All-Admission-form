@@ -11,6 +11,20 @@
   padding: 0;
 }
 
+@media (max-width: 768px) {
+  .glass-panel,
+  .ivs-card {
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+
+  .glass-panel:hover,
+  .ivs-card:hover {
+    transform: none;
+    box-shadow: var(--shadow-lg);
+  }
+}
+
 .ivs-emoji {
   font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", "Segoe UI Symbol", sans-serif;
 }
