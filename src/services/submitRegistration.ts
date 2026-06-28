@@ -1,6 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
 import type { FormData } from '../../types';
 import { buildSubmissionId } from '../utils/submissionPayloads';
+import { formatPhoneForWhatsApp } from '../utils/validation';
 
 type SubmitRegistrationResult = {
   success: boolean;
@@ -46,7 +47,7 @@ const buildSubmissionPayload = (data: FormData) => {
     lead_type: data.leadType,
     parent_name: data.parentName,
     email: data.email,
-    whatsapp: data.whatsapp,
+    whatsapp: formatPhoneForWhatsApp(data.country || 'Other', data.whatsapp),
     country: data.country,
     other_country: data.otherCountryName,
     quran_student_country: quranCountry || null,
