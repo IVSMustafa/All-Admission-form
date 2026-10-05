@@ -237,6 +237,15 @@ export const FinalSummary = ({
           )}
         </div>
 
+        <div className="mt-5 rounded-2xl bg-white/80 border border-black/6 p-5 shadow-[0_8px_24px_rgba(15,45,87,0.04)]">
+          <p className="text-gray-500 text-xs mb-1">Country of Residence</p>
+          <p className="font-bold text-[#163761] text-base sm:text-lg">
+            {data.countryOfResidence === 'Other'
+              ? data.otherCountryOfResidence || 'Other'
+              : data.countryOfResidence || '—'}
+          </p>
+        </div>
+
         <div className="grid sm:grid-cols-2 gap-4 pt-5 border-t border-black/8 mt-5">
           <div className="rounded-2xl bg-white/80 border border-black/6 p-5 shadow-[0_8px_24px_rgba(15,45,87,0.04)]">
             <p className="text-gray-500 text-xs mb-1">Program</p>

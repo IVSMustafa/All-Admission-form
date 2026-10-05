@@ -112,6 +112,162 @@ export const SelectField = ({
   </div>
 );
 
+export const CountrySelectField = ({
+  label,
+  options,
+  value,
+  onChange,
+  error,
+  required,
+  className = "",
+}: {
+  label: string;
+  options: readonly string[] | string[];
+  value: string;
+  onChange: (e: { target: { value: string } }) => void;
+  error?: string;
+  required?: boolean;
+  className?: string;
+}) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [search, setSearch] = useState("");
+  const [highlightedIndex, setHighlightedIndex] = useState(-1);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const listRef = useRef<HTMLUListElement>(null);
+  
+  const filteredOptions = useMemo(() => {
+    return options.filter((opt) => 
+      opt.toLowerCase().includes(search.toLowerCase())
+    );
+  }, [options, search]);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        setIsOpen(false);
+        setSearch(value);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [value]);
+
+  useEffect(() => {
+    if (isOpen) {
+      setSearch("");
+      setHighlightedIndex(-1);
+    } else {
+      setSearch(value);
+    }
+  }, [isOpen, value]);
+
+  useEffect(() => {
+    if (isOpen && highlightedIndex >= 0 && listRef.current) {
+      const element = listRef.current.children[highlightedIndex] as HTMLElement;
+      if (element) {
+        element.scrollIntoView({ block: "nearest" });
+      }
+    }
+  }, [highlightedIndex, isOpen]);
+
+  const handleSelect = (opt: string) => {
+    onChange({ target: { value: opt } });
+    setIsOpen(false);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (!isOpen && (e.key === "Enter" || e.key === " " || e.key === "ArrowDown")) {
+      e.preventDefault();
+      setIsOpen(true);
+      return;
+    }
+
+    if (isOpen) {
+      if (e.key === "ArrowDown") {
+        e.preventDefault();
+        setHighlightedIndex(prev => Math.min(prev + 1, filteredOptions.length - 1));
+      } else if (e.key === "ArrowUp") {
+        e.preventDefault();
+        setHighlightedIndex(prev => Math.max(prev - 1, 0));
+      } else if (e.key === "Enter" && highlightedIndex >= 0 && highlightedIndex < filteredOptions.length) {
+        e.preventDefault();
+        handleSelect(filteredOptions[highlightedIndex]);
+      } else if (e.key === "Escape") {
+        setIsOpen(false);
+        setSearch(value);
+      } else if (e.key === "Tab") {
+        setIsOpen(false);
+      }
+    }
+  };
+
+  return (
+    <div className={`flex flex-col gap-2 ${className}`} ref={containerRef}>
+      <label className="text-[12px] font-semibold tracking-wide text-brand-darkText/80 ml-1">
+        {label} {required && <span className="text-red-500">*</span>}
+      </label>
+
+      <div className="relative">
+        <div className="relative">
+          <input
+            type="text"
+            role="combobox"
+            aria-expanded={isOpen}
+            aria-autocomplete="list"
+            aria-controls="country-listbox"
+            className={`w-full min-h-[56px] glass-input rounded-xl px-4 py-3 text-sm bg-white/75 border border-black/10
+            focus:outline-none focus:ring-2 focus:ring-[rgba(29,111,206,0.18)] focus:border-[rgba(29,111,206,0.45)]
+            transition-all ${error ? "border-red-400" : ""}`}
+            value={isOpen ? search : value || ""}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              if (!isOpen) setIsOpen(true);
+            }}
+            onClick={() => setIsOpen(true)}
+            onKeyDown={handleKeyDown}
+            placeholder={`Select ${label}`}
+          />
+          <div className="absolute right-4 top-4 pointer-events-none">
+            <ChevronDown className={`w-4 h-4 text-brand-mediumText transition-transform ${isOpen ? "rotate-180" : ""}`} />
+          </div>
+        </div>
+
+        {isOpen && (
+          <ul
+            id="country-listbox"
+            ref={listRef}
+            className="absolute z-50 w-full mt-1 bg-white/95 backdrop-blur-md border border-black/10 rounded-xl shadow-lg max-h-60 overflow-y-auto"
+            role="listbox"
+          >
+            {filteredOptions.length > 0 ? (
+              filteredOptions.map((opt, index) => (
+                <li
+                  key={opt}
+                  role="option"
+                  aria-selected={highlightedIndex === index}
+                  className={`px-4 py-2.5 text-sm cursor-pointer transition-colors
+                    ${highlightedIndex === index ? "bg-[rgba(139,21,56,0.1)] text-brand-burgundy" : "text-brand-darkText hover:bg-[rgba(139,21,56,0.05)]"}
+                  `}
+                  onMouseEnter={() => setHighlightedIndex(index)}
+                  onClick={() => handleSelect(opt)}
+                >
+                  {opt}
+                </li>
+              ))
+            ) : (
+              <li className="px-4 py-3 text-sm text-gray-500 italic text-center">
+                No countries found
+              </li>
+            )}
+          </ul>
+        )}
+      </div>
+
+      {error && <span className="text-xs text-red-500 ml-1">{error}</span>}
+    </div>
+  );
+};
+
 /* =======================
    BUTTON
    ======================= */

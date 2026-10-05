@@ -24,7 +24,7 @@ const getSchoolStudents = (data: FormData) =>
   (data.students || []).filter((student) => student.id !== DRAFT_STUDENT_ID);
 
 const getParentCompletion = (data: FormData) => {
-  const hasCountry = data.country === 'Other' ? Boolean(data.otherCountryName.trim()) : Boolean(data.country);
+  const hasCountry = data.countryOfResidence === 'Other' ? Boolean(data.otherCountryOfResidence.trim()) : Boolean(data.countryOfResidence);
   const complete = [data.parentName, data.email, data.whatsapp].filter(Boolean).length + (hasCountry ? 1 : 0);
 
   return {

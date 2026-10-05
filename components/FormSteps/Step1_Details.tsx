@@ -2,7 +2,7 @@ import '@fontsource/great-vibes/400.css';
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { FormData, LeadType, ProgramType, Curriculum, Track, ClassMode, Student, QuranStudent } from '../../types';
 import { GRADES, COUNTRIES, IGCSE_SUBJECTS, TIME_SLOTS, DAYS, QURAN_LEVELS, QURAN_CLASS_TIMES, getGradeValue as getGV } from '../../constants';
-import { GlassCard, InputField, SelectField, OptionCard, Toggle, PhoneInput, Button } from '../UI';
+import { GlassCard, InputField, SelectField, CountrySelectField, OptionCard, Toggle, PhoneInput, Button } from '../UI';
 import { HeroCard, ProgramCard, TrustStrip, PROGRAM_CARDS_DATA, Navbar } from '../LandingPage';
 import {
   School, BookOpen, GraduationCap, CheckCircle, Calendar, AlertTriangle,
@@ -175,6 +175,26 @@ return (
                 required
                 error={errors.email}
               />
+              <CountrySelectField
+                label="Country of Residence"
+                value={data.countryOfResidence}
+                onChange={e => updateData({ countryOfResidence: e.target.value })}
+                options={COUNTRIES}
+                required
+                error={errors.countryOfResidence}
+                className="sm:col-span-2"
+              />
+              {data.countryOfResidence === 'Other' && (
+                <InputField
+                  label="Country of Residence Name"
+                  value={data.otherCountryOfResidence}
+                  onChange={e => updateData({ otherCountryOfResidence: e.target.value })}
+                  placeholder="Type your country"
+                  required
+                  error={errors.otherCountryOfResidence}
+                  className="sm:col-span-2"
+                />
+              )}
               <div className="sm:col-span-2">
                 <PhoneInput
                   label="WhatsApp Number"
@@ -186,18 +206,6 @@ return (
                   error={errors.whatsapp}
                 />
               </div>
-              {data.country === 'Other' && (
-                <div className="sm:col-span-2">
-                  <InputField
-                    label="Country Name"
-                    value={data.otherCountryName}
-                    onChange={e => updateData({ otherCountryName: e.target.value })}
-                    placeholder="e.g. Denmark"
-                    required
-                    error={errors.otherCountryName}
-                  />
-                </div>
-              )}
             </div>
           </div>
         </div>

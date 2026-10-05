@@ -2,7 +2,7 @@ import '@fontsource/great-vibes/400.css';
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { FormData, LeadType, ProgramType, Curriculum, Track, ClassMode, Student, QuranStudent } from '../../types';
 import { GRADES, COUNTRIES, IGCSE_SUBJECTS, TIME_SLOTS, DAYS, QURAN_LEVELS, QURAN_CLASS_TIMES, getGradeValue as getGV } from '../../constants';
-import { GlassCard, InputField, SelectField, OptionCard, Toggle, PhoneInput, Button } from '../UI';
+import { GlassCard, InputField, SelectField, CountrySelectField, OptionCard, Toggle, PhoneInput, Button } from '../UI';
 import { HeroCard, ProgramCard, TrustStrip, PROGRAM_CARDS_DATA, Navbar } from '../LandingPage';
 import {
   School, BookOpen, GraduationCap, CheckCircle, Calendar, AlertTriangle,
@@ -88,8 +88,12 @@ export const TuitionForm = ({ data, updateData, errors }: Pick<StepProps,'data'|
         <div className="grid sm:grid-cols-2 gap-4 mt-3">
           <InputField label="Parent Name" value={data.parentName} onChange={e => updateData({ parentName: e.target.value })} placeholder="e.g. Mr. Khan" required error={errors.parentName} />
           <InputField label="Email Address" type="email" value={data.email} onChange={e => updateData({ email: e.target.value })} placeholder="e.g. parent@email.com" required error={errors.email} />
+          <CountrySelectField label="Country of Residence" value={data.countryOfResidence} onChange={e => updateData({ countryOfResidence: e.target.value })} options={COUNTRIES} required error={errors.countryOfResidence} className="sm:col-span-2" />
+          {data.countryOfResidence === 'Other' && (
+            <InputField label="Country of Residence Name" value={data.otherCountryOfResidence} onChange={e => updateData({ otherCountryOfResidence: e.target.value })} placeholder="Type your country" required error={errors.otherCountryOfResidence} className="sm:col-span-2" />
+          )}
           <div className="sm:col-span-2">
-            <PhoneInput label="WhatsApp Number" country={data.country || 'Other'} phone={data.whatsapp} onPhoneChange={p => updateData({ whatsapp: p })} onCountryChange={c => updateData({ country: c })} required error={errors.whatsapp} />
+            <PhoneInput label="WhatsApp Number" country={data.country || ''} phone={data.whatsapp} onPhoneChange={p => updateData({ whatsapp: p })} onCountryChange={c => updateData({ country: c })} required error={errors.whatsapp} />
           </div>
         </div>
       </div>

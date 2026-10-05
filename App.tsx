@@ -222,7 +222,7 @@ const [isSubmitting, setIsSubmitting] = useState(false);
             subjects: formData.quranSubjects || [],
             classDays: formData.quranClassDays,
             classTime: formData.quranClassTime,
-            country: formData.quranStudentCountry,
+            country: formData.countryOfResidence === 'Other' ? formData.otherCountryOfResidence : formData.countryOfResidence,
           };
 
           setFormData(prev => ({

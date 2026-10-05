@@ -1,4 +1,3 @@
-import { createClient } from '@supabase/supabase-js';
 import type { FormData } from '../../types';
 import { buildSubmissionId } from '../utils/submissionPayloads';
 import { formatPhoneForWhatsApp } from '../utils/validation';
@@ -7,27 +6,23 @@ type SubmitRegistrationResult = {
   success: boolean;
   error?: string;
   details?: {
-    supabase?: unknown;
     webhook?: unknown;
   };
 };
 
-const getSupabaseClient = () => {
-  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-  const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-
-  if (!supabaseUrl || !supabaseAnonKey) {
-    throw new Error('Missing Supabase environment variables');
-  }
-
-  return createClient(supabaseUrl, supabaseAnonKey);
-};
-
 const buildSubmissionPayload = (data: FormData) => {
+  const resolvedResidenceCountry =
+    data.countryOfResidence === 'Other'
+      ? data.otherCountryOfResidence || 'Other'
+      : data.countryOfResidence;
+
   const quranCountry =
-    data.quranStudentCountry ||
+    (data.quranStudentCountry === 'Other'
+      ? resolvedResidenceCountry
+      : data.quranStudentCountry) ||
     data.quranStudents?.find((student) => student.country)?.country ||
     data.upsellQuranStudents?.find((student) => student.country)?.country ||
+    resolvedResidenceCountry ||
     '';
 
   const quranStudents = (data.quranStudents || []).map((student) => ({
@@ -50,6 +45,8 @@ const buildSubmissionPayload = (data: FormData) => {
     whatsapp: formatPhoneForWhatsApp(data.country || 'Other', data.whatsapp),
     country: data.country,
     other_country: data.otherCountryName,
+    country_of_residence: resolvedResidenceCountry,
+    other_country_of_residence: data.otherCountryOfResidence || null,
     quran_student_country: quranCountry || null,
     student_name: data.studentName,
     age: data.age,
@@ -93,28 +90,13 @@ export const submitRegistration = async (
   data: FormData
 ): Promise<SubmitRegistrationResult> => {
   try {
-    const supabase = getSupabaseClient();
     const webhookUrl = import.meta.env.VITE_WEBHOOK_URL;
     const payload = buildSubmissionPayload(data);
 
-    const supabaseResult = await supabase.from('registrations').insert([payload]);
-
-    if (supabaseResult.error) {
-      return {
-        success: false,
-        error: supabaseResult.error.message || 'Supabase submission failed',
-        details: {
-          supabase: supabaseResult,
-        },
-      };
-    }
-
     if (!webhookUrl) {
       return {
-        success: true,
-        details: {
-          supabase: supabaseResult,
-        },
+        success: false,
+        error: 'Missing webhook configuration',
       };
     }
 
@@ -129,7 +111,6 @@ export const submitRegistration = async (
         success: false,
         error: `Webhook submission failed with status ${webhookResult.status}`,
         details: {
-          supabase: supabaseResult,
           webhook: webhookResult,
         },
       };
@@ -138,7 +119,6 @@ export const submitRegistration = async (
     return {
       success: true,
       details: {
-        supabase: supabaseResult,
         webhook: webhookResult,
       },
     };

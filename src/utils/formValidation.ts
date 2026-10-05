@@ -64,8 +64,12 @@ export const getStepValidationResult = (
   let quranDraft: QuranDraftValidation | null = null;
 
   if (currentStep === 1) {
-    if (data.country === 'Other' && !data.otherCountryName.trim()) {
-      errors.otherCountryName = 'Required';
+    if (!data.countryOfResidence) {
+      errors.countryOfResidence = 'Please select your country of residence';
+    }
+
+    if (data.countryOfResidence === 'Other' && !data.otherCountryOfResidence.trim()) {
+      errors.otherCountryOfResidence = 'Required';
     }
 
     if (!data.email?.trim()) {
@@ -88,14 +92,14 @@ export const getStepValidationResult = (
         errors.students = 'Please add at least one student';
       }
     } else if (data.leadType === 'quran') {
-      const quranCountry = data.quranStudentCountry || 'Other';
+      const phoneCountry = data.country || 'Other';
       quranDraft = getQuranDraftValidation(data);
       const existingStudents = data.quranStudents?.length || 0;
       const totalStudents = existingStudents + (quranDraft.hasPendingStudent ? 1 : 0);
 
       if (!data.parentName) errors.parentName = 'Required';
-      if (!data.quranStudentCountry) errors.quranStudentCountry = 'Required';
-      if (!data.whatsapp || !validatePhoneLength(quranCountry, data.whatsapp)) {
+      if (!data.country) errors.country = 'Please select a country code';
+      if (!data.whatsapp || !validatePhoneLength(phoneCountry, data.whatsapp)) {
         errors.whatsapp = 'Enter valid phone number';
       }
 
@@ -106,6 +110,7 @@ export const getStepValidationResult = (
       if (!data.studentName) errors.studentName = 'Required';
       if (!data.age) errors.age = 'Required';
       if (!data.parentName) errors.parentName = 'Required';
+      if (!data.country) errors.country = 'Please select a country code';
       if (!data.whatsapp || !validatePhoneLength(data.country || 'Other', data.whatsapp)) {
         errors.whatsapp = 'Enter valid phone number';
       }

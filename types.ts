@@ -67,6 +67,8 @@ export interface FormData {
   grade: string;
   country: string;
   otherCountryName: string;
+  countryOfResidence: string;
+  otherCountryOfResidence: string;
   city: string;
   parentName: string;
   whatsapp: string;
@@ -145,6 +147,8 @@ export const INITIAL_DATA: FormData = {
   grade: '',
   country: '',
   otherCountryName: '',
+  countryOfResidence: '',
+  otherCountryOfResidence: '',
   city: '',
   parentName: '',
   whatsapp: '',
